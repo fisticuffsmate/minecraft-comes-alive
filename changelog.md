@@ -215,3 +215,4 @@
 * Updated lang files and fixed issue #121
 * Limited greeting distance to avoid errors
 * Disabled teleportation by default (configurable)
+* Decreased interaction fatigue

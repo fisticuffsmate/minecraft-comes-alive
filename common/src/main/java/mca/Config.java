@@ -55,8 +55,8 @@ public final class Config implements Serializable {
     public boolean canHurtBabies = true;
     public boolean useVoices = false;
     public boolean useVanillaVoices = false;
-    public float interactionFatigue = 0.05f;
-    public int interactionFatigueCooldown = 4800;
+    public float interactionFatigue = 0.025f;
+    public int interactionFatigueCooldown = 3000;
     public float taxesFactor = 0.5f;
     public boolean enterVillageNotification = true;
     public boolean showNameTags = true;
