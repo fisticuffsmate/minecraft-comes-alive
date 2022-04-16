@@ -60,6 +60,7 @@ public final class Config implements Serializable {
     public float taxesFactor = 0.5f;
     public boolean enterVillageNotification = true;
     public boolean showNameTags = true;
+    public boolean villagerCanTeleport = false;
 
     public static File getConfigFile() {
         return new File("./config/mca.json");
