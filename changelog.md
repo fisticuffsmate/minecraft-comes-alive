@@ -216,3 +216,9 @@
 * Limited greeting distance to avoid errors
 * Disabled teleportation by default (configurable)
 * Decreased interaction fatigue
+
+# 7.0.12
+
+* Fixed massive family crashing whistle
+* Fixed Gifting advancements
+* Fixed missing riding phrase

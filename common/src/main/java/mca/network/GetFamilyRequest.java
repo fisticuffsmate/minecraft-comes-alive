@@ -30,9 +30,13 @@ public class GetFamilyRequest implements Message {
                 ).distinct()
                 .map(((ServerWorld)player.world)::getEntity)
                 .filter(e -> e instanceof VillagerLike<?>)
+                .limit(100)
                 .forEach(e -> {
                     NbtCompound nbt = new NbtCompound();
                     ((MobEntity)e).writeCustomDataToNbt(nbt);
+                    nbt.remove("Brain");
+                    nbt.remove("memories");
+                    nbt.remove("Inventory");
                     familyData.put(e.getUuid().toString(), nbt);
                 });
 
