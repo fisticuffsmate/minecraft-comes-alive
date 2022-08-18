@@ -52,7 +52,6 @@ jobs:
           loaders: |
             fabric
             forge
-            quilt
           java: |
             Java 17
           dependencies: |
