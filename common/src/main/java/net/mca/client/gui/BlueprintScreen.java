@@ -1,6 +1,5 @@
 package net.mca.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.mca.MCA;
 import net.mca.client.gui.widget.RectangleWidget;
 import net.mca.client.gui.widget.TooltipButtonWidget;

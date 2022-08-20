@@ -2,7 +2,6 @@ package net.mca.forge;
 
 import me.shedaniel.architectury.registry.BlockEntityRenderers;
 import me.shedaniel.architectury.registry.entity.EntityRenderers;
-import me.shedaniel.architectury.registry.entity.forge.EntityRenderersImpl;
 import net.mca.Config;
 import net.mca.MCA;
 import net.mca.ParticleTypesMCA;

@@ -12,7 +12,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 public class Result {
     private final Actions actions;

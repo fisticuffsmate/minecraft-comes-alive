@@ -1,10 +1,10 @@
 package net.mca.util.compat.model;
 
+import net.minecraft.client.model.ModelPart;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-
-import net.minecraft.client.model.ModelPart;
 
 /**
  * @since MC 1.17

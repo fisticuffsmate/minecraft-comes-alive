@@ -3,9 +3,8 @@ package net.mca.client.model;
 import com.google.common.collect.ImmutableList;
 import net.mca.entity.VillagerLike;
 import net.mca.util.compat.model.*;
-import net.minecraft.client.model.*;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.entity.LivingEntity;
 
 public class VillagerEntityModelMCA<T extends LivingEntity & VillagerLike<T>> extends VillagerEntityBaseModelMCA<T> {

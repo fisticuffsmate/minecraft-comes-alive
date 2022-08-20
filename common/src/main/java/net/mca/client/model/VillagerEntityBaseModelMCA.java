@@ -6,7 +6,7 @@ import net.mca.entity.VillagerLike;
 import net.mca.entity.ai.relationship.AgeState;
 import net.mca.entity.ai.relationship.VillagerDimensions;
 import net.mca.util.compat.model.*;
-import net.minecraft.client.model.*;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;

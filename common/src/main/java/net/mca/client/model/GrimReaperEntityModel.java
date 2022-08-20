@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import net.mca.entity.GrimReaperEntity;
 import net.mca.entity.ReaperAttackState;
 import net.mca.util.compat.model.*;
-import net.minecraft.client.model.*;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 
 import java.util.Map;

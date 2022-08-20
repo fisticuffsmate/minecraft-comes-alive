@@ -4,7 +4,10 @@ import net.mca.cobalt.network.Message;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 public abstract class NbtDataMessage implements Message {
     private static final long serialVersionUID = 3409849549326097419L;

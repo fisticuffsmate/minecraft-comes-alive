@@ -1,6 +1,5 @@
 package net.mca.server.world.data;
 
-import com.google.common.collect.Lists;
 import net.mca.Config;
 import net.mca.ProfessionsMCA;
 import net.mca.entity.EquipmentSet;
@@ -29,7 +28,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtInt;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;

@@ -2,7 +2,6 @@ package net.mca.client.model;
 
 import net.mca.entity.VillagerLike;
 import net.mca.util.compat.model.ModelPartCompat;
-import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.CrossbowPosing;
 import net.minecraft.entity.LivingEntity;
 

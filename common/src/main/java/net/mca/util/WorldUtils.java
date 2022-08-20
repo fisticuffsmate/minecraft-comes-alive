@@ -1,6 +1,5 @@
 package net.mca.util;
 
-import net.mca.MCA;
 import net.mca.util.compat.PersistentStateCompat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnReason;
@@ -15,7 +14,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 import java.util.List;
