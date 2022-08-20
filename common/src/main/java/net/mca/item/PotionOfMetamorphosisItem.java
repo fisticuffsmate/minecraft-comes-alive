@@ -30,8 +30,9 @@ public class PotionOfMetamorphosisItem extends TooltippedItem {
 
     @Override
     public final TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        if (player instanceof ServerPlayerEntity serverPlayer) {
+        if (player instanceof ServerPlayerEntity) {
             // set gender
+            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
             PlayerSaveData data = PlayerSaveData.get(serverPlayer);
             NbtCompound villagerData = data.getEntityData();
             villagerData.putInt("gender", gender.ordinal());
@@ -40,7 +41,7 @@ public class PotionOfMetamorphosisItem extends TooltippedItem {
             common(serverPlayer);
 
             // also update players
-            serverPlayer.getWorld().getPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PlayerDataMessage(player.getUuid(), villagerData), p));
+            serverPlayer.getServerWorld().getPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PlayerDataMessage(player.getUuid(), villagerData), p));
 
             // remove item
             ItemStack stack = player.getStackInHand(hand);
@@ -51,7 +52,8 @@ public class PotionOfMetamorphosisItem extends TooltippedItem {
     }
 
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity player, LivingEntity entity, Hand hand) {
-        if (entity instanceof VillagerLike villager && !entity.world.isClient) {
+        if (entity instanceof VillagerLike<?> && !entity.world.isClient) {
+            VillagerLike<?> villager = (VillagerLike<?>) entity;
             villager.getGenetics().setGender(gender);
 
             common(entity);
@@ -68,7 +70,7 @@ public class PotionOfMetamorphosisItem extends TooltippedItem {
         entity.playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED, 1.0f, 1.0f);
 
         // update family tree
-        FamilyTree tree = FamilyTree.get((ServerWorld)entity.getWorld());
+        FamilyTree tree = FamilyTree.get((ServerWorld)entity.world);
         FamilyTreeNode entry = tree.getOrCreate(entity);
         entry.setGender(gender);
     }

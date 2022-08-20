@@ -69,10 +69,10 @@ public class LongTermMemory {
         String id = json.get("id").getAsString();
         if (json.has("var")) {
             switch (json.get("var").getAsString()) {
-                case "player" -> {
+                case "player":
                     assert player != null;
                     id += "." + player.getUuid().toString();
-                }
+                    break;
             }
         }
         return id;

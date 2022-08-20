@@ -1,5 +1,8 @@
 package net.mca.forge;
 
+import me.shedaniel.architectury.registry.BlockEntityRenderers;
+import me.shedaniel.architectury.registry.entity.EntityRenderers;
+import me.shedaniel.architectury.registry.entity.forge.EntityRenderersImpl;
 import net.mca.Config;
 import net.mca.MCA;
 import net.mca.ParticleTypesMCA;
@@ -21,15 +24,15 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
-import net.minecraft.client.render.entity.EntityRenderers;
 import net.minecraft.client.render.entity.VillagerEntityRenderer;
 import net.minecraft.client.render.entity.ZombieVillagerEntityRenderer;
+import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -48,11 +51,12 @@ public final class MCAForgeClient {
     @SubscribeEvent
     public static void setup(FMLClientSetupEvent event) {
         if (Config.getInstance().useSquidwardModels) {
-            EntityRenderers.register(EntitiesMCA.MALE_VILLAGER.get(), VillagerEntityRenderer::new);
-            EntityRenderers.register(EntitiesMCA.FEMALE_VILLAGER.get(), VillagerEntityRenderer::new);
+            ReloadableResourceManager reloader = ((ReloadableResourceManagerImpl) MinecraftClient.getInstance().getResourceManager());
+            RenderingRegistry.registerEntityRenderingHandler(EntitiesMCA.MALE_VILLAGER.get(), (dispatcher) -> new VillagerEntityRenderer(dispatcher, reloader));
+            RenderingRegistry.registerEntityRenderingHandler(EntitiesMCA.FEMALE_VILLAGER.get(), (dispatcher) -> new VillagerEntityRenderer(dispatcher, reloader));
 
-            EntityRenderers.register(EntitiesMCA.MALE_ZOMBIE_VILLAGER.get(), ZombieVillagerEntityRenderer::new);
-            EntityRenderers.register(EntitiesMCA.FEMALE_ZOMBIE_VILLAGER.get(), ZombieVillagerEntityRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntitiesMCA.MALE_ZOMBIE_VILLAGER.get(), (dispatcher) -> new ZombieVillagerEntityRenderer(dispatcher, reloader));
+            RenderingRegistry.registerEntityRenderingHandler(EntitiesMCA.FEMALE_ZOMBIE_VILLAGER.get(), (dispatcher) -> new ZombieVillagerEntityRenderer(dispatcher, reloader));
         } else {
             EntityRenderers.register(EntitiesMCA.MALE_VILLAGER.get(), VillagerEntityMCARenderer::new);
             EntityRenderers.register(EntitiesMCA.FEMALE_VILLAGER.get(), VillagerEntityMCARenderer::new);
@@ -63,19 +67,19 @@ public final class MCAForgeClient {
 
         EntityRenderers.register(EntitiesMCA.GRIM_REAPER.get(), GrimReaperRenderer::new);
 
-        BlockEntityRendererFactories.register(BlockEntityTypesMCA.TOMBSTONE.get(), TombstoneBlockEntityRenderer::new);
+        BlockEntityRenderers.registerRenderer(BlockEntityTypesMCA.TOMBSTONE.get(), TombstoneBlockEntityRenderer::new);
 
         // todo java.util.ConcurrentModificationException occurred in computeIfAbsent
-        ModelPredicateProviderRegistry.register(ItemsMCA.BABY_BOY.get(), new Identifier("invalidated"), (stack, world, entity, i) ->
+        ModelPredicateProviderRegistry.register(ItemsMCA.BABY_BOY.get(), new Identifier("invalidated"), (stack, world, entity) ->
                 BabyItem.hasBeenInvalidated(stack) ? 1 : 0
         );
-        ModelPredicateProviderRegistry.register(ItemsMCA.BABY_GIRL.get(), new Identifier("invalidated"), (stack, world, entity, i) ->
+        ModelPredicateProviderRegistry.register(ItemsMCA.BABY_GIRL.get(), new Identifier("invalidated"), (stack, world, entity) ->
                 BabyItem.hasBeenInvalidated(stack) ? 1 : 0
         );
-        ModelPredicateProviderRegistry.register(ItemsMCA.SIRBEN_BABY_BOY.get(), new Identifier("invalidated"), (stack, world, entity, i) ->
+        ModelPredicateProviderRegistry.register(ItemsMCA.SIRBEN_BABY_BOY.get(), new Identifier("invalidated"), (stack, world, entity) ->
                 SirbenBabyItem.hasBeenInvalidated(stack) ? 1 : 0
         );
-        ModelPredicateProviderRegistry.register(ItemsMCA.SIRBEN_BABY_GIRL.get(), new Identifier("invalidated"), (stack, world, entity, i) ->
+        ModelPredicateProviderRegistry.register(ItemsMCA.SIRBEN_BABY_GIRL.get(), new Identifier("invalidated"), (stack, world, entity) ->
                 SirbenBabyItem.hasBeenInvalidated(stack) ? 1 : 0
         );
 

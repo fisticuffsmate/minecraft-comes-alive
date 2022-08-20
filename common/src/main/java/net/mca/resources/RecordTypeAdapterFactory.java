@@ -1,5 +1,5 @@
 /*
-package mca.resources;
+package net.mca.resources;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;

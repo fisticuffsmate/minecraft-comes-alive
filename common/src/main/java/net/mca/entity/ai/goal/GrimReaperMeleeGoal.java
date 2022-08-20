@@ -63,9 +63,10 @@ public class GrimReaperMeleeGoal extends Goal {
     //curse the player if he tries to block
     private void curse() {
         LivingEntity entityToAttack = reaper.getTarget();
-        if (entityToAttack instanceof PlayerEntity player) {
+        if (entityToAttack instanceof PlayerEntity) {
             // Check to see if the player's blocking, then teleport behind them.
             // Also, randomly swap their selected item with something else in the hotbar and apply blindness.
+            PlayerEntity player = (PlayerEntity) entityToAttack;
             if (player.isBlocking()) {
                 double dX = reaper.getX() - player.getX();
                 double dZ = reaper.getZ() - player.getZ();
@@ -73,13 +74,13 @@ public class GrimReaperMeleeGoal extends Goal {
                 reaper.requestTeleport(player.getX() - (dX * 2), player.getY() + 2, reaper.getZ() - (dZ * 2));
 
                 if (!reaper.world.isClient && reaper.getRandom().nextFloat() >= 0.20F) {
-                    int currentItem = player.getInventory().selectedSlot;
+                    int currentItem = player.inventory.selectedSlot;
                     int randomItem = reaper.getRandom().nextInt(9);
-                    ItemStack currentItemStack = player.getInventory().getStack(currentItem);
-                    ItemStack randomItemStack = player.getInventory().getStack(randomItem);
+                    ItemStack currentItemStack = player.inventory.getStack(currentItem);
+                    ItemStack randomItemStack = player.inventory.getStack(randomItem);
 
-                    player.getInventory().setStack(currentItem, randomItemStack);
-                    player.getInventory().setStack(randomItem, currentItemStack);
+                    player.inventory.setStack(currentItem, randomItemStack);
+                    player.inventory.setStack(randomItem, currentItemStack);
 
                     entityToAttack.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 200));
                 }

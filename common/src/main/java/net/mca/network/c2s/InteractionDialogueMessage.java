@@ -6,11 +6,9 @@ import net.mca.resources.Dialogues;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.io.Serial;
 import java.util.UUID;
 
 public class InteractionDialogueMessage implements Message {
-    @Serial
     private static final long serialVersionUID = 1462101145658166706L;
 
     private final UUID villagerUUID;
@@ -25,8 +23,9 @@ public class InteractionDialogueMessage implements Message {
 
     @Override
     public void receive(ServerPlayerEntity player) {
-        Entity v = player.getWorld().getEntity(villagerUUID);
-        if (v instanceof VillagerEntityMCA villager) {
+        Entity v = player.getServerWorld().getEntity(villagerUUID);
+        if (v instanceof VillagerEntityMCA) {
+            VillagerEntityMCA villager = (VillagerEntityMCA) v;
             Dialogues.getInstance().selectAnswer(villager, player, question, answer);
         }
     }

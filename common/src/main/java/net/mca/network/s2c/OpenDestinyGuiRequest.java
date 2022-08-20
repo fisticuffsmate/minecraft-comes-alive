@@ -5,10 +5,7 @@ import net.mca.Config;
 import net.mca.cobalt.network.Message;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.io.Serial;
-
 public class OpenDestinyGuiRequest implements Message {
-    @Serial
     private static final long serialVersionUID = -8912548616237596312L;
 
     public final int player;
@@ -17,7 +14,7 @@ public class OpenDestinyGuiRequest implements Message {
     public boolean allowVillagerModel;
 
     public OpenDestinyGuiRequest(ServerPlayerEntity player) {
-        this.player = player.getId();
+        this.player = player.getEntityId();
 
         allowTeleportation = Config.getInstance().allowDestinyTeleportation;
         allowPlayerModel = Config.getInstance().enableVillagerPlayerModel;

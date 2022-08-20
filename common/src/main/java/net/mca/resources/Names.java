@@ -53,7 +53,7 @@ public class Names extends JsonDataLoader {
         if (Config.getInstance().useModernUSANamesOnly) {
             countries = NAMES_MAP.get("modernusa");
         } else {
-            int i = Nationality.get((ServerWorld)entity.getWorld()).getRegionId(entity.getBlockPos());
+            int i = Nationality.get((ServerWorld)entity.world).getRegionId(entity.getBlockPos());
             countries = NAMES.get(Math.floorMod(i, NAMES.size()));
         }
         return countries.get(gender.binary()).pickOne();

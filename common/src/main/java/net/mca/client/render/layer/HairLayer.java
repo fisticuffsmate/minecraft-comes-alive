@@ -31,7 +31,7 @@ public class HairLayer<T extends LivingEntity, M extends BipedEntityModel<T>> ex
     }
 
     private float[] getRainbow(LivingEntity entity, float tickDelta) {
-        int n = Math.abs(entity.age) / 25 + entity.getId();
+        int n = Math.abs(entity.age) / 25 + entity.getEntityId();
         int o = DyeColor.values().length;
         int p = n % o;
         int q = (n + 1) % o;

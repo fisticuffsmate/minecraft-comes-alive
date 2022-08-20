@@ -27,7 +27,7 @@ public class RankCriterion extends AbstractCriterion<RankCriterion.Conditions> {
     }
 
     public void trigger(ServerPlayerEntity player, Rank rank) {
-        trigger(player, (conditions) -> conditions.test(rank));
+        this.test(player, (conditions) -> conditions.test(rank));
     }
 
     public static class Conditions extends AbstractCriterionConditions {

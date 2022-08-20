@@ -86,10 +86,11 @@ public enum Constraint implements BiPredicate<VillagerLike<?>, ServerPlayerEntit
     NOT_STAYING("!staying", (villager, player) -> villager.getVillagerBrain().getMoveState() != MoveState.STAY),
 
     VILLAGE_HAS_SPACE("village_has_space", (villager, player) -> PlayerSaveData.get(player).getLastSeenVillage(VillageManager.get((ServerWorld)player.world)).filter(Village::hasSpace).isPresent()),
-    NOT_VILLAGE_HAS_SPACE("!village_has_space", (villager, player) -> PlayerSaveData.get(player).getLastSeenVillage(VillageManager.get((ServerWorld)player.world)).filter(Village::hasSpace).isEmpty()),
+    NOT_VILLAGE_HAS_SPACE("!village_has_space", (villager, player) -> !PlayerSaveData.get(player).getLastSeenVillage(VillageManager.get((ServerWorld)player.world)).filter(Village::hasSpace).isPresent()),
 
     HIT_BY("hit_by", (villager, player) -> {
-        if (villager instanceof VillagerEntityMCA v) {
+        if (villager instanceof VillagerEntityMCA) {
+            VillagerEntityMCA v = (VillagerEntityMCA) villager;
             return v.isHitBy(player);
         } else {
             return false;

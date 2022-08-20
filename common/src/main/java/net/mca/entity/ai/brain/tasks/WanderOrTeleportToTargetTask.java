@@ -1,8 +1,8 @@
 package net.mca.entity.ai.brain.tasks;
 
 import com.google.gson.JsonSyntaxException;
+import me.shedaniel.architectury.hooks.TagHooks;
 import net.mca.Config;
-import net.mca.util.RegistryHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -12,7 +12,7 @@ import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.TagKey;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -98,8 +98,8 @@ public class WanderOrTeleportToTargetTask extends WanderAroundTask {
                 return false;
             } else if (blockId.charAt(0) == '#') {
                 Identifier identifier = new Identifier(blockId.substring(1));
-                TagKey<Block> tag = TagKey.of(Registry.BLOCK_KEY, identifier);
-                if (tag != null && !RegistryHelper.isTagEmpty(tag)) {
+                Tag.Identified<Block> tag = TagHooks.getBlockOptional(identifier);
+                if (tag != null && !tag.values().isEmpty()) {
                     if (aboveState.isIn(tag)) {
                         return false;
                     }

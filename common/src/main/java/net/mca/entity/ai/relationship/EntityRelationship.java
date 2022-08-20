@@ -50,18 +50,17 @@ public interface EntityRelationship {
         return getFamilyEntry().streamParents().map(getWorld()::getEntity).filter(Objects::nonNull);
     }
 
-    default Optional<Entity> getPartner() {
-        return Optional.ofNullable(getWorld().getEntity(getFamilyEntry().partner()));
+    default Stream<Entity> getSiblings() {
+        return getFamilyEntry()
+                .siblings()
+                .stream()
+                .map(getWorld()::getEntity)
+                .filter(Objects::nonNull)
+                .filter(e -> !e.getUuid().equals(getUUID())); // we exclude ourselves from the list of siblings
     }
 
-    //try to load a PlayerSaveData before loading the entity
-    //that way, offline players are also considered
-    default Stream<EntityRelationship> getRelationshipStream(Stream<UUID> uuids) {
-        return uuids.map(uuid -> PlayerSaveData.getIfPresent(getWorld(), uuid)
-                        .map(p -> (EntityRelationship)p)
-                        .or(() -> EntityRelationship.of(getWorld().getEntity(uuid))))
-                .filter(Optional::isPresent)
-                .map(Optional::get);
+    default Optional<Entity> getPartner() {
+        return Optional.ofNullable(getWorld().getEntity(getFamilyEntry().partner()));
     }
 
     default void onTragedy(DamageSource cause, @Nullable BlockPos burialSite, RelationshipType type, Entity victim) {
@@ -71,14 +70,19 @@ public interface EntityRelationship {
 
         // notify family
         if (type == RelationshipType.SELF) {
-            getRelationshipStream(getFamilyEntry().streamParents())
-                    .forEach(r -> r.onTragedy(cause, burialSite, RelationshipType.CHILD, victim));
-
-            getRelationshipStream(getFamilyEntry().siblings().stream())
-                    .forEach(r -> r.onTragedy(cause, burialSite, RelationshipType.SIBLING, victim));
-
-            getRelationshipStream(Stream.of(getFamilyEntry().partner()))
-                    .forEach(r -> r.onTragedy(cause, burialSite, RelationshipType.SPOUSE, victim));
+            getParents().forEach(parent ->
+                    EntityRelationship.of(parent).ifPresent(r ->
+                            r.onTragedy(cause, burialSite, RelationshipType.CHILD, victim)
+                    )
+            );
+            getSiblings().forEach(sibling ->
+                    EntityRelationship.of(sibling).ifPresent(r ->
+                            r.onTragedy(cause, burialSite, RelationshipType.SIBLING, victim)
+                    )
+            );
+            getPartner().flatMap(EntityRelationship::of).ifPresent(r ->
+                    r.onTragedy(cause, burialSite, RelationshipType.SPOUSE, victim)
+            );
         }
 
         // end the marriage for both the deceased one and the spouse
@@ -93,21 +97,24 @@ public interface EntityRelationship {
 
     default void marry(Entity spouse) {
         RelationshipState state = spouse instanceof PlayerEntity ? RelationshipState.MARRIED_TO_PLAYER : RelationshipState.MARRIED_TO_VILLAGER;
-        if (spouse instanceof ServerPlayerEntity spouseEntity) {
+        if (spouse instanceof ServerPlayerEntity) {
+            ServerPlayerEntity spouseEntity = (ServerPlayerEntity) spouse;
             CriterionMCA.GENERIC_EVENT_CRITERION.trigger(spouseEntity, "marriage");
         }
         getFamilyEntry().updatePartner(spouse, state);
     }
 
     default void engage(Entity spouse) {
-        if (spouse instanceof ServerPlayerEntity spouseEntity) {
+        if (spouse instanceof ServerPlayerEntity) {
+            ServerPlayerEntity spouseEntity = (ServerPlayerEntity) spouse;
             CriterionMCA.GENERIC_EVENT_CRITERION.trigger(spouseEntity, "engage");
         }
         getFamilyEntry().updatePartner(spouse, RelationshipState.ENGAGED);
     }
 
     default void promise(Entity spouse) {
-        if (spouse instanceof ServerPlayerEntity spouseEntity) {
+        if (spouse instanceof ServerPlayerEntity) {
+            ServerPlayerEntity spouseEntity = (ServerPlayerEntity) spouse;
             CriterionMCA.GENERIC_EVENT_CRITERION.trigger(spouseEntity, "promise");
         }
         getFamilyEntry().updatePartner(spouse, RelationshipState.PROMISED);
@@ -159,11 +166,13 @@ public interface EntityRelationship {
     }
 
     static Optional<EntityRelationship> of(Entity entity) {
-        if (entity instanceof ServerPlayerEntity player) {
+        if (entity instanceof ServerPlayerEntity) {
+            ServerPlayerEntity player = (ServerPlayerEntity) entity;
             return Optional.ofNullable(PlayerSaveData.get(player));
         }
 
-        if (entity instanceof CompassionateEntity<?> compassionateEntity) {
+        if (entity instanceof CompassionateEntity<?>) {
+            CompassionateEntity<?> compassionateEntity = (CompassionateEntity<?>) entity;
             return Optional.ofNullable(compassionateEntity.getRelationships());
         }
 

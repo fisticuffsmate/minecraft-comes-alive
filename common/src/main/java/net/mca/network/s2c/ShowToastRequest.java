@@ -5,10 +5,7 @@ import net.mca.cobalt.network.Message;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
-import java.io.Serial;
-
 public class ShowToastRequest implements Message {
-    @Serial
     private static final long serialVersionUID = 1055734972572313374L;
 
     private final String title;

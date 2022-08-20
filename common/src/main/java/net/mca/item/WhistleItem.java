@@ -18,7 +18,8 @@ public class WhistleItem extends TooltippedItem {
     public final TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (player instanceof ServerPlayerEntity serverPlayer) {
+        if (player instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
             NetworkHandler.sendToPlayer(new OpenGuiRequest(OpenGuiRequest.Type.WHISTLE), serverPlayer);
         }
 

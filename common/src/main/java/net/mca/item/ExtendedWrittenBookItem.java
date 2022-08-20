@@ -4,6 +4,7 @@ import net.mca.client.book.Book;
 import net.mca.client.book.pages.TextPage;
 import net.mca.cobalt.network.NetworkHandler;
 import net.mca.network.s2c.OpenGuiRequest;
+import net.mca.util.NbtElementCompat;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -56,13 +57,13 @@ public class ExtendedWrittenBookItem extends WrittenBookItem {
     }
 
     public Book getBook(ItemStack item) {
-        NbtCompound tag = item.getNbt();
+        NbtCompound tag = item.getTag();
         if (tag != null && tag.contains("pages")) {
             //seems like a vanilla book, let's make a copy of the book and add
             Book book = this.book.copy();
 
             //add our text pages
-            NbtList pages = tag.getList("pages", NbtElement.STRING_TYPE);
+            NbtList pages = tag.getList("pages", NbtElementCompat.STRING_TYPE);
             for (int i = 0; i < pages.size(); i++) {
                 book.addPage(new TextPage(pages.getString(i)));
             }

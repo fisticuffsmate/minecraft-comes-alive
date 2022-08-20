@@ -8,6 +8,7 @@ architectury {
 }
 
 loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
     mixin.defaultRefmapName = 'mca.mixin.refmap.json'
 }
 

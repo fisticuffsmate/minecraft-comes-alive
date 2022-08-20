@@ -9,13 +9,11 @@ import net.mca.resources.data.BuildingType;
 import net.mca.resources.data.tasks.Task;
 import net.mca.server.world.data.Village;
 
-import java.io.Serial;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class GetVillageResponse extends NbtDataMessage {
-    @Serial
     private static final long serialVersionUID = 4882425683460617550L;
 
     public final Rank rank;

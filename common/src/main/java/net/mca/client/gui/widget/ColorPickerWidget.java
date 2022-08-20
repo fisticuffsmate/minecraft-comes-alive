@@ -2,8 +2,8 @@ package net.mca.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.mca.MCA;
+import net.mca.util.compat.RenderSystemCompat;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -33,14 +33,14 @@ public class ColorPickerWidget extends ClickableWidget {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        RenderSystem.setShaderColor(1, 1, 1, alpha);
+        RenderSystem.color4f(1, 1, 1, alpha);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        RenderSystem.setShaderTexture(0, texture);
+        RenderSystemCompat.setShaderTexture(0, texture);
         DrawableHelper.drawTexture(matrices, x, y, 0, 0, width, height, width, height);
 
-        RenderSystem.setShaderTexture(0, MCA_GUI_ICONS_TEXTURE);
+        RenderSystemCompat.setShaderTexture(0, MCA_GUI_ICONS_TEXTURE);
         DrawableHelper.drawTexture(matrices, (int)(x + valueX * width) - 8, (int)(y + valueY * height) - 8, 240, 0, 16, 16, 256, 256);
 
         RectangleWidget.drawRectangle(matrices, x, y, x + width, y + height, 0xaaffffff);
@@ -68,10 +68,5 @@ public class ColorPickerWidget extends ClickableWidget {
         valueX = MathHelper.clamp((mouseX - x) / width, 0.0, 1.0);
         valueY = MathHelper.clamp((mouseY - y) / height, 0.0, 1.0);
         consumer.apply(valueX, valueY);
-    }
-
-    @Override
-    public void appendNarrations(NarrationMessageBuilder builder) {
-        appendDefaultNarrations(builder);
     }
 }

@@ -46,7 +46,8 @@ public class ClothingList extends JsonDataLoader {
                 return;
             }
 
-            for (String key : file.getAsJsonObject().keySet()) {
+            for (Map.Entry<String, JsonElement> entry : file.getAsJsonObject().entrySet()) {
+                String key = entry.getKey();
                 JsonObject object = file.getAsJsonObject().get(key).getAsJsonObject();
 
                 for (int i = 0; i < JsonHelper.getInt(object, "count", 1); i++) {
@@ -72,17 +73,20 @@ public class ClothingList extends JsonDataLoader {
      */
     public WeightedPool<String> getPool(VillagerLike<?> villager) {
         Gender gender = villager.getGenetics().getGender();
-        return switch (villager.getAgeState()) {
-            case BABY, TODDLER -> getPool(gender, MCA.locate("baby").toString());
-            case CHILD, TEEN -> getPool(gender, MCA.locate("child").toString());
-            default -> {
+        switch (villager.getAgeState()) {
+            case BABY:
+            case TODDLER:
+                return getPool(gender, MCA.locate("baby").toString());
+            case CHILD:
+            case TEEN:
+                return getPool(gender, MCA.locate("child").toString());
+            default:
                 WeightedPool<String> pool = getPool(gender, villager.getVillagerData().getProfession());
                 if (pool.entries.size() == 0) {
                     pool = getPool(gender, VillagerProfession.NONE);
                 }
-                yield pool;
-            }
-        };
+                return pool;
+        }
     }
 
     public WeightedPool<String> getPool(Gender gender, @Nullable VillagerProfession profession) {

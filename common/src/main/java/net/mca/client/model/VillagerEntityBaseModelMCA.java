@@ -5,6 +5,7 @@ import net.mca.Config;
 import net.mca.entity.VillagerLike;
 import net.mca.entity.ai.relationship.AgeState;
 import net.mca.entity.ai.relationship.VillagerDimensions;
+import net.mca.util.compat.model.*;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -19,13 +20,13 @@ public class VillagerEntityBaseModelMCA<T extends LivingEntity & VillagerLike<T>
     VillagerDimensions.Mutable dimensions = new VillagerDimensions.Mutable(AgeState.ADULT);
     float breastSize;
 
-    public VillagerEntityBaseModelMCA(ModelPart root) {
-        super(root);
+    public VillagerEntityBaseModelMCA(ModelPartCompat root) {
+        super(root.getOriginalDilation(), 0, root.getTextureWidth(), root.getTextureHeight());
         this.breasts = root.getChild(BREASTS);
     }
 
     public static ModelData getModelData(Dilation dilation) {
-        ModelData modelData = BipedEntityModel.getModelData(dilation, 0.0f);
+        ModelData modelData = BipedEntityModelCompat.getModelData(dilation, 0.0f);
         ModelPartData data = modelData.getRoot();
 
         data.addChild(BREASTS, newBreasts(dilation, 0), ModelTransform.NONE);
@@ -96,7 +97,8 @@ public class VillagerEntityBaseModelMCA<T extends LivingEntity & VillagerLike<T>
     public void setAttributes(BipedEntityModel<T> target) {
         super.setAttributes(target);
 
-        if (target instanceof VillagerEntityBaseModelMCA<T> m) {
+        if (target instanceof VillagerEntityBaseModelMCA) {
+            VillagerEntityBaseModelMCA<T> m = (VillagerEntityBaseModelMCA<T>) target;
             copyCommonAttributes(m);
 
             m.breasts.visible = breasts.visible;

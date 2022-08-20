@@ -20,8 +20,9 @@ public class CombItem extends TooltippedItem {
 
     @Override
     public final TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        if (player instanceof ServerPlayerEntity serverPlayer) {
+        if (player instanceof ServerPlayerEntity) {
             ItemStack stack = player.getStackInHand(hand);
+            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
             NetworkHandler.sendToPlayer(new OpenGuiRequest(OpenGuiRequest.Type.COMB), serverPlayer);
             return TypedActionResult.success(stack);
         }

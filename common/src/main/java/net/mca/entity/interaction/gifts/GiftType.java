@@ -3,13 +3,14 @@ package net.mca.entity.interaction.gifts;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import me.shedaniel.architectury.hooks.TagHooks;
 import net.mca.MCA;
 import net.mca.entity.VillagerEntityMCA;
 import net.mca.resources.data.analysis.IntAnalysis;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.tag.TagKey;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
@@ -29,13 +30,13 @@ public class GiftType {
         });
 
         HashMap<Item, Integer> items = new HashMap<>();
-        HashMap<TagKey<Item>, Integer> tags = new HashMap<>();
+        HashMap<Tag.Identified<Item>, Integer> tags = new HashMap<>();
         JsonHelper.getObject(json, "items").entrySet().forEach(element -> {
             String string = element.getKey();
             Integer satisfaction = element.getValue().getAsInt();
             if (string.charAt(0) == '#') {
                 Identifier identifier = new Identifier(string.substring(1));
-                TagKey<Item> tag = TagKey.of(Registry.ITEM_KEY, identifier);
+                Tag.Identified<Item> tag = TagHooks.getItemOptional(identifier);
                 if (tag != null) {
                     tags.put(tag, satisfaction);
                 } else {
@@ -104,7 +105,7 @@ public class GiftType {
     private final List<GiftPredicate> conditions;
 
     private final Map<Item, Integer> items;
-    private final Map<TagKey<Item>, Integer> tags;
+    private final Map<Tag.Identified<Item>, Integer> tags;
 
     private int fail;
     private int good;
@@ -134,7 +135,7 @@ public class GiftType {
         );
     }
 
-    public GiftType(Identifier id, int priority, List<GiftPredicate> conditions, Map<Item, Integer> items, Map<TagKey<Item>, Integer> tags, int fail, int good, int better, Map<Response, String> responses) {
+    public GiftType(Identifier id, int priority, List<GiftPredicate> conditions, Map<Item, Integer> items, Map<Tag.Identified<Item>, Integer> tags, int fail, int good, int better, Map<Response, String> responses) {
         this.id = id;
         this.priority = priority;
         this.conditions = conditions;
@@ -162,7 +163,7 @@ public class GiftType {
      * Checks whether the given item counts for this type of gift.
      */
     public boolean matches(ItemStack stack) {
-        return items.keySet().stream().anyMatch(i -> i == stack.getItem()) || tags.keySet().stream().anyMatch(stack::isIn);
+        return items.keySet().stream().anyMatch(i -> i == stack.getItem()) || tags.keySet().stream().anyMatch(stack.getItem()::isIn);
     }
 
     /**
@@ -174,7 +175,7 @@ public class GiftType {
         IntAnalysis analysis = new IntAnalysis();
 
         Optional<Integer> value = items.entrySet().stream().filter(i -> i.getKey() == stack.getItem()).findFirst().map(Map.Entry::getValue);
-        int base = value.orElseGet(() -> tags.entrySet().stream().filter(i -> stack.isIn(i.getKey())).findFirst().map(Map.Entry::getValue).orElse(0));
+        int base = value.orElseGet(() -> tags.entrySet().stream().filter(i -> stack.getItem().isIn(i.getKey())).findFirst().map(Map.Entry::getValue).orElse(0));
 
         analysis.add("base", base);
 

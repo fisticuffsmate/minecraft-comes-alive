@@ -21,8 +21,8 @@ public class NeedleScreen extends VillagerEditorScreen {
     }
 
     @Override
-    public void close() {
-        super.close();
+    public void onClose() {
+        super.onClose();
     }
 
     @Override
@@ -38,7 +38,7 @@ public class NeedleScreen extends VillagerEditorScreen {
             super.setPage("loading");
         } else if (page.equals("body")) {
             syncVillagerData();
-            close();
+            onClose();
         } else {
             super.setPage("clothing");
         }

@@ -26,7 +26,7 @@ public class GenericEventCriterion extends AbstractCriterion<GenericEventCriteri
     }
 
     public void trigger(ServerPlayerEntity player, String event) {
-        trigger(player, (conditions) -> conditions.test(event));
+        this.test(player, (conditions) -> conditions.test(event));
     }
 
     public static class Conditions extends AbstractCriterionConditions {

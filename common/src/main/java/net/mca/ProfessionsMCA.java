@@ -1,8 +1,8 @@
 package net.mca;
 
 import com.google.common.collect.ImmutableSet;
-import dev.architectury.registry.registries.DeferredRegister;
-import dev.architectury.registry.registries.RegistrySupplier;
+import me.shedaniel.architectury.registry.DeferredRegister;
+import me.shedaniel.architectury.registry.RegistrySupplier;
 import net.mca.entity.ai.PointOfInterestTypeMCA;
 import net.mca.mixin.MixinVillagerProfession;
 import net.minecraft.block.Block;

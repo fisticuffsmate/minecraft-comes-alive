@@ -31,7 +31,7 @@ public class SpawnQueue {
             VillagerEntity e = villagerSpawnQueue.remove(0);
 
             if (e.world.canSetBlock(e.getBlockPos())) {
-                e.discard();
+                e.remove();
                 VillagerFactory.newVillager(e.world)
                         .withName(e.hasCustomName() ? e.getName().getString() : null)
                         .withGender(Gender.getRandom())
@@ -49,7 +49,7 @@ public class SpawnQueue {
             ZombieVillagerEntity e = zombieVillagerSpawnQueue.remove(0);
 
             if (e.world.canSetBlock(e.getBlockPos())) {
-                e.discard();
+                e.remove();
                 ZombieVillagerEntityMCA z = ZombieVillagerFactory.newVillager(e.world)
                         .withName(e.hasCustomName() ? e.getName().getString() : null)
                         .withGender(Gender.getRandom())
@@ -68,7 +68,7 @@ public class SpawnQueue {
     }
 
     public boolean addVillager(Entity entity) {
-        if (entity instanceof IVillagerEntity villagerEntity && !handlesSpawnReason(villagerEntity.getSpawnReason())) {
+        if (entity instanceof IVillagerEntity && !handlesSpawnReason(((IVillagerEntity) entity).getSpawnReason())) {
             return false;
         }
         if (Config.getInstance().villagerDimensionBlacklist.contains(entity.getEntityWorld().getRegistryKey().getValue().toString())) {

@@ -26,7 +26,7 @@ public class BabyCriterion extends AbstractCriterion<BabyCriterion.Conditions> {
     }
 
     public void trigger(ServerPlayerEntity player, int c) {
-        trigger(player, (conditions) -> conditions.test(c));
+        this.test(player, (conditions) -> conditions.test(c));
     }
 
     public static class Conditions extends AbstractCriterionConditions {

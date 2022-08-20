@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.mca.MCA;
 import net.mca.advancement.criterion.CriterionMCA;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Final;
@@ -20,16 +21,16 @@ public class MixinAbstractFurnaceBlockEntity {
     @Shadow
     private Object2IntOpenHashMap<Identifier> recipesUsed;
 
-    @Inject(method = "dropExperienceForRecipesUsed", at = @At("HEAD"))
-    public void onDropExperience(ServerPlayerEntity player, CallbackInfo ci) {
+    @Inject(method = "dropExperience(Lnet/minecraft/entity/player/PlayerEntity;)V", at = @At("HEAD"))
+    public void onDropExperience(PlayerEntity player, CallbackInfo ci) {
         recipesUsed.forEach((identifier, count) -> {
             if (identifier.getNamespace().equals(MCA.MOD_ID)) {
                 boolean isBaby = identifier.equals(MCA.locate("baby_boy_from_smelting"));
                 boolean isSirbenBaby = identifier.equals(MCA.locate("baby_sirben_boy_from_smelting"));
                 if (isBaby || isSirbenBaby) {
-                    CriterionMCA.BABY_SMELTED_CRITERION.trigger(player, count);
+                    CriterionMCA.BABY_SMELTED_CRITERION.trigger((ServerPlayerEntity) player, count);
                     if (isSirbenBaby) {
-                        CriterionMCA.BABY_SIRBEN_SMELTED_CRITERION.trigger(player, count);
+                        CriterionMCA.BABY_SIRBEN_SMELTED_CRITERION.trigger((ServerPlayerEntity) player, count);
                     }
                 }
             }

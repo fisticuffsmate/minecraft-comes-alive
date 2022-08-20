@@ -7,10 +7,7 @@ import net.mca.resources.ClothingList;
 import net.mca.resources.HairList;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.io.Serial;
-
 public class SkinListRequest implements Message {
-    @Serial
     private static final long serialVersionUID = -6508206556519152120L;
 
     @Override

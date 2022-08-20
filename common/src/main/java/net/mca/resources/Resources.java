@@ -9,7 +9,6 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serial;
 import java.lang.reflect.Type;
 
 public interface Resources {
@@ -37,7 +36,6 @@ public interface Resources {
     }
 
     class BrokenResourceException extends Exception {
-        @Serial
         private static final long serialVersionUID = -7371322414731622879L;
 
         BrokenResourceException(String path, Throwable cause) {

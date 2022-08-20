@@ -5,11 +5,9 @@ import net.mca.entity.VillagerEntityMCA;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.io.Serial;
 import java.util.UUID;
 
 public class InteractionCloseRequest implements Message {
-    @Serial
     private static final long serialVersionUID = 5410526074172819931L;
 
     private final UUID villagerUUID;
@@ -20,8 +18,9 @@ public class InteractionCloseRequest implements Message {
 
     @Override
     public void receive(ServerPlayerEntity player) {
-        Entity v = player.getWorld().getEntity(villagerUUID);
-        if (v instanceof VillagerEntityMCA villager) {
+        Entity v = player.getServerWorld().getEntity(villagerUUID);
+        if (v instanceof VillagerEntityMCA) {
+            VillagerEntityMCA villager = (VillagerEntityMCA) v;
             villager.getInteractions().stopInteracting();
         }
     }

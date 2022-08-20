@@ -28,7 +28,7 @@ public interface CParameter<T, TrackedType> {
     }
 
     static CDataParameter<NbtCompound> create(String id, NbtCompound def) {
-        return new CDataParameter<>(id, TrackedDataHandlerRegistry.NBT_COMPOUND, def, (nbt, key) -> NbtCompoundDefaultGetters.getCompound(nbt, key, def), NbtCompound::put);
+        return new CDataParameter<>(id, TrackedDataHandlerRegistry.TAG_COMPOUND, def, (nbt, key) -> NbtCompoundDefaultGetters.getCompound(nbt, key, def), NbtCompound::put);
     }
 
     static CDataParameter<BlockPos> create(String id, BlockPos def) {

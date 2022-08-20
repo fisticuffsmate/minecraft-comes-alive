@@ -10,6 +10,7 @@ import net.mca.network.s2c.OpenDestinyGuiRequest;
 import net.mca.network.s2c.ShowToastRequest;
 import net.mca.server.world.data.BabyTracker;
 import net.mca.server.world.data.PlayerSaveData;
+import net.mca.util.compat.OptionalCompat;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.BaseText;
@@ -62,7 +63,7 @@ public class ServerInteractionManager {
                 launchDestiny(player);
 
                 if (player.interactionManager.getGameMode() == GameMode.SURVIVAL) {
-                    player.changeGameMode(GameMode.SPECTATOR);
+                    player.setGameMode(GameMode.SPECTATOR);
                 }
             } else if (Config.getInstance().allowDestinyCommandOnce) {
                 NetworkHandler.sendToPlayer(new ShowToastRequest(
@@ -133,7 +134,7 @@ public class ServerInteractionManager {
 
         // Send the name of all online players to the command sender.
         proposals.forEach((uuid -> {
-            PlayerEntity player = sender.getWorld().getPlayerByUuid(uuid);
+            PlayerEntity player = sender.world.getPlayerByUuid(uuid);
             if (player != null) {
                 infoMessage(sender, (BaseText)new LiteralText("- ").append(new LiteralText(player.getEntityName())));
             }
@@ -250,8 +251,9 @@ public class ServerInteractionManager {
                     successMessage(sender, new TranslatableText("server.endMarriage", name.getString()))
             );
             senderData.getPartner().ifPresent(spouse -> {
-                if (spouse instanceof PlayerEntity player) {
+                if (spouse instanceof PlayerEntity) {
                     // Notify the ex if they are online.
+                    PlayerEntity player = (PlayerEntity) spouse;
                     failMessage(player, new TranslatableText("server.marriageEnded", sender.getEntityName()));
                 }
             });
@@ -280,7 +282,7 @@ public class ServerInteractionManager {
         }
 
         // Ensure we don't already have a baby
-        BabyTracker tracker = BabyTracker.get(sender.getWorld());
+        BabyTracker tracker = BabyTracker.get(sender.getServerWorld());
         BabyTracker.Pairing pairing = tracker.getPairing(sender.getUuid(), senderData.getPartnerUUID().orElse(null));
         if (tracker.hasActiveBaby(sender.getUuid(), senderData.getPartnerUUID().orElse(null))) {
             if (pairing.locateBaby(sender).getRight().wasFound()) {
@@ -293,7 +295,7 @@ public class ServerInteractionManager {
         }
 
         // Ensure the spouse is online.
-        senderData.getPartner().filter(e -> e instanceof PlayerEntity).map(PlayerEntity.class::cast).ifPresentOrElse(spouse -> {
+        OptionalCompat.ifPresentOrElse(senderData.getPartner().filter(e -> e instanceof PlayerEntity).map(PlayerEntity.class::cast), spouse -> {
             // If the spouse is online and has previously sent a procreation request that hasn't expired, we can continue.
             // Otherwise, we notify the spouse that they must also enter the command.
             if (!procreateMap.containsKey(spouse.getUuid())) {

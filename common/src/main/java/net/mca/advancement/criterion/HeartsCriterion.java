@@ -29,7 +29,7 @@ public class HeartsCriterion extends AbstractCriterion<HeartsCriterion.Condition
     }
 
     public void trigger(ServerPlayerEntity player, int hearts, int increase, String source) {
-        trigger(player, (conditions) -> conditions.test(hearts, increase, source));
+        this.test(player, (conditions) -> conditions.test(hearts, increase, source));
     }
 
     public static class Conditions extends AbstractCriterionConditions {

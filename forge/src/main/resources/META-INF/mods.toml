@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[40,)"
+loaderVersion = "[36,)"
 #issueTrackerURL = ""
 license = "GNU"
 
@@ -16,18 +16,18 @@ logoFile = "mca.png"
 [[dependencies.mca]]
     modId="forge"
     mandatory=true
-    versionRange="[40.1.14,)"
+    versionRange="[36.2.39,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.mca]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.18.2,1.19)"
+    versionRange="[1.16.5,1.17)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.mca]]
     modId="architectury"
     mandatory=true
-    versionRange="[4.9.83,)"
+    versionRange="[1.32.66,)"
     ordering="AFTER"
     side="BOTH"

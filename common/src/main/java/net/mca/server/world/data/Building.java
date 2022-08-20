@@ -3,6 +3,7 @@ package net.mca.server.world.data;
 import net.mca.Config;
 import net.mca.resources.API;
 import net.mca.resources.data.BuildingType;
+import net.mca.util.NbtElementCompat;
 import net.mca.util.NbtHelper;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
@@ -25,15 +26,14 @@ import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.minecraft.tag.BlockTags.LEAVES;
 
 public class Building implements Serializable, Iterable<UUID> {
-    @Serial
     private static final long serialVersionUID = -1106627083469687307L;
     public static final long SCAN_COOLDOWN = 4800;
     private static final Direction[] directions = {
@@ -103,7 +103,7 @@ public class Building implements Serializable, Iterable<UUID> {
 
         strictScan = v.getBoolean("strictScan");
 
-        NbtList res = v.getList("residents", NbtElement.COMPOUND_TYPE);
+        NbtList res = v.getList("residents", NbtElementCompat.COMPOUND_TYPE);
         for (int i = 0; i < res.size(); i++) {
             NbtCompound c = res.getCompound(i);
             residents.put(c.getUuid("uuid"), c.getString("name"));
@@ -226,7 +226,7 @@ public class Building implements Serializable, Iterable<UUID> {
         for (Map.Entry<Identifier, List<BlockPos>> positions : blocks.entrySet()) {
             List<BlockPos> mask = positions.getValue().stream()
                     .filter(p -> !Registry.BLOCK.getId(world.getBlockState(p).getBlock()).equals(positions.getKey()))
-                    .toList();
+                    .collect(Collectors.toList());
             positions.getValue().removeAll(mask);
         }
     }

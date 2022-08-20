@@ -2,12 +2,12 @@ package net.mca.entity.ai.brain.tasks.chore;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonSyntaxException;
+import me.shedaniel.architectury.hooks.TagHooks;
 import net.mca.Config;
 import net.mca.entity.VillagerEntityMCA;
 import net.mca.entity.ai.Chore;
 import net.mca.entity.ai.TaskUtils;
 import net.mca.util.InventoryUtils;
-import net.mca.util.RegistryHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -16,7 +16,7 @@ import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.TagKey;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -134,7 +134,7 @@ public class ChoppingTask extends AbstractChoreTask {
         // check upside continues and valid leaves exist.
         BlockPos.Mutable pos_up = origin.mutableCopy(); // copy as mutable for reduce resources
         for (int y = 0; y < Config.getInstance().maxTreeHeight; y++) {
-            BlockState up = world.getBlockState(pos_up.setY(pos_up.getY() + 1)); // use set directly instead of "pos_up.move(Direction.UP)" (set is faster)
+            BlockState up = world.getBlockState(pos_up.up()); // use set directly instead of "pos_up.move(Direction.UP)" (set is faster)
             if (up.isIn(BlockTags.LOGS)) {continue;} else return up.isIn(BlockTags.LEAVES);
         }
         return false;
@@ -166,8 +166,8 @@ public class ChoppingTask extends AbstractChoreTask {
                 return true;
             } else if (blockId.charAt(0) == '#') {
                 Identifier identifier = new Identifier(blockId.substring(1));
-                TagKey<Block> tag = TagKey.of(Registry.BLOCK_KEY, identifier);
-                if (tag != null && !RegistryHelper.isTagEmpty(tag)) {
+                Tag.Identified<Block> tag = TagHooks.getBlockOptional(identifier);
+                if (tag != null && !tag.values().isEmpty()) {
                     if (state.isIn(tag)) {
                         return true;
                     }
@@ -188,8 +188,8 @@ public class ChoppingTask extends AbstractChoreTask {
                 return sources.get(blockId);
             } else if (blockId.charAt(0) == '#') {
                 Identifier identifier = new Identifier(blockId.substring(1));
-                TagKey<Block> tag = TagKey.of(Registry.BLOCK_KEY, identifier);
-                if (tag != null && !RegistryHelper.isTagEmpty(tag)) {
+                Tag.Identified<Block> tag = TagHooks.getBlockOptional(identifier);
+                if (tag != null && !tag.values().isEmpty()) {
                     if (state.isIn(tag)) {
                         return sources.get(blockId);
                     }

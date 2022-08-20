@@ -17,13 +17,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 abstract class MixinPlayerInventory implements Inventory, Nameable {
     @Shadow @Final public PlayerEntity player;
 
-    @Inject(method = "dropSelectedItem(Z)Lnet/minecraft/item/ItemStack;",
-            at = @At("HEAD"),
-            cancellable = true)
-    public void onDropSelectedItem(boolean dropEntireStack, CallbackInfoReturnable<ItemStack> info) {
-        ItemStack stack = ((PlayerInventory)(Object)this).getMainHandStack();
-        if (stack.getItem() instanceof BabyItem baby && !baby.onDropped(stack, this.player)) {
-            info.setReturnValue(ItemStack.EMPTY);
-        }
-    }
+//    @Inject(method = "dropSelectedItem(Z)Lnet/minecraft/item/ItemStack;",
+//            at = @At("HEAD"),
+//            cancellable = true)
+//    public void onDropSelectedItem(boolean dropEntireStack, CallbackInfoReturnable<ItemStack> info) {
+//        ItemStack stack = ((PlayerInventory)(Object)this).getMainHandStack();
+//        if (stack.getItem() instanceof BabyItem baby && !baby.onDropped(stack, this.player)) {
+//            info.setReturnValue(ItemStack.EMPTY);
+//        }
+//    }
 }

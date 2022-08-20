@@ -1,6 +1,6 @@
 package net.mca.forge;
 
-import dev.architectury.platform.forge.EventBuses;
+import me.shedaniel.architectury.platform.forge.EventBuses;
 import net.mca.MCA;
 import net.mca.ParticleTypesMCA;
 import net.mca.SoundsMCA;

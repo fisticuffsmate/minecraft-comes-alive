@@ -5,7 +5,6 @@ import net.mca.Config;
 import net.mca.entity.VillagerEntityMCA;
 import net.mca.entity.ai.MemoryModuleTypeMCA;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.mob.MobEntity;
@@ -15,6 +14,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,10 +30,10 @@ public class GuardEnemiesSensor extends Sensor<LivingEntity> {
     }
 
     private Optional<LivingEntity> getNearestHostile(LivingEntity entity) {
-        return getVisibleMobs(entity).flatMap((list) -> list.stream(this::isHostile).min((a, b) -> this.compareEntities(entity, a, b)));
+        return getVisibleMobs(entity).flatMap((list) -> list.stream().filter(this::isHostile).min((a, b) -> this.compareEntities(entity, a, b)));
     }
 
-    private Optional<LivingTargetCache> getVisibleMobs(LivingEntity entity) {
+    private Optional<List<LivingEntity>> getVisibleMobs(LivingEntity entity) {
         return entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
     }
 
@@ -47,7 +47,8 @@ public class GuardEnemiesSensor extends Sensor<LivingEntity> {
     }
 
     private int getPriority(LivingEntity entity, LivingEntity guard) {
-        if (entity instanceof VillagerEntityMCA villager) {
+        if (entity instanceof VillagerEntityMCA) {
+            VillagerEntityMCA villager = (VillagerEntityMCA) entity;
             return villager.isHostile() ? 10 : -1;
         } else if (guard != null && entity instanceof MobEntity && (((MobEntity)entity).getTarget() == guard)) {
             //priority is irrelevant if this entity is currently an active threat

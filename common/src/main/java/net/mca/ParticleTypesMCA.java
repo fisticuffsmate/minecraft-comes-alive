@@ -1,7 +1,7 @@
 package net.mca;
 
-import dev.architectury.registry.registries.DeferredRegister;
-import dev.architectury.registry.registries.RegistrySupplier;
+import me.shedaniel.architectury.registry.DeferredRegister;
+import me.shedaniel.architectury.registry.RegistrySupplier;
 import net.mca.mixin.MixinDefaultParticleType;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleType;

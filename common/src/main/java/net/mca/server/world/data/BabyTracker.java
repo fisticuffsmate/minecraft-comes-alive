@@ -3,8 +3,10 @@ package net.mca.server.world.data;
 import net.mca.entity.ai.relationship.Gender;
 import net.mca.item.ItemsMCA;
 import net.mca.util.InventoryUtils;
+import net.mca.util.NbtElementCompat;
 import net.mca.util.NbtHelper;
 import net.mca.util.WorldUtils;
+import net.mca.util.compat.PersistentStateCompat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -21,7 +23,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class BabyTracker extends PersistentState {
+public class BabyTracker extends PersistentStateCompat {
     public static BabyTracker get(ServerWorld world) {
         return WorldUtils.loadData(world.getServer().getOverworld(), nbt -> new BabyTracker(world, nbt), BabyTracker::new, "mca_baby_tracker");
     }
@@ -32,7 +34,7 @@ public class BabyTracker extends PersistentState {
     }
 
     BabyTracker(ServerWorld world, NbtCompound nbt) {
-        nbt.getList("pairings", NbtElement.COMPOUND_TYPE).forEach(element -> {
+        nbt.getList("pairings", NbtElementCompat.COMPOUND_TYPE).forEach(element -> {
             Pairing pairing = new Pairing((NbtCompound)element);
             pairings.put(pairing.key, pairing);
         });
@@ -126,8 +128,8 @@ public class BabyTracker extends PersistentState {
         }
 
         public Pairing(NbtCompound tag) {
-            key = new Key(tag.getList("key", NbtElement.STRING_TYPE));
-            children = NbtHelper.toList(tag.getList("children", NbtElement.COMPOUND_TYPE), c -> new MutableChildSaveState((NbtCompound)c));
+            key = new Key(tag.getList("key", NbtElementCompat.STRING_TYPE));
+            children = NbtHelper.toList(tag.getList("children", NbtElementCompat.COMPOUND_TYPE), c -> new MutableChildSaveState((NbtCompound)c));
         }
 
         public int getChildCount() {
@@ -154,12 +156,12 @@ public class BabyTracker extends PersistentState {
          */
         public Pair<ItemStack, Placement> locateBaby(PlayerEntity player) {
 
-            int slot = InventoryUtils.getFirstSlotContainingItem(player.getInventory(), stack ->
+            int slot = InventoryUtils.getFirstSlotContainingItem(player.inventory, stack ->
                     getState(stack).filter(state -> state.key.equals(key)).isPresent()
             );
 
             if (slot >= 0) {
-                return Pair.of(player.getInventory().getStack(slot), Placement.INVENTORY);
+                return Pair.of(player.inventory.getStack(slot), Placement.INVENTORY);
             }
 
             slot = InventoryUtils.getFirstSlotContainingItem(player.getEnderChestInventory(), stack ->
@@ -183,8 +185,8 @@ public class BabyTracker extends PersistentState {
         public void reconstructBaby(ServerPlayerEntity player) {
             getChildren().forEach(c -> {
                 ItemStack stack = new ItemStack(c.getGender() == Gender.MALE ? ItemsMCA.BABY_BOY.get() : ItemsMCA.BABY_GIRL.get());
-                c.writeToNbt(stack.getOrCreateSubNbt("childData"));
-                player.getInventory().insertStack(stack);
+                c.writeToNbt(stack.getOrCreateSubTag("childData"));
+                player.inventory.insertStack(stack);
             });
         }
     }
@@ -212,7 +214,7 @@ public class BabyTracker extends PersistentState {
             infected = tag.getBoolean("infected");
             name = tag.contains("name") ? Optional.of(tag.getString("name")) : Optional.empty();
             seed = tag.getLong("seed");
-            key = new Key(tag.getList("key", NbtElement.STRING_TYPE));
+            key = new Key(tag.getList("key", NbtElementCompat.STRING_TYPE));
         }
 
         public UUID getId() {
@@ -312,7 +314,7 @@ public class BabyTracker extends PersistentState {
         }
 
         public ItemStack writeToItem(ItemStack stack) {
-            writeToNbt(stack.getOrCreateSubNbt("childData"));
+            writeToNbt(stack.getOrCreateSubTag("childData"));
             return stack;
         }
     }
@@ -331,27 +333,27 @@ public class BabyTracker extends PersistentState {
         if (!hasState(stack)) {
             return Optional.empty();
         }
-        ChildSaveState state = new ChildSaveState(stack.getSubNbt("childData"));
+        ChildSaveState state = new ChildSaveState(stack.getSubTag("childData"));
         return get(world).getPairing(state).children.stream().filter(s -> s.id.equals(state.id)).findAny();
     }
 
     public static Optional<ChildSaveState> getState(ItemStack stack) {
-        return hasState(stack) ? Optional.of(new ChildSaveState(stack.getSubNbt("childData"))) : Optional.empty();
+        return hasState(stack) ? Optional.of(new ChildSaveState(stack.getSubTag("childData"))) : Optional.empty();
     }
 
     public static Optional<UUID> getStateId(ItemStack stack) {
-        return hasState(stack) ? Optional.of(stack.getSubNbt("childData").getUuid("id")) : Optional.empty();
+        return hasState(stack) ? Optional.of(stack.getSubTag("childData").getUuid("id")) : Optional.empty();
     }
 
     public static boolean hasState(ItemStack stack) {
-        return stack.hasNbt()
-                && !stack.getNbt().getBoolean("invalidated")
-                && stack.getNbt().contains("childData", NbtElement.COMPOUND_TYPE)
-                && stack.getSubNbt("childData").containsUuid("id");
+        return stack.hasTag()
+                && !stack.getTag().getBoolean("invalidated")
+                && stack.getTag().contains("childData", NbtElementCompat.COMPOUND_TYPE)
+                && stack.getSubTag("childData").containsUuid("id");
     }
 
     public static void invalidate(ItemStack stack) {
-        stack.removeSubNbt("childData");
-        stack.getOrCreateNbt().putBoolean("invalidated", true);
+        stack.removeSubTag("childData");
+        stack.getOrCreateTag().putBoolean("invalidated", true);
     }
 }

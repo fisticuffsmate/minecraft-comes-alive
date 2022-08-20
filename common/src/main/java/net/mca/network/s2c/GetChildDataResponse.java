@@ -5,11 +5,9 @@ import net.mca.network.NbtDataMessage;
 import net.mca.server.world.data.BabyTracker.ChildSaveState;
 import net.minecraft.nbt.NbtCompound;
 
-import java.io.Serial;
 import java.util.UUID;
 
 public class GetChildDataResponse extends NbtDataMessage {
-    @Serial
     private static final long serialVersionUID = -4415670234855916259L;
 
     public final UUID id;

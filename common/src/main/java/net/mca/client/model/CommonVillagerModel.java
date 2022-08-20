@@ -80,8 +80,8 @@ public interface CommonVillagerModel<T extends LivingEntity> {
     }
 
     static VillagerLike<?> getVillager(Entity villager) {
-        if (villager instanceof VillagerLike<?> v) {
-            return v;
+        if (villager instanceof VillagerLike<?>) {
+            return (VillagerLike<?>) villager;
         } else {
             if (MCAClient.fallbackVillager == null) {
                 MCAClient.fallbackVillager = EntitiesMCA.MALE_VILLAGER.get().create(MinecraftClient.getInstance().world);

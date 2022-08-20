@@ -1,8 +1,8 @@
 package net.mca.entity;
 
-import dev.architectury.registry.level.entity.EntityAttributeRegistry;
-import dev.architectury.registry.registries.DeferredRegister;
-import dev.architectury.registry.registries.RegistrySupplier;
+import me.shedaniel.architectury.registry.DeferredRegister;
+import me.shedaniel.architectury.registry.RegistrySupplier;
+import me.shedaniel.architectury.registry.entity.EntityAttributes;
 import net.mca.MCA;
 import net.mca.ProfessionsMCA;
 import net.mca.entity.ai.ActivityMCA;
@@ -56,7 +56,7 @@ public interface EntitiesMCA {
         Identifier id = new Identifier(MCA.MOD_ID, name);
         return ENTITY_TYPES.register(id, () -> {
             EntityType<T> result = builder.build(id.toString());
-            EntityAttributeRegistry.register(() -> result, attributes);
+            EntityAttributes.register(() -> result, attributes);
 
             return result;
         });

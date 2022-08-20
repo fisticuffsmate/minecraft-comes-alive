@@ -3,14 +3,12 @@ package net.mca.resources.data.analysis;
 import net.mca.resources.data.SerializablePair;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 public abstract class Analysis<T extends Serializable> implements Serializable, Iterable<Analysis.AnalysisElement> {
-    @Serial
     private static final long serialVersionUID = 2255112660663961645L;
 
     private final List<SerializablePair<String, T>> summands = new LinkedList<>();
@@ -54,7 +52,7 @@ public abstract class Analysis<T extends Serializable> implements Serializable, 
     @NotNull
     @Override
     public Iterator<AnalysisElement> iterator() {
-        return new Iterator<>() {
+        return new Iterator<AnalysisElement>() {
             private int i = 0;
 
             @Override

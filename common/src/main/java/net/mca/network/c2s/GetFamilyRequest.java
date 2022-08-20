@@ -9,11 +9,9 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.io.Serial;
 import java.util.stream.Stream;
 
 public class GetFamilyRequest implements Message {
-    @Serial
     private static final long serialVersionUID = -4415670234855916259L;
 
     @Override
@@ -27,9 +25,9 @@ public class GetFamilyRequest implements Message {
 
         Stream.concat(
                         playerData.getFamilyEntry().getAllRelatives(4),
-                        playerData.getPartnerUUID().stream()
+                        playerData.getPartnerUUID().map(Stream::of).orElseGet(Stream::empty)
                 ).distinct()
-                .map(player.getWorld()::getEntity)
+                .map(player.getServerWorld()::getEntity)
                 .filter(e -> e instanceof VillagerLike<?>)
                 .limit(100)
                 .forEach(e -> {

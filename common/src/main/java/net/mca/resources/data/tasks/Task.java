@@ -6,11 +6,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.JsonHelper;
 
-import java.io.Serial;
 import java.io.Serializable;
 
 public abstract class Task implements Serializable {
-    @Serial
     private static final long serialVersionUID = 6029812512760976500L;
 
     private final String id;

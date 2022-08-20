@@ -147,7 +147,7 @@ public class Pregnancy {
                         .setOwner(mother)
                         .setSeed(seed)
                 .createItem();
-                if (!(spouse instanceof PlayerEntity player && player.giveItemStack(stack))) {
+                if (!(spouse instanceof PlayerEntity && ((PlayerEntity) spouse).giveItemStack(stack))) {
                     mother.getInventory().addStack(stack);
                 }
             });

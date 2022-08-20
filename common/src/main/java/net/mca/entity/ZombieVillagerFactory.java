@@ -80,7 +80,7 @@ public class ZombieVillagerFactory {
     }
 
     public ZombieVillagerEntityMCA spawn(SpawnReason reason) {
-        if (position.isEmpty()) {
+        if (!position.isPresent()) {
             MCA.LOGGER.info("Attempted to spawn villager without a position being set!");
         }
 

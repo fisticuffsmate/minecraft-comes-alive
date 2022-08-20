@@ -2,7 +2,7 @@ package net.mca.entity.ai.brain.tasks.chore;
 
 import net.mca.MCA;
 import net.mca.entity.VillagerEntityMCA;
-import net.minecraft.entity.ai.FuzzyTargeting;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -34,7 +34,7 @@ public abstract class AbstractChoreTask extends Task<VillagerEntityMCA> {
             walkingTicks += diff;
 
             if (walkingTicks > WALKING_THRESHOLD) {
-                Optional<Vec3d> optional = Optional.ofNullable(FuzzyTargeting.find(entity, 10, 5));
+                Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(entity, 10, 5));
                 entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, 0.4f, 0)));
                 walkingTicks = 0;
             }
@@ -50,7 +50,7 @@ public abstract class AbstractChoreTask extends Task<VillagerEntityMCA> {
 
     @Override
     protected void keepRunning(ServerWorld world, VillagerEntityMCA entity, long time) {
-        if (getAssigningPlayer().isEmpty()) {
+        if (!getAssigningPlayer().isPresent()) {
             MCA.LOGGER.info("Force-stopped chore because assigning player was not present.");
             villager.getVillagerBrain().abandonJob();
         }

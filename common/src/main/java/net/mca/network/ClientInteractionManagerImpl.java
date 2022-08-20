@@ -30,60 +30,61 @@ public class ClientInteractionManagerImpl implements ClientInteractionManager {
         assert MinecraftClient.getInstance().player != null;
         switch (message.getGui()) {
             case WHISTLE:
-                client.setScreen(new WhistleScreen());
+                client.openScreen(new WhistleScreen());
                 break;
             case BOOK:
                 if (client.player != null) {
                     ItemStack item = client.player.getStackInHand(Hand.MAIN_HAND);
-                    if (item.getItem() instanceof ExtendedWrittenBookItem bookItem) {
+                    if (item.getItem() instanceof ExtendedWrittenBookItem) {
+                        ExtendedWrittenBookItem bookItem = (ExtendedWrittenBookItem) item.getItem();
                         Book book = bookItem.getBook(item);
-                        client.setScreen(new ExtendedBookScreen(book));
+                        client.openScreen(new ExtendedBookScreen(book));
                     }
                 }
                 break;
             case BLUEPRINT:
-                client.setScreen(new BlueprintScreen());
+                client.openScreen(new BlueprintScreen());
                 break;
             case INTERACT:
                 VillagerLike<?> villager = (VillagerLike<?>)client.world.getEntityById(message.villager);
-                client.setScreen(new InteractScreen(villager));
+                client.openScreen(new InteractScreen(villager));
                 break;
             case VILLAGER_EDITOR:
                 entity = client.world.getEntityById(message.villager);
                 assert entity != null;
-                client.setScreen(new VillagerEditorScreen(entity.getUuid(), MinecraftClient.getInstance().player.getUuid()));
+                client.openScreen(new VillagerEditorScreen(entity.getUuid(), MinecraftClient.getInstance().player.getUuid()));
                 break;
             case LIMITED_VILLAGER_EDITOR:
                 entity = client.world.getEntityById(message.villager);
                 assert entity != null;
-                client.setScreen(new LimitedVillagerEditorScreen(entity.getUuid(), MinecraftClient.getInstance().player.getUuid()));
+                client.openScreen(new LimitedVillagerEditorScreen(entity.getUuid(), MinecraftClient.getInstance().player.getUuid()));
                 break;
             case NEEDLE_AND_THREAD:
                 entity = client.world.getEntityById(message.villager);
                 if (entity == null) {
-                    client.setScreen(new NeedleScreen(MinecraftClient.getInstance().player.getUuid()));
+                    client.openScreen(new NeedleScreen(MinecraftClient.getInstance().player.getUuid()));
                 } else {
-                    client.setScreen(new NeedleScreen(entity.getUuid(), MinecraftClient.getInstance().player.getUuid()));
+                    client.openScreen(new NeedleScreen(entity.getUuid(), MinecraftClient.getInstance().player.getUuid()));
                 }
                 break;
             case COMB:
                 entity = client.world.getEntityById(message.villager);
                 if (entity == null) {
-                    client.setScreen(new CombScreen(MinecraftClient.getInstance().player.getUuid()));
+                    client.openScreen(new CombScreen(MinecraftClient.getInstance().player.getUuid()));
                 } else {
-                    client.setScreen(new CombScreen(entity.getUuid(), MinecraftClient.getInstance().player.getUuid()));
+                    client.openScreen(new CombScreen(entity.getUuid(), MinecraftClient.getInstance().player.getUuid()));
                 }
                 break;
             case BABY_NAME:
                 if (client.player != null) {
                     ItemStack item = client.player.getStackInHand(Hand.MAIN_HAND);
                     if (item.getItem() instanceof BabyItem) {
-                        client.setScreen(new NameBabyScreen(client.player, item));
+                        client.openScreen(new NameBabyScreen(client.player, item));
                     }
                 }
                 break;
             case FAMILY_TREE:
-                client.setScreen(new FamilyTreeSearchScreen());
+                client.openScreen(new FamilyTreeSearchScreen());
                 break;
             default:
         }
@@ -92,7 +93,8 @@ public class ClientInteractionManagerImpl implements ClientInteractionManager {
     @Override
     public void handleFamilyTreeResponse(GetFamilyTreeResponse message) {
         Screen screen = client.currentScreen;
-        if (screen instanceof FamilyTreeScreen gui) {
+        if (screen instanceof FamilyTreeScreen) {
+            FamilyTreeScreen gui = (FamilyTreeScreen) screen;
             gui.setFamilyData(message.uuid, message.family);
         }
     }
@@ -100,7 +102,8 @@ public class ClientInteractionManagerImpl implements ClientInteractionManager {
     @Override
     public void handleInteractDataResponse(GetInteractDataResponse message) {
         Screen screen = client.currentScreen;
-        if (screen instanceof InteractScreen gui) {
+        if (screen instanceof InteractScreen) {
+            InteractScreen gui = (InteractScreen) screen;
             gui.setConstraints(message.constraints);
             gui.setParents(message.father, message.mother);
             gui.setSpouse(message.marriageState, message.spouse);
@@ -110,10 +113,11 @@ public class ClientInteractionManagerImpl implements ClientInteractionManager {
     @Override
     public void handleVillageDataResponse(GetVillageResponse message) {
         Screen screen = client.currentScreen;
-        if (screen instanceof BlueprintScreen gui) {
+        if (screen instanceof BlueprintScreen) {
             Village village = new Village();
             village.load(message.getData());
 
+            BlueprintScreen gui = (BlueprintScreen) screen;
             gui.setVillage(village);
             gui.setRank(message.rank, message.reputation, message.isVillage, message.ids, message.tasks, message.buildingTypes);
         }
@@ -122,7 +126,8 @@ public class ClientInteractionManagerImpl implements ClientInteractionManager {
     @Override
     public void handleVillageDataFailedResponse(GetVillageFailedResponse message) {
         Screen screen = client.currentScreen;
-        if (screen instanceof BlueprintScreen gui) {
+        if (screen instanceof BlueprintScreen) {
+            BlueprintScreen gui = (BlueprintScreen) screen;
             gui.setVillage(null);
         }
     }
@@ -130,7 +135,8 @@ public class ClientInteractionManagerImpl implements ClientInteractionManager {
     @Override
     public void handleFamilyDataResponse(GetFamilyResponse message) {
         Screen screen = client.currentScreen;
-        if (screen instanceof WhistleScreen gui) {
+        if (screen instanceof WhistleScreen) {
+            WhistleScreen gui = (WhistleScreen) screen;
             gui.setVillagerData(message.getData());
         }
     }
@@ -138,7 +144,8 @@ public class ClientInteractionManagerImpl implements ClientInteractionManager {
     @Override
     public void handleVillagerDataResponse(GetVillagerResponse message) {
         Screen screen = client.currentScreen;
-        if (screen instanceof VillagerEditorScreen gui) {
+        if (screen instanceof VillagerEditorScreen) {
+            VillagerEditorScreen gui = (VillagerEditorScreen) screen;
             gui.setVillagerData(message.getData());
         }
     }
@@ -146,7 +153,8 @@ public class ClientInteractionManagerImpl implements ClientInteractionManager {
     @Override
     public void handleDialogueResponse(InteractionDialogueResponse message) {
         Screen screen = client.currentScreen;
-        if (screen instanceof InteractScreen gui) {
+        if (screen instanceof InteractScreen) {
+            InteractScreen gui = (InteractScreen) screen;
             gui.setDialogue(message.question, message.answers, message.silent);
         }
     }
@@ -164,7 +172,8 @@ public class ClientInteractionManagerImpl implements ClientInteractionManager {
     @Override
     public void handleBabyNameResponse(BabyNameResponse message) {
         Screen screen = client.currentScreen;
-        if (screen instanceof NameBabyScreen gui) {
+        if (screen instanceof NameBabyScreen) {
+            NameBabyScreen gui = (NameBabyScreen) screen;
             gui.setBabyName(message.getName());
         }
     }
@@ -172,7 +181,8 @@ public class ClientInteractionManagerImpl implements ClientInteractionManager {
     @Override
     public void handleVillagerNameResponse(VillagerNameResponse message) {
         Screen screen = client.currentScreen;
-        if (screen instanceof VillagerEditorScreen gui) {
+        if (screen instanceof VillagerEditorScreen) {
+            VillagerEditorScreen gui = (VillagerEditorScreen) screen;
             gui.setVillagerName(message.getName());
         }
     }
@@ -185,7 +195,8 @@ public class ClientInteractionManagerImpl implements ClientInteractionManager {
     @Override
     public void handleFamilyTreeUUIDResponse(FamilyTreeUUIDResponse response) {
         Screen screen = client.currentScreen;
-        if (screen instanceof FamilyTreeSearchScreen gui) {
+        if (screen instanceof FamilyTreeSearchScreen) {
+            FamilyTreeSearchScreen gui = (FamilyTreeSearchScreen) screen;
             gui.setList(response.getList());
         }
     }
@@ -201,7 +212,8 @@ public class ClientInteractionManagerImpl implements ClientInteractionManager {
     @Override
     public void handleSkinListResponse(SkinListResponse message) {
         Screen screen = client.currentScreen;
-        if (screen instanceof VillagerEditorScreen gui) {
+        if (screen instanceof VillagerEditorScreen) {
+            VillagerEditorScreen gui = (VillagerEditorScreen) screen;
             gui.setSkinList(message.getClothing(), message.getHair());
         }
     }

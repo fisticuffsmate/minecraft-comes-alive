@@ -5,6 +5,7 @@ import net.mca.entity.ai.relationship.Gender;
 import net.mca.entity.ai.relationship.RelationshipState;
 import net.mca.util.NbtHelper;
 import net.mca.util.WorldUtils;
+import net.mca.util.compat.PersistentStateCompat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -20,7 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-public class FamilyTree extends PersistentState {
+public class FamilyTree extends PersistentStateCompat {
     private static final String DATA_ID = "MCA-FamilyTree";
 
     private final Map<UUID, FamilyTreeNode> entries;

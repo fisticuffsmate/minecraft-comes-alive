@@ -2,10 +2,7 @@ package net.mca.resources.data.analysis;
 
 import net.mca.resources.data.SerializablePair;
 
-import java.io.Serial;
-
 public class FloatAnalysis extends Analysis<Float> {
-    @Serial
     private static final long serialVersionUID = -3009100555809907786L;
 
     @Override

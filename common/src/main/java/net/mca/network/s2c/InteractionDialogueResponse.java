@@ -6,11 +6,9 @@ import net.mca.entity.VillagerEntityMCA;
 import net.mca.resources.data.dialogue.Question;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.io.Serial;
 import java.util.List;
 
 public class InteractionDialogueResponse implements Message {
-    @Serial
     private static final long serialVersionUID = 1371939319244994642L;
 
     public final String question;

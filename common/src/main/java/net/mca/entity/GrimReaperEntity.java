@@ -103,7 +103,7 @@ public class GrimReaperEntity extends PathAwareEntity implements CTrackedEntity<
     @Override
     public void checkDespawn() {
         if (world.getDifficulty() == Difficulty.PEACEFUL && isDisallowedInPeaceful()) {
-            discard();
+            remove();
         }
     }
 
@@ -149,10 +149,14 @@ public class GrimReaperEntity extends PathAwareEntity implements CTrackedEntity<
         setTrackedValue(ATTACK_STAGE, state);
 
         switch (state) {
-            case PRE -> playSound(SoundsMCA.REAPER_SCYTHE_OUT.get(), 1, 1);
-            case POST -> playSound(SoundsMCA.REAPER_SCYTHE_SWING.get(), 1, 1);
-            default -> {
-            }
+            case PRE:
+                playSound(SoundsMCA.REAPER_SCYTHE_OUT.get(), 1, 1);
+                break;
+            case POST:
+                playSound(SoundsMCA.REAPER_SCYTHE_SWING.get(), 1, 1);
+                break;
+            default:
+                break;
         }
     }
 
@@ -189,7 +193,8 @@ public class GrimReaperEntity extends PathAwareEntity implements CTrackedEntity<
         }
 
         // Teleport behind the player who fired an arrow and ignore its damage.
-        if (attacker instanceof ArrowEntity arrow) {
+        if (attacker instanceof ArrowEntity) {
+            ArrowEntity arrow = (ArrowEntity) attacker;
             if (getAttackState() != ReaperAttackState.REST) {
                 Entity owner = arrow.getOwner();
 
@@ -199,7 +204,7 @@ public class GrimReaperEntity extends PathAwareEntity implements CTrackedEntity<
 
                     requestTeleport(newX, owner.getY(), newZ);
                 }
-                arrow.discard();
+                arrow.remove();
             }
             return false;
         }
@@ -235,7 +240,7 @@ public class GrimReaperEntity extends PathAwareEntity implements CTrackedEntity<
         bossInfo.setPercent(this.getHealth() / this.getMaxHealth());
 
         if (!Config.getInstance().allowGrimReaper) {
-            discard();
+            remove();
         }
 
         // Prevent flying off into oblivion on death...

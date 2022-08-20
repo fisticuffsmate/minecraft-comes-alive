@@ -7,13 +7,13 @@ import net.mca.client.model.PlayerEntityExtendedModel;
 import net.mca.client.model.VillagerEntityModelMCA;
 import net.mca.client.render.layer.*;
 import net.mca.entity.ai.relationship.AgeState;
-import net.minecraft.client.model.Dilation;
-import net.minecraft.client.model.ModelData;
+import net.mca.util.compat.model.Dilation;
+import net.mca.util.compat.model.ModelData;
+import net.mca.util.compat.model.TexturedModelData;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -34,12 +34,12 @@ public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<Abs
     SkinLayer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> skinLayer;
     ClothingLayer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> clothingLayer;
 
-    public MixinPlayerEntityRenderer(EntityRendererFactory.Context ctx, PlayerEntityModel<AbstractClientPlayerEntity> model, float shadowRadius) {
+    public MixinPlayerEntityRenderer(EntityRenderDispatcher ctx, PlayerEntityModel<AbstractClientPlayerEntity> model, float shadowRadius) {
         super(ctx, model, shadowRadius);
     }
 
-    @Inject(method = "<init>(Lnet/minecraft/client/render/entity/EntityRendererFactory$Context;Z)V", at = @At("TAIL"))
-    private void init(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
+    @Inject(method = "<init>(Lnet/minecraft/client/render/entity/EntityRenderDispatcher;Z)V", at = @At("TAIL"))
+    private void init(EntityRenderDispatcher ctx, boolean slim, CallbackInfo ci) {
         if (Config.getInstance().enableVillagerPlayerModel) {
             villagerModel = createModel(VillagerEntityModelMCA.bodyData(new Dilation(0.0F), slim));
             originalModel = model;

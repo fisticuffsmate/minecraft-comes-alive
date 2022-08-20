@@ -6,6 +6,7 @@ import net.mca.cobalt.network.NetworkHandler;
 import net.mca.entity.ai.relationship.RelationshipState;
 import net.mca.entity.ai.relationship.family.FamilyTreeNode;
 import net.mca.network.c2s.GetFamilyTreeRequest;
+import net.mca.util.compat.RenderSystemCompat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -18,6 +19,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Matrix4f;
@@ -55,7 +57,7 @@ public class FamilyTreeScreen extends Screen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
@@ -77,15 +79,15 @@ public class FamilyTreeScreen extends Screen {
     public void init() {
         focusEntity(focusedEntityId);
 
-        addDrawableChild(new ButtonWidget(width / 2 - 100, height - 25, 200, 20, new TranslatableText("gui.done"), sender -> {
-            close();
+        addButton(new ButtonWidget(width / 2 - 100, height - 25, 200, 20, new TranslatableText("gui.done"), sender -> {
+            onClose();
         }));
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         assert client != null;
-        client.setScreen(parent);
+        client.openScreen(parent);
     }
 
     @Override
@@ -221,7 +223,7 @@ public class FamilyTreeScreen extends Screen {
             this.deceased = node.isDeceased();
             this.relationship = node.getRelationshipState();
             final LiteralText text = new LiteralText(node.getName().isEmpty() ? defaultNodeName : node.getName());
-            this.label.add(text.setStyle(text.getStyle().withColor(node.gender().getColor())));
+            this.label.add(text.setStyle(text.getStyle().withColor(TextColor.fromRgb(node.gender().getColor()))));
             this.label.add(node.getProfessionText().formatted(Formatting.GRAY));
 
             FamilyTreeNode father = family.get(node.father());
@@ -304,7 +306,7 @@ public class FamilyTreeScreen extends Screen {
                 k += 20;
             }
 
-            Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+            Matrix4f matrix4f = matrices.peek().getModel();
 
             TextRenderer r = MinecraftClient.getInstance().textRenderer;
 
@@ -324,7 +326,7 @@ public class FamilyTreeScreen extends Screen {
             immediate.draw();
             matrices.pop();
 
-            RenderSystem.setShaderTexture(0, InteractScreen.ICON_TEXTURES);
+            RenderSystemCompat.setShaderTexture(0, InteractScreen.ICON_TEXTURES);
 
             if (deceased) {
                 Icon icon = MCAScreens.getInstance().getIcon("deceased");

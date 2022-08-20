@@ -57,7 +57,7 @@ public class Result {
     }
 
     public List<InteractionPredicate> getConditions() {
-        return Objects.requireNonNullElse(conditions, Collections.emptyList());
+        return conditions != null ? conditions : Collections.emptyList();
     }
 
     public IntAnalysis getChances(VillagerEntityMCA villager, ServerPlayerEntity player) {

@@ -9,12 +9,10 @@ import net.mca.resources.Tasks;
 import net.mca.server.world.data.Village;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.io.Serial;
 import java.util.Optional;
 import java.util.Set;
 
 public class GetVillageRequest implements Message {
-    @Serial
     private static final long serialVersionUID = -1302412553466016247L;
 
     @Override

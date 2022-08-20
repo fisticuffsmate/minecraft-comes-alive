@@ -4,10 +4,7 @@ import net.mca.ClientProxy;
 import net.mca.cobalt.network.Message;
 import net.minecraft.entity.Entity;
 
-import java.io.Serial;
-
 public class OpenGuiRequest implements Message {
-    @Serial
     private static final long serialVersionUID = -2371116419166251497L;
 
     public final int gui;
@@ -15,7 +12,7 @@ public class OpenGuiRequest implements Message {
     public final int villager;
 
     public OpenGuiRequest(OpenGuiRequest.Type gui, Entity villager) {
-        this(gui, villager.getId());
+        this(gui, villager.getEntityId());
     }
 
     public OpenGuiRequest(OpenGuiRequest.Type gui, int villager) {

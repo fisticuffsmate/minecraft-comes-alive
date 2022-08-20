@@ -1,20 +1,19 @@
 package net.mca.resources.data;
 
+import me.shedaniel.architectury.hooks.TagHooks;
 import net.mca.MCA;
-import net.mca.util.RegistryHelper;
 import net.minecraft.block.Block;
-import net.minecraft.tag.TagKey;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class BuildingType implements Serializable {
-    @Serial
     private static final long serialVersionUID = 2215455350801127280L;
 
     private final String name;
@@ -43,7 +42,9 @@ public final class BuildingType implements Serializable {
         this.priority = priority;
         this.visible = visible;
         this.noBeds = noBeds;
-        this.blocks = Map.of("#minecraft:beds", 1000000000);
+        this.blocks = Stream.of(
+                        new AbstractMap.SimpleEntry<>("#minecraft:beds", 1000000000))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         this.blockToGroup = null;
         this.icon = false;
         this.iconU = 0;
@@ -87,15 +88,13 @@ public final class BuildingType implements Serializable {
                 Identifier identifier;
                 if (requirement.getKey().startsWith("#")) {
                     identifier = new Identifier(requirement.getKey().substring(1));
-                    TagKey<Block> tag = TagKey.of(Registry.BLOCK_KEY, identifier);
-                    if (tag == null || RegistryHelper.isTagEmpty(tag)) {
+                    Tag.Identified<Block> tag = TagHooks.getBlockOptional(identifier);
+                    if (tag == null || tag.values().isEmpty()) {
                         MCA.LOGGER.error("Unknown building type tag " + identifier);
                     } else {
-                        var entries = RegistryHelper.getEntries(tag);
-                        entries.ifPresent(registryEntries -> {
-                            for (Block b : registryEntries.stream().map(RegistryEntry::value).toList()) {
-                                blockToGroup.putIfAbsent(Registry.BLOCK.getId(b), identifier);
-                            }
+                        List<Block> entries = tag.values();
+                        entries.forEach(b -> {
+                            blockToGroup.putIfAbsent(Registry.BLOCK.getId(b), identifier);
                         });
                     }
                 } else {

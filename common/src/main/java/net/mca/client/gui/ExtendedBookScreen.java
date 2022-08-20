@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.mca.client.book.Book;
 import net.mca.client.book.pages.Page;
 import net.mca.client.gui.widget.ExtendedPageTurnWidget;
+import net.mca.util.compat.RenderSystemCompat;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -53,13 +54,13 @@ public class ExtendedBookScreen extends Screen {
     }
 
     protected void addCloseButton() {
-        addDrawableChild(new ButtonWidget(width / 2 - 100, 196, 200, 20, ScreenTexts.DONE, (buttonWidget) -> this.client.setScreen(null)));
+        addButton(new ButtonWidget(width / 2 - 100, 196, 200, 20, ScreenTexts.DONE, (buttonWidget) -> this.client.openScreen(null)));
     }
 
     protected void addPageButtons() {
         int i = (width - 192) / 2;
-        nextPageButton = addDrawableChild(new ExtendedPageTurnWidget(i + 116, 159, true, (buttonWidget) -> goToNextPage(), book.hasPageTurnSound(), book.getBackground()));
-        previousPageButton = addDrawableChild(new ExtendedPageTurnWidget(i + 43, 159, false, (buttonWidget) -> goToPreviousPage(), book.hasPageTurnSound(), book.getBackground()));
+        nextPageButton = addButton(new ExtendedPageTurnWidget(i + 116, 159, true, (buttonWidget) -> goToNextPage(), book.hasPageTurnSound(), book.getBackground()));
+        previousPageButton = addButton(new ExtendedPageTurnWidget(i + 43, 159, false, (buttonWidget) -> goToPreviousPage(), book.hasPageTurnSound(), book.getBackground()));
         updatePageButtons();
     }
 
@@ -115,8 +116,8 @@ public class ExtendedBookScreen extends Screen {
         renderBackground(matrices);
 
         // background
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShaderTexture(0, book.getBackground());
+        RenderSystem.color4f(1, 1, 1, 1);
+        RenderSystemCompat.setShaderTexture(0, book.getBackground());
         int i = (width - 192) / 2;
         drawTexture(matrices, i, 2, 0, 0, 192, 192);
 
@@ -157,7 +158,7 @@ public class ExtendedBookScreen extends Screen {
 
         boolean handled = super.handleTextClick(style);
         if (handled && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-            client.setScreen(null);
+            client.openScreen(null);
         }
 
         return handled;

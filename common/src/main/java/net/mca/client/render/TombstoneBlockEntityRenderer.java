@@ -2,12 +2,13 @@ package net.mca.client.render;
 
 import net.mca.block.TombstoneBlock;
 import net.mca.block.TombstoneBlock.Data;
+import net.mca.util.compat.TextRendererCompat;
 import net.mca.util.localization.FlowingText;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.OrderedText;
@@ -18,11 +19,12 @@ import net.minecraft.util.math.Vec3f;
 
 import java.util.List;
 
-public class TombstoneBlockEntityRenderer implements BlockEntityRenderer<TombstoneBlock.Data> {
+public class TombstoneBlockEntityRenderer extends BlockEntityRenderer<TombstoneBlock.Data> {
 
     private final TextRenderer text;
 
-    public TombstoneBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+    public TombstoneBlockEntityRenderer(BlockEntityRenderDispatcher context) {
+        super(context);
         text = context.getTextRenderer();
     }
 
@@ -78,7 +80,7 @@ public class TombstoneBlockEntityRenderer implements BlockEntityRenderer<Tombsto
         for (OrderedText line : lines) {
             float x = -text.getWidth(line) / 2F;
 
-            text.drawWithOutline(line, x, y, 0xFFFFFF, 0x000000, matrices.peek().getPositionMatrix(), vertexConsumers, light);
+            TextRendererCompat.drawWithOutline(text, line, x, y, 0xFFFFFF, 0x000000, matrices.peek().getModel(), vertexConsumers, light);
 
             y += 10;
         }

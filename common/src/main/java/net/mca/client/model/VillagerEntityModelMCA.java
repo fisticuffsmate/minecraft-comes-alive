@@ -2,9 +2,9 @@ package net.mca.client.model;
 
 import com.google.common.collect.ImmutableList;
 import net.mca.entity.VillagerLike;
+import net.mca.util.compat.model.*;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.entity.LivingEntity;
 
@@ -20,7 +20,7 @@ public class VillagerEntityModelMCA<T extends LivingEntity & VillagerLike<T>> ex
 
     private boolean wearsHidden;
 
-    public VillagerEntityModelMCA(ModelPart tree) {
+    public VillagerEntityModelMCA(ModelPartCompat tree) {
         super(tree);
         bodyWear = tree.getChild(EntityModelPartNames.JACKET);
         leftArmwear = tree.getChild("left_sleeve");
@@ -50,7 +50,7 @@ public class VillagerEntityModelMCA<T extends LivingEntity & VillagerLike<T>> ex
     }
 
     public static ModelData bodyData(Dilation dilation, boolean slim) {
-        ModelData modelData = PlayerEntityModel.getTexturedModelData(dilation, slim);
+        ModelData modelData = PlayerEntityModelCompat.getTexturedModelData(dilation, slim);
         ModelPartData root = modelData.getRoot();
         root.addChild(BREASTS, newBreasts(dilation, 0), ModelTransform.NONE);
         root.addChild(BREASTPLATE, newBreasts(dilation.add(0.1F), 16), ModelTransform.NONE);

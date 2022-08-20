@@ -12,7 +12,7 @@ public class DestinyManager {
     public void tick(MinecraftClient client) {
         if (openDestiny && client.currentScreen == null) {
             assert client.player != null;
-            client.setScreen(new DestinyScreen(client.player.getUuid(), allowTeleportation, allowPlayerModel, allowVillagerModel));
+            client.openScreen(new DestinyScreen(client.player.getUuid(), allowTeleportation, allowPlayerModel, allowVillagerModel));
         }
     }
 

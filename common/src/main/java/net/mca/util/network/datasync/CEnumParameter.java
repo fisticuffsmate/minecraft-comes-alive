@@ -1,5 +1,6 @@
 package net.mca.util.network.datasync;
 
+import net.mca.util.NbtElementCompat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -39,7 +40,7 @@ public class CEnumParameter<T extends Enum<T>> implements CParameter<T, Integer>
 
     @Override
     public T load(NbtCompound nbt) {
-        return nbt.contains(id, NbtElement.NUMBER_TYPE) ? fromIndex(nbt.getInt(id)) : defaultValue;
+        return nbt.contains(id, NbtElementCompat.NUMBER_TYPE) ? fromIndex(nbt.getInt(id)) : defaultValue;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package net.mca.block;
 
-import dev.architectury.registry.registries.DeferredRegister;
-import dev.architectury.registry.registries.RegistrySupplier;
+import me.shedaniel.architectury.registry.DeferredRegister;
+import me.shedaniel.architectury.registry.RegistrySupplier;
 import net.mca.MCA;
 import net.mca.TagsMCA;
 import net.minecraft.block.Block;

@@ -1,5 +1,6 @@
 package net.mca.server.world.data;
 
+import com.google.common.collect.Lists;
 import net.mca.Config;
 import net.mca.ProfessionsMCA;
 import net.mca.entity.EquipmentSet;
@@ -12,6 +13,7 @@ import net.mca.resources.PoolUtil;
 import net.mca.resources.Rank;
 import net.mca.resources.Tasks;
 import net.mca.util.BlockBoxExtended;
+import net.mca.util.NbtElementCompat;
 import net.mca.util.NbtHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -324,12 +326,13 @@ public class Village implements Iterable<Building> {
 
     private void tryToPutIntoInventory(ServerWorld world, BlockPos p) {
         BlockState state = world.getBlockState(p);
-        if (state.hasBlockEntity()) {
+        Block block = state.getBlock();
+        if (block.hasBlockEntity()) {
             BlockEntity blockEntity = world.getBlockEntity(p);
-            if (blockEntity instanceof Inventory inventory) {
-                Block block = state.getBlock();
-                if (inventory instanceof ChestBlockEntity && block instanceof ChestBlock chest) {
-                    inventory = ChestBlock.getInventory(chest, state, world, p, true);
+            if (blockEntity instanceof Inventory) {
+                Inventory inventory = (Inventory)blockEntity;
+                if (inventory instanceof ChestBlockEntity && block instanceof ChestBlock) {
+                    inventory = ChestBlock.getInventory((ChestBlock)block, state, world, p, true);
                     if (inventory != null) {
                         putIntoInventory(inventory);
                     }
@@ -419,8 +422,8 @@ public class Village implements Iterable<Building> {
                 .ifPresent(villager ->
                         villager.getRelationships().getPartner().ifPresent(spouse -> {
                                     // tell everyone about it
-                                    if (Config.getInstance().villagerBirthNotification && spouse instanceof VillagerEntityMCA spouseVillager) {
-                                        broadCastMessage(world, "events.baby", villager, spouseVillager);
+                                    if (Config.getInstance().villagerBirthNotification && spouse instanceof VillagerEntityMCA) {
+                                        broadCastMessage(world, "events.baby", villager, (VillagerEntityMCA) spouse);
                                     }
                                 }
                         )
@@ -470,7 +473,7 @@ public class Village implements Iterable<Building> {
     private void inn(ServerWorld world) {
         getBuildingsOfType("inn").forEach((b) -> {
             if (world.random.nextFloat() < Config.getInstance().adventurerAtInnChance / 100f) {
-                List<BlockPos> values = new ArrayList<>(b.getBlocks().values().stream().flatMap(Collection::stream).toList());
+                List<BlockPos> values = b.getBlocks().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
                 Collections.shuffle(values);
                 for (BlockPos p : values) {
                     if (trySpawnAdventurer(world, p.up())) {
@@ -706,7 +709,7 @@ public class Village implements Iterable<Building> {
             autoScan = true;
         }
 
-        NbtList b = v.getList("buildings", NbtElement.COMPOUND_TYPE);
+        NbtList b = v.getList("buildings", NbtElementCompat.COMPOUND_TYPE);
         for (int i = 0; i < b.size(); i++) {
             Building building = new Building(b.getCompound(i));
             buildings.put(building.getId(), building);

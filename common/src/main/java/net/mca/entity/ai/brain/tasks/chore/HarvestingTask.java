@@ -6,6 +6,7 @@ import net.mca.entity.VillagerEntityMCA;
 import net.mca.entity.ai.Chore;
 import net.mca.entity.ai.TaskUtils;
 import net.mca.util.InventoryUtils;
+import net.mca.util.compat.BlockCompat;
 import net.minecraft.block.*;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -28,6 +29,7 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class HarvestingTask extends AbstractChoreTask {
     /**
@@ -96,9 +98,9 @@ public class HarvestingTask extends AbstractChoreTask {
         if (harvestableOnly) {
             harvestable.addAll(nearbyCrops.stream().filter(pos -> {
                 BlockState state = villager.world.getBlockState(pos);
-                return (state.getBlock() instanceof CropBlock crop && crop.isMature(state))
+                return (state.getBlock() instanceof CropBlock && ((CropBlock) state.getBlock()).isMature(state))
                         || state.getBlock() instanceof GourdBlock;
-            }).toList());
+            }).collect(Collectors.toList()));
         }
 
         return TaskUtils.getNearestPoint(villager.getBlockPos(), harvestable.isEmpty() ? nearbyCrops : harvestable);
@@ -116,7 +118,7 @@ public class HarvestingTask extends AbstractChoreTask {
                                     && state.canPlaceAt(villager.world, pos)
                                     && villager.world.getBlockState(pos.up()).isAir();
                         })
-                        .toList());
+                        .collect(Collectors.toList()));
     }
 
     @Override
@@ -169,7 +171,8 @@ public class HarvestingTask extends AbstractChoreTask {
         if (villager.squaredDistanceTo(Vec3d.ofBottomCenter(crops)) <= 4.5D && tickAction()) {
             BlockState state = world.getBlockState(crops);
 
-            if (state.getBlock() instanceof CropBlock crop) {
+            if (state.getBlock() instanceof CropBlock) {
+                CropBlock crop = (CropBlock) state.getBlock();
                 if (crop.isMature(state)) {
                     harvestCrops(world, crops);
                     plantSeeds(world, villager, crops);
@@ -208,8 +211,9 @@ public class HarvestingTask extends AbstractChoreTask {
     }
 
     private boolean plantSeed(ItemStack itemStack, ServerWorld serverWorld, BlockPos currentTarget) {
-        if (itemStack.getItem() instanceof BlockItem blockItem) {
-            return serverWorld.setBlockState(currentTarget, blockItem.getBlock().getDefaultState(), Block.NOTIFY_ALL);
+        if (itemStack.getItem() instanceof BlockItem) {
+            BlockItem blockItem = (BlockItem) itemStack.getItem();
+            return serverWorld.setBlockState(currentTarget, blockItem.getBlock().getDefaultState(), BlockCompat.NOTIFY_ALL);
         }
         return false;
     }
@@ -223,7 +227,7 @@ public class HarvestingTask extends AbstractChoreTask {
         );
 
         ActionResult result = InventoryUtils.stream(villager.getInventory())
-                .filter(stack -> !stack.isEmpty() && stack.getItem() instanceof BlockItem && stack.isIn(TagsMCA.Items.VILLAGER_PLANTABLE))
+                .filter(stack -> !stack.isEmpty() && stack.getItem() instanceof BlockItem && stack.getItem().isIn(TagsMCA.Items.VILLAGER_PLANTABLE))
                 .filter(stack -> {
                     if (plantSeed(stack, world, hitResult.getBlockPos())) {
                         stack.decrement(1);

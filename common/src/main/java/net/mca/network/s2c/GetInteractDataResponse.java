@@ -5,11 +5,9 @@ import net.mca.client.gui.Constraint;
 import net.mca.cobalt.network.Message;
 import net.mca.entity.ai.relationship.RelationshipState;
 
-import java.io.Serial;
 import java.util.Set;
 
 public class GetInteractDataResponse implements Message {
-    @Serial
     private static final long serialVersionUID = -4168503424192658779L;
 
     public final Set<Constraint> constraints;

@@ -1,13 +1,15 @@
 package net.mca.fabric;
 
-import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
-import dev.architectury.registry.client.particle.ParticleProviderRegistry;
+import me.shedaniel.architectury.registry.ParticleProviderRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.mixin.object.builder.ModelPredicateProviderRegistryAccessor;
 import net.mca.ClientProxyAbstractImpl;
 import net.mca.Config;
 import net.mca.MCAClient;
@@ -39,40 +41,40 @@ public final class MCAFabricClient extends ClientProxyAbstractImpl implements Cl
     @Override
     public void onInitializeClient() {
         if (Config.getInstance().useSquidwardModels) {
-            EntityRendererRegistry.register(EntitiesMCA.MALE_VILLAGER, VillagerEntityRenderer::new);
-            EntityRendererRegistry.register(EntitiesMCA.FEMALE_VILLAGER, VillagerEntityRenderer::new);
+            EntityRendererRegistry.INSTANCE.register(EntitiesMCA.MALE_VILLAGER.get(), (dispatcher, ctx) -> new VillagerEntityRenderer(dispatcher, ctx.getResourceManager()));
+            EntityRendererRegistry.INSTANCE.register(EntitiesMCA.FEMALE_VILLAGER.get(), (dispatcher, ctx) -> new VillagerEntityRenderer(dispatcher, ctx.getResourceManager()));
 
-            EntityRendererRegistry.register(EntitiesMCA.MALE_ZOMBIE_VILLAGER, ZombieVillagerEntityRenderer::new);
-            EntityRendererRegistry.register(EntitiesMCA.FEMALE_ZOMBIE_VILLAGER, ZombieVillagerEntityRenderer::new);
+            EntityRendererRegistry.INSTANCE.register(EntitiesMCA.MALE_ZOMBIE_VILLAGER.get(), (dispatcher, ctx) -> new ZombieVillagerEntityRenderer(dispatcher, ctx.getResourceManager()));
+            EntityRendererRegistry.INSTANCE.register(EntitiesMCA.FEMALE_ZOMBIE_VILLAGER.get(), (dispatcher, ctx) -> new ZombieVillagerEntityRenderer(dispatcher, ctx.getResourceManager()));
         } else {
-            EntityRendererRegistry.register(EntitiesMCA.MALE_VILLAGER, VillagerEntityMCARenderer::new);
-            EntityRendererRegistry.register(EntitiesMCA.FEMALE_VILLAGER, VillagerEntityMCARenderer::new);
+            EntityRendererRegistry.INSTANCE.register(EntitiesMCA.MALE_VILLAGER.get(), (dispatcher, ctx) -> new VillagerEntityMCARenderer(dispatcher));
+            EntityRendererRegistry.INSTANCE.register(EntitiesMCA.FEMALE_VILLAGER.get(), (dispatcher, ctx) -> new VillagerEntityMCARenderer(dispatcher));
 
-            EntityRendererRegistry.register(EntitiesMCA.MALE_ZOMBIE_VILLAGER, ZombieVillagerEntityMCARenderer::new);
-            EntityRendererRegistry.register(EntitiesMCA.FEMALE_ZOMBIE_VILLAGER, ZombieVillagerEntityMCARenderer::new);
+            EntityRendererRegistry.INSTANCE.register(EntitiesMCA.MALE_ZOMBIE_VILLAGER.get(), (dispatcher, ctx) -> new ZombieVillagerEntityMCARenderer(dispatcher));
+            EntityRendererRegistry.INSTANCE.register(EntitiesMCA.FEMALE_ZOMBIE_VILLAGER.get(), (dispatcher, ctx) -> new ZombieVillagerEntityMCARenderer(dispatcher));
         }
 
-        EntityRendererRegistry.register(EntitiesMCA.GRIM_REAPER, GrimReaperRenderer::new);
+        EntityRendererRegistry.INSTANCE.register(EntitiesMCA.GRIM_REAPER.get(), (dispatcher, ctx) -> new GrimReaperRenderer(dispatcher));
 
         ParticleProviderRegistry.register(ParticleTypesMCA.NEG_INTERACTION.get(), InteractionParticle.Factory::new);
         ParticleProviderRegistry.register(ParticleTypesMCA.POS_INTERACTION.get(), InteractionParticle.Factory::new);
 
-        BlockEntityRendererRegistry.register(BlockEntityTypesMCA.TOMBSTONE.get(), TombstoneBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.INSTANCE.register(BlockEntityTypesMCA.TOMBSTONE.get(), TombstoneBlockEntityRenderer::new);
 
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new FabricMCAScreens());
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new FabricColorPaletteLoader());
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new FabricSupportersLoader());
 
-        ModelPredicateProviderRegistry.register(ItemsMCA.BABY_BOY.get(), new Identifier("invalidated"), (stack, world, entity, i) ->
+        FabricModelPredicateProviderRegistry.register(ItemsMCA.BABY_BOY.get(), new Identifier("invalidated"), (stack, world, entity) ->
                 BabyItem.hasBeenInvalidated(stack) ? 1 : 0
         );
-        ModelPredicateProviderRegistry.register(ItemsMCA.BABY_GIRL.get(), new Identifier("invalidated"), (stack, world, entity, i) ->
+        FabricModelPredicateProviderRegistry.register(ItemsMCA.BABY_GIRL.get(), new Identifier("invalidated"), (stack, world, entity) ->
                 BabyItem.hasBeenInvalidated(stack) ? 1 : 0
         );
-        ModelPredicateProviderRegistry.register(ItemsMCA.SIRBEN_BABY_BOY.get(), new Identifier("invalidated"), (stack, world, entity, i) ->
+        FabricModelPredicateProviderRegistry.register(ItemsMCA.SIRBEN_BABY_BOY.get(), new Identifier("invalidated"), (stack, world, entity) ->
                 SirbenBabyItem.hasBeenInvalidated(stack) ? 1 : 0
         );
-        ModelPredicateProviderRegistry.register(ItemsMCA.SIRBEN_BABY_GIRL.get(), new Identifier("invalidated"), (stack, world, entity, i) ->
+        FabricModelPredicateProviderRegistry.register(ItemsMCA.SIRBEN_BABY_GIRL.get(), new Identifier("invalidated"), (stack, world, entity) ->
                 SirbenBabyItem.hasBeenInvalidated(stack) ? 1 : 0
         );
 

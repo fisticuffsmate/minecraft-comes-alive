@@ -6,13 +6,13 @@ import net.mca.client.render.layer.FaceLayer;
 import net.mca.client.render.layer.HairLayer;
 import net.mca.client.render.layer.SkinLayer;
 import net.mca.entity.VillagerEntityMCA;
-import net.minecraft.client.model.Dilation;
-import net.minecraft.client.model.ModelData;
-import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.mca.util.compat.model.Dilation;
+import net.mca.util.compat.model.ModelData;
+import net.mca.util.compat.model.TexturedModelData;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
 
 public class VillagerEntityMCARenderer extends VillagerLikeEntityMCARenderer<VillagerEntityMCA> {
-    public VillagerEntityMCARenderer(EntityRendererFactory.Context ctx) {
+    public VillagerEntityMCARenderer(EntityRenderDispatcher ctx) {
         super(ctx, createModel(VillagerEntityModelMCA.bodyData(Dilation.NONE)).hideWears());
 
         addFeature(new SkinLayer<>(this, model));

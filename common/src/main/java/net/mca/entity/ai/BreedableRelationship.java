@@ -88,7 +88,8 @@ public class BreedableRelationship extends Relationship<VillagerEntityMCA> {
                 entity.setInfected(false);
                 entity.eatFood(entity.world, stack);
                 stack.decrement(1);
-            } else if (stack.getItem() instanceof DyeItem dye) {
+            } else if (stack.getItem() instanceof DyeItem) {
+                DyeItem dye = (DyeItem) stack.getItem();
                 entity.setHairDye(dye.getColor());
                 stack.decrement(1);
             } else if (stack.getItem() == Items.WET_SPONGE) {
@@ -121,18 +122,21 @@ public class BreedableRelationship extends Relationship<VillagerEntityMCA> {
 
     //returns estimated values for common item types, which the villager could use
     private Optional<GiftType> handleDynamicGift(ItemStack stack) {
-        if (stack.getItem() instanceof SwordItem sword) {
+        if (stack.getItem() instanceof SwordItem) {
             //swords
+            SwordItem sword = (SwordItem) stack.getItem();
             float satisfaction = sword.getAttackDamage();
             satisfaction = (float)(Math.pow(satisfaction, 1.25) * 2);
             return Optional.of(new GiftType(stack.getItem(), (int)satisfaction, MCA.locate("swords")));
-        } else if (stack.getItem() instanceof RangedWeaponItem ranged) {
+        } else if (stack.getItem() instanceof RangedWeaponItem) {
             //ranged weapons
+            RangedWeaponItem ranged = (RangedWeaponItem) stack.getItem();
             float satisfaction = ranged.getRange();
             satisfaction = (float)(Math.pow(satisfaction, 1.25) * 2);
             return Optional.of(new GiftType(stack.getItem(), (int)satisfaction, MCA.locate("archery")));
-        } else if (stack.getItem() instanceof ToolItem tool) {
+        } else if (stack.getItem() instanceof ToolItem) {
             //tools
+            ToolItem tool = (ToolItem) stack.getItem();
             float satisfaction = tool.getMaterial().getMiningSpeedMultiplier();
             satisfaction = (float)(Math.pow(satisfaction, 1.25) * 2);
             return Optional.of(new GiftType(stack.getItem(), (int)satisfaction, MCA.locate(
@@ -141,8 +145,9 @@ public class BreedableRelationship extends Relationship<VillagerEntityMCA> {
                                     stack.getItem() instanceof ShovelItem ? "shovels" :
                                             "pickaxes"
             )));
-        } else if (stack.getItem() instanceof ArmorItem armor) {
+        } else if (stack.getItem() instanceof ArmorItem) {
             //armor
+            ArmorItem armor = (ArmorItem) stack.getItem();
             int satisfaction = (int)(Math.pow(armor.getProtection(), 1.25) * 1.5 + armor.getMaterial().getToughness() * 5);
             return Optional.of(new GiftType(stack.getItem(), satisfaction, MCA.locate("armor")));
         } else if (stack.getItem().isFood()) {

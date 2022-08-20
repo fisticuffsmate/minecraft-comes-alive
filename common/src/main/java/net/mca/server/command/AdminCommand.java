@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.minecraft.util.Formatting.*;
@@ -69,7 +70,7 @@ public class AdminCommand {
 
     private static int listVillages(CommandContext<ServerCommandSource> ctx) {
         for (Village village : VillageManager.get(ctx.getSource().getWorld())) {
-            final BlockPos pos = village.getBox().getCenter();
+            final BlockPos pos = new BlockPos(village.getBox().getCenter());
             success(String.format("%d: %s with %d buildings and %d/%d villager(s)",
                     village.getId(),
                     village.getName(),
@@ -86,7 +87,7 @@ public class AdminCommand {
     private static int assumeNameDead(CommandContext<ServerCommandSource> ctx) {
         String name = StringArgumentType.getString(ctx, "name");
         FamilyTree tree = FamilyTree.get(ctx.getSource().getWorld());
-        List<FamilyTreeNode> collect = tree.getAllWithName(name).filter(n -> !n.isDeceased()).toList();
+        List<FamilyTreeNode> collect = tree.getAllWithName(name).filter(n -> !n.isDeceased()).collect(Collectors.toList());
         if (collect.isEmpty()) {
             fail("Villager does not exist.", ctx);
         } else if (collect.size() == 1) {
@@ -172,7 +173,7 @@ public class AdminCommand {
 
     private static int removeVillage(CommandContext<ServerCommandSource> ctx) {
         String name = StringArgumentType.getString(ctx, "name");
-        List<Village> collect = VillageManager.get(ctx.getSource().getWorld()).findVillages(v -> v.getName().equals(name)).toList();
+        List<Village> collect = VillageManager.get(ctx.getSource().getWorld()).findVillages(v -> v.getName().equals(name)).collect(Collectors.toList());
         if (collect.isEmpty()) {
             fail("No village with this name exists.", ctx);
         } else if (collect.size() > 1) {
@@ -230,7 +231,7 @@ public class AdminCommand {
         ItemStack heldStack = player.getMainHandStack();
 
         if (heldStack.getItem() instanceof BabyItem) {
-            heldStack.getOrCreateNbt().putInt("age", Config.getInstance().babyItemGrowUpTime);
+            heldStack.getOrCreateTag().putInt("age", Config.getInstance().babyItemGrowUpTime);
             success("Baby is old enough to place now.", ctx);
         } else {
             fail("Hold a baby first.", ctx);
@@ -269,7 +270,7 @@ public class AdminCommand {
             NbtCompound tag = new NbtCompound();
             if (v.saveSelfNbt(tag)) {
                 storedVillagers.add(tag);
-                v.discard();
+                v.remove();
             }
         });
 
@@ -293,10 +294,12 @@ public class AdminCommand {
     private static Text message(String message, Formatting red, Object[] events) {
         MutableText data = new LiteralText(message).formatted(red);
         for (Object evt : events) {
-            if (evt instanceof ClickEvent clickEvent) {
+            if (evt instanceof ClickEvent) {
+                ClickEvent clickEvent = (ClickEvent) evt;
                 data.styled((style -> style.withClickEvent(clickEvent)));
             }
-            if (evt instanceof HoverEvent hoverEvent) {
+            if (evt instanceof HoverEvent) {
+                HoverEvent hoverEvent = (HoverEvent) evt;
                 data.styled((style -> style.withHoverEvent(hoverEvent)));
             }
         }

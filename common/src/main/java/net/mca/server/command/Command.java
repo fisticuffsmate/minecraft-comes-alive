@@ -70,7 +70,7 @@ public class Command {
         PlayerSaveData data = PlayerSaveData.get(player);
         if (data.hasMail()) {
             while (data.hasMail()) {
-                player.getInventory().offerOrDrop(data.getMail());
+                player.inventory.offerOrDrop(player.world, data.getMail());
             }
         } else {
             ctx.getSource().getPlayer().sendSystemMessage(new TranslatableText("command.no_mail"), Util.NIL_UUID);

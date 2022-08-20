@@ -19,7 +19,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public interface Messenger extends EntityWrapper {
-    TargetPredicate CAN_RECEIVE = TargetPredicate.createNonAttackable();
+    TargetPredicate CAN_RECEIVE = new TargetPredicate().ignoreEntityTargetRules();
 
     default boolean isSpeechImpaired() {
         return false;
@@ -39,8 +39,9 @@ public interface Messenger extends EntityWrapper {
 
     default TranslatableText getTranslatable(PlayerEntity target, String phraseId, Object... params) {
         String targetName;
-        if (target.world instanceof ServerWorld world) {
+        if (target.world instanceof ServerWorld) {
             //todo won't work on a few client side use cases
+            ServerWorld world = (ServerWorld) target.world;
             targetName = FamilyTree.get(world)
                     .getOrEmpty(target.getUuid())
                     .map(FamilyTreeNode::getName)
@@ -55,13 +56,15 @@ public interface Messenger extends EntityWrapper {
 
         //also pass profession
         String professionString = "";
-        if (!asEntity().isBaby() && asEntity() instanceof VillagerEntityMCA v) {
+        if (!asEntity().isBaby() && asEntity() instanceof VillagerEntityMCA) {
+            VillagerEntityMCA v = (VillagerEntityMCA) asEntity();
             professionString = "#P" + Registry.VILLAGER_PROFESSION.getId(v.getProfession()).getPath() + ".";
         }
 
         //and personality
         String personalityString = "";
-        if (!asEntity().isBaby() && asEntity() instanceof VillagerEntityMCA v) {
+        if (!asEntity().isBaby() && asEntity() instanceof VillagerEntityMCA) {
+            VillagerEntityMCA v = (VillagerEntityMCA) asEntity();
             personalityString = "#E" + v.getVillagerBrain().getPersonality().name() + ".";
         }
 

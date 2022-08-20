@@ -30,7 +30,8 @@ public abstract class EntityCommandHandler<T extends Entity & VillagerLike<?>> {
 
     public void stopInteracting() {
         if (!entity.world.isClient) {
-            if (interactingPlayer instanceof ServerPlayerEntity serverPlayer) {
+            if (interactingPlayer instanceof ServerPlayerEntity) {
+                ServerPlayerEntity serverPlayer = (ServerPlayerEntity) interactingPlayer;
                 serverPlayer.closeHandledScreen();
             }
         }
@@ -38,7 +39,8 @@ public abstract class EntityCommandHandler<T extends Entity & VillagerLike<?>> {
     }
 
     public ActionResult interactAt(PlayerEntity player, Vec3d pos, @NotNull Hand hand) {
-        if (player instanceof ServerPlayerEntity serverPlayer) {
+        if (player instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
             NetworkHandler.sendToPlayer(new OpenGuiRequest(OpenGuiRequest.Type.INTERACT, entity), serverPlayer);
         }
         interactingPlayer = player;

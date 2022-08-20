@@ -14,6 +14,7 @@ import net.mca.entity.ai.relationship.family.FamilyTreeNode;
 import net.mca.entity.interaction.gifts.GiftSaturation;
 import net.mca.server.world.data.GraveyardManager;
 import net.mca.util.WorldUtils;
+import net.mca.util.compat.OptionalCompat;
 import net.mca.util.network.datasync.CDataManager;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
@@ -87,9 +88,9 @@ public class Relationship<T extends MobEntity & VillagerLike<T>> implements Enti
 
             //look for a gravestone
             //todo place one for villagers being remembered or loved
-            GraveyardManager.get((ServerWorld)entity.world)
+            OptionalCompat.ifPresentOrElse(GraveyardManager.get((ServerWorld)entity.world)
                     .findNearest(entity.getBlockPos(), GraveyardManager.TombstoneState.EMPTY, 10)
-                    .ifPresentOrElse(pos -> {
+                    , pos -> {
                         if (entity.world.getBlockState(pos).isIn(TagsMCA.Blocks.TOMBSTONES)) {
                             BlockEntity be = entity.world.getBlockEntity(pos);
                             if (be instanceof TombstoneBlock.Data) {
@@ -133,7 +134,8 @@ public class Relationship<T extends MobEntity & VillagerLike<T>> implements Enti
             entity.getVillagerBrain().modifyMoodValue(-moodAffect);
 
             // seen murder
-            if (cause.getAttacker() instanceof PlayerEntity player) {
+            if (cause.getAttacker() instanceof PlayerEntity) {
+                PlayerEntity player = (PlayerEntity) cause.getAttacker();
                 entity.getVillagerBrain().getMemoriesForPlayer(player).modHearts(-20);
             }
         }

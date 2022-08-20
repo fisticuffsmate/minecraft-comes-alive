@@ -1,8 +1,8 @@
 package net.mca.client.model;
 
 import com.google.common.base.Preconditions;
+import net.mca.util.compat.model.ModelTransform;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.ModelTransform;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.HashMap;

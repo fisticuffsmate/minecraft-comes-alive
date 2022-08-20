@@ -2,6 +2,7 @@ package net.mca.server.world.data;
 
 import net.mca.util.NbtHelper;
 import net.mca.util.WorldUtils;
+import net.mca.util.compat.PersistentStateCompat;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtInt;
 import net.minecraft.server.world.ServerWorld;
@@ -12,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class Nationality extends PersistentState {
+public class Nationality extends PersistentStateCompat {
     private static final int CHUNK_SIZE = 128;
     private Map<Long, Integer> map = new HashMap<>();
 

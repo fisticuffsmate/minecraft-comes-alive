@@ -87,10 +87,11 @@ public abstract class AbstractDynamicScreen extends Screen {
     public void setLayout(String guiKey) {
         activeScreen = guiKey;
 
-        clearChildren();
+        children.clear();
+        buttons.clear();
         MCAScreens.getInstance().getScreen(guiKey).ifPresent(buttons -> {
             for (Button b : buttons) {
-                addDrawableChild(new ButtonEx(b, this));
+                addButton(new ButtonEx(b, this));
             }
         });
     }

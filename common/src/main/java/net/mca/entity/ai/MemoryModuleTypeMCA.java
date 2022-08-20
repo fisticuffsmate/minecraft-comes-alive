@@ -1,8 +1,8 @@
 package net.mca.entity.ai;
 
 import com.mojang.serialization.Codec;
-import dev.architectury.registry.registries.DeferredRegister;
-import dev.architectury.registry.registries.RegistrySupplier;
+import me.shedaniel.architectury.registry.DeferredRegister;
+import me.shedaniel.architectury.registry.RegistrySupplier;
 import net.mca.MCA;
 import net.mca.mixin.MixinMemoryModuleType;
 import net.minecraft.entity.LivingEntity;

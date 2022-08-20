@@ -1,7 +1,7 @@
 package net.mca.entity.ai;
 
-import dev.architectury.registry.registries.DeferredRegister;
-import dev.architectury.registry.registries.RegistrySupplier;
+import me.shedaniel.architectury.registry.DeferredRegister;
+import me.shedaniel.architectury.registry.RegistrySupplier;
 import net.mca.MCA;
 import net.mca.entity.ai.brain.sensor.ExplodingCreeperSensor;
 import net.mca.entity.ai.brain.sensor.GuardEnemiesSensor;

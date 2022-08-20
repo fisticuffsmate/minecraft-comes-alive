@@ -96,7 +96,7 @@ public class ExtendedSleepTask extends Task<VillagerEntityMCA> {
     @Override
     protected void run(ServerWorld world, VillagerEntityMCA entity, long time) {
         if (time > startTime) {
-            OpenDoorsTask.pathToDoor(world, entity, null, null);
+            OpenDoorsTask.method_30760/*pathToDoor*/(world, entity, null, null);
             entity.sleep(bed);
         }
     }

@@ -12,12 +12,10 @@ import net.mca.network.s2c.GetInteractDataResponse;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.io.Serial;
 import java.util.Set;
 import java.util.UUID;
 
 public class GetInteractDataRequest implements Message {
-    @Serial
     private static final long serialVersionUID = -4363277735373237564L;
 
     UUID uuid;
@@ -28,12 +26,12 @@ public class GetInteractDataRequest implements Message {
 
     @Override
     public void receive(ServerPlayerEntity player) {
-        Entity entity = player.getWorld().getEntity(uuid);
+        Entity entity = player.getServerWorld().getEntity(uuid);
 
-        if (entity instanceof VillagerLike<?> villager) {
+        if (entity instanceof VillagerLike<?>) {
             //get constraints
+            VillagerLike<?> villager = (VillagerLike<?>) entity;
             Set<Constraint> constraints = Constraint.allMatching(villager, player);
-
             EntityRelationship relationship = ((CompassionateEntity<?>)villager).getRelationships();
             FamilyTreeNode family = relationship.getFamilyEntry();
 

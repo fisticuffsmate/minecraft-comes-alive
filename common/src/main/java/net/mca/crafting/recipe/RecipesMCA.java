@@ -1,7 +1,7 @@
 package net.mca.crafting.recipe;
 
-import dev.architectury.registry.registries.DeferredRegister;
-import dev.architectury.registry.registries.RegistrySupplier;
+import me.shedaniel.architectury.registry.DeferredRegister;
+import me.shedaniel.architectury.registry.RegistrySupplier;
 import net.mca.MCA;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
@@ -27,7 +27,7 @@ public interface RecipesMCA {
     // TODO: Migrate to Deferred when Mojang inevitably freezes this registry
     static <T extends Recipe<?>> RecipeType<T> type(String name) {
         Identifier id = new Identifier(MCA.MOD_ID, name);
-        return Registry.register(Registry.RECIPE_TYPE, id, new RecipeType<>() {
+        return Registry.register(Registry.RECIPE_TYPE, id, new RecipeType<T>() {
             @Override
             public String toString() {
                 return name;

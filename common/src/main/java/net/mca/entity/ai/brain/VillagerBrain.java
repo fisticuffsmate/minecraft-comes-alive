@@ -200,8 +200,9 @@ public class VillagerBrain<E extends MobEntity & VillagerLike<E>> {
     }
 
     private void resetsBrain() {
-        if (entity.asEntity() instanceof VillagerEntityMCA villager) {
-            villager.reinitializeBrain((ServerWorld)villager.getWorld());
+        if (entity.asEntity() instanceof VillagerEntityMCA) {
+            VillagerEntityMCA villager = (VillagerEntityMCA) entity.asEntity();
+            villager.reinitializeBrain((ServerWorld)villager.world);
         }
     }
 
@@ -217,7 +218,7 @@ public class VillagerBrain<E extends MobEntity & VillagerLike<E>> {
      * Read the move state from the active memory.
      */
     public void updateMoveState() {
-        if (getMoveState() == MoveState.FOLLOW && entity.getBrain().getOptionalMemory(MemoryModuleTypeMCA.PLAYER_FOLLOWING.get()).isEmpty()) {
+        if (getMoveState() == MoveState.FOLLOW && !entity.getBrain().getOptionalMemory(MemoryModuleTypeMCA.PLAYER_FOLLOWING.get()).isPresent()) {
             if (entity.getBrain().getOptionalMemory(MemoryModuleTypeMCA.STAYING.get()).isPresent()) {
                 entity.setTrackedValue(MOVE_STATE, MoveState.STAY);
             } else if (entity.getBrain().getOptionalMemory(MemoryModuleTypeMCA.PLAYER_FOLLOWING.get()).isPresent()) {

@@ -1,8 +1,7 @@
 package net.mca.item;
 
-import dev.architectury.core.item.ArchitecturySpawnEggItem;
-import dev.architectury.registry.registries.DeferredRegister;
-import dev.architectury.registry.registries.RegistrySupplier;
+import me.shedaniel.architectury.registry.DeferredRegister;
+import me.shedaniel.architectury.registry.RegistrySupplier;
 import net.mca.MCA;
 import net.mca.TagsMCA;
 import net.mca.block.BlocksMCA;
@@ -17,6 +16,7 @@ import net.mca.entity.ai.relationship.Gender;
 import net.mca.resources.Supporters;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -28,13 +28,13 @@ import java.util.stream.Collectors;
 public interface ItemsMCA {
     DeferredRegister<Item> ITEMS = DeferredRegister.create(MCA.MOD_ID, Registry.ITEM_KEY);
 
-    RegistrySupplier<Item> MALE_VILLAGER_SPAWN_EGG = register("male_villager_spawn_egg", () -> new ArchitecturySpawnEggItem(EntitiesMCA.MALE_VILLAGER, 0x5e9aff, 0x3366bc, baseProps()));
-    RegistrySupplier<Item> FEMALE_VILLAGER_SPAWN_EGG = register("female_villager_spawn_egg", () -> new ArchitecturySpawnEggItem(EntitiesMCA.FEMALE_VILLAGER, 0xe85ca1, 0xe3368c, baseProps()));
+    RegistrySupplier<Item> MALE_VILLAGER_SPAWN_EGG = register("male_villager_spawn_egg", () -> new SpawnEggItem(EntitiesMCA.MALE_VILLAGER.get(), 0x5e9aff, 0x3366bc, baseProps()));
+    RegistrySupplier<Item> FEMALE_VILLAGER_SPAWN_EGG = register("female_villager_spawn_egg", () -> new SpawnEggItem(EntitiesMCA.FEMALE_VILLAGER.get(), 0xe85ca1, 0xe3368c, baseProps()));
 
-    RegistrySupplier<Item> MALE_ZOMBIE_VILLAGER_SPAWN_EGG = register("male_zombie_villager_spawn_egg", () -> new ArchitecturySpawnEggItem(EntitiesMCA.MALE_ZOMBIE_VILLAGER, 0x5ebaff, 0x33a6bc, baseProps()));
-    RegistrySupplier<Item> FEMALE_ZOMBIE_VILLAGER_SPAWN_EGG = register("female_zombie_villager_spawn_egg", () -> new ArchitecturySpawnEggItem(EntitiesMCA.FEMALE_ZOMBIE_VILLAGER, 0xe8aca1, 0xe3a68c, baseProps()));
+    RegistrySupplier<Item> MALE_ZOMBIE_VILLAGER_SPAWN_EGG = register("male_zombie_villager_spawn_egg", () -> new SpawnEggItem(EntitiesMCA.MALE_ZOMBIE_VILLAGER.get(), 0x5ebaff, 0x33a6bc, baseProps()));
+    RegistrySupplier<Item> FEMALE_ZOMBIE_VILLAGER_SPAWN_EGG = register("female_zombie_villager_spawn_egg", () -> new SpawnEggItem(EntitiesMCA.FEMALE_ZOMBIE_VILLAGER.get(), 0xe8aca1, 0xe3a68c, baseProps()));
 
-    RegistrySupplier<Item> GRIM_REAPER_SPAWN_EGG = register("grim_reaper_spawn_egg", () -> new ArchitecturySpawnEggItem(EntitiesMCA.GRIM_REAPER, 0x301515, 0x2A1C34, baseProps()));
+    RegistrySupplier<Item> GRIM_REAPER_SPAWN_EGG = register("grim_reaper_spawn_egg", () -> new SpawnEggItem(EntitiesMCA.GRIM_REAPER.get(), 0x301515, 0x2A1C34, baseProps()));
 
     RegistrySupplier<Item> BABY_BOY = register("baby_boy", () -> new BabyItem(Gender.MALE, baseProps().maxCount(1)));
     RegistrySupplier<Item> BABY_GIRL = register("baby_girl", () -> new BabyItem(Gender.FEMALE, baseProps().maxCount(1)));

@@ -5,11 +5,9 @@ import net.mca.cobalt.network.Message;
 import net.mca.resources.ClothingList;
 import net.mca.resources.HairList;
 
-import java.io.Serial;
 import java.util.HashMap;
 
 public class SkinListResponse implements Message {
-    @Serial
     private static final long serialVersionUID = 3523559818338225910L;
 
     private final HashMap<String, ClothingList.Clothing> clothing;

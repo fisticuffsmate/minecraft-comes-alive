@@ -7,6 +7,8 @@ import net.mca.block.BlocksMCA;
 import net.mca.entity.EntitiesMCA;
 import net.mca.entity.GrimReaperEntity;
 import net.mca.server.world.data.VillageManager;
+import net.mca.util.NbtElementCompat;
+import net.mca.util.compat.BlockCompat;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -22,6 +24,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -45,7 +48,7 @@ public class ReaperSpawner {
 
     public ReaperSpawner(VillageManager manager, NbtCompound nbt) {
         this.manager = manager;
-        net.mca.util.NbtHelper.toList(nbt.getList("summons", NbtElement.COMPOUND_TYPE), n -> new ActiveSummon((NbtCompound)n)).forEach(summon ->
+        net.mca.util.NbtHelper.toList(nbt.getList("summons", NbtElementCompat.COMPOUND_TYPE), n -> new ActiveSummon((NbtCompound)n)).forEach(summon ->
                 activeSummons.put(summon.position.spawnPosition.asLong(), summon)
         );
     }
@@ -99,10 +102,10 @@ public class ReaperSpawner {
 
         EntityType.LIGHTNING_BOLT.spawn(world, null, null, null, pos, SpawnReason.TRIGGERED, false, false);
 
-        world.setBlockState(pos.down(), Blocks.SOUL_SOIL.getDefaultState(), Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
-        world.setBlockState(pos, BlocksMCA.INFERNAL_FLAME.get().getDefaultState(), Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
+        world.setBlockState(pos.down(), Blocks.SOUL_SOIL.getDefaultState(), BlockCompat.NOTIFY_NEIGHBORS | BlockCompat.NOTIFY_LISTENERS);
+        world.setBlockState(pos, BlocksMCA.INFERNAL_FLAME.get().getDefaultState(), BlockCompat.NOTIFY_NEIGHBORS | BlockCompat.NOTIFY_LISTENERS);
         totems.forEach(totem ->
-                world.setBlockState(totem, BlocksMCA.INFERNAL_FLAME.get().getDefaultState(), Block.NOTIFY_LISTENERS | Block.FORCE_STATE)
+                world.setBlockState(totem, BlocksMCA.INFERNAL_FLAME.get().getDefaultState(), BlockCompat.NOTIFY_LISTENERS | BlockCompat.FORCE_STATE)
         );
     }
 
@@ -138,12 +141,12 @@ public class ReaperSpawner {
 
     private Set<BlockPos> getTotemsFires(World world, BlockPos pos) {
         int groundY = pos.getY() - 2;
-        int leftSkyHeight = world.getTopY() - groundY;
+        int leftSkyHeight = world.getTopY(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ()) - groundY;
         int minPillarHeight = Math.min(Config.getInstance().minPillarHeight, leftSkyHeight);
         BlockPos.Mutable target = new BlockPos.Mutable();
-        return Stream.of(HORIZONTALS).map(d -> target.set(pos).setY(groundY).move(d, 3)).filter(pillarPos -> {
+        return Stream.of(HORIZONTALS).map(d -> target.set(pos.getX(), groundY, pos.getZ()).offset(d, 3)).filter(pillarPos -> {
             for (int height = 1; height <= leftSkyHeight; height++) {
-                pillarPos.setY(groundY + height);
+                pillarPos.add(0, height, 0);
                 if (world.getBlockState(pillarPos).isOf(Blocks.OBSIDIAN)) {
                     continue;
                 } else if (world.getBlockState(pillarPos).isIn(BlockTags.FIRE)) {

@@ -32,33 +32,33 @@ public class FamilyTreeSearchScreen extends Screen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
     @Override
     public void init() {
-        TextFieldWidget field = addDrawableChild(new TextFieldWidget(this.textRenderer, width / 2 - DATA_WIDTH / 2, height / 2 - 80, DATA_WIDTH, 18, new TranslatableText("structure_block.structure_name")));
+        TextFieldWidget field = addButton(new TextFieldWidget(this.textRenderer, width / 2 - DATA_WIDTH / 2, height / 2 - 80, DATA_WIDTH, 18, new TranslatableText("structure_block.structure_name")));
         field.setMaxLength(32);
         field.setChangedListener(this::searchVillager);
         field.setTextFieldFocused(true);
         setFocused(field);
 
-        addDrawableChild(new ButtonWidget(width / 2 - 44, height / 2 + 82, 88, 20, new TranslatableText("gui.done"), sender -> {
-            close();
+        addButton(new ButtonWidget(width / 2 - 44, height / 2 + 82, 88, 20, new TranslatableText("gui.done"), sender -> {
+            onClose();
         }));
 
-        addDrawableChild(new ButtonWidget(width / 2 - 24 - 20, height / 2 + 60, 20, 20, new LiteralText("<"), (b) -> {
+        addButton(new ButtonWidget(width / 2 - 24 - 20, height / 2 + 60, 20, 20, new LiteralText("<"), (b) -> {
             if (pageNumber > 0) {
                 pageNumber--;
             }
         }));
-        addDrawableChild(new ButtonWidget(width / 2 + 24, height / 2 + 60, 20, 20, new LiteralText(">"), (b) -> {
+        addButton(new ButtonWidget(width / 2 + 24, height / 2 + 60, 20, 20, new LiteralText(">"), (b) -> {
             if (pageNumber < Math.ceil(list.size() / 9.0) - 1) {
                 pageNumber++;
             }
         }));
-        buttonPage = addDrawableChild(new ButtonWidget(width / 2 - 24, height / 2 + 60, 48, 20, new LiteralText("0/0)"), (b) -> {
+        buttonPage = addButton(new ButtonWidget(width / 2 - 24, height / 2 + 60, 48, 20, new LiteralText("0/0)"), (b) -> {
         }));
     }
 
@@ -131,7 +131,7 @@ public class FamilyTreeSearchScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (selectedVillager != null) {
-            client.setScreen(new FamilyTreeScreen(selectedVillager));
+            client.openScreen(new FamilyTreeScreen(selectedVillager));
         }
 
         return super.mouseClicked(mouseX, mouseY, button);

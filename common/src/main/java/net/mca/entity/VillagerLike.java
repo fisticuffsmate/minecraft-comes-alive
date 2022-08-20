@@ -387,7 +387,8 @@ public interface VillagerLike<E extends Entity & VillagerLike<E>> extends CTrack
     static VillagerLike<?> toVillager(Entity entity) {
         if (entity instanceof VillagerLike<?>) {
             return (VillagerLike<?>)entity;
-        } else if (entity instanceof ServerPlayerEntity playerEntity) {
+        } else if (entity instanceof ServerPlayerEntity) {
+            ServerPlayerEntity playerEntity = (ServerPlayerEntity) entity;
             NbtCompound villagerData = PlayerSaveData.get(playerEntity).getEntityData();
             VillagerEntityMCA villager = EntitiesMCA.MALE_VILLAGER.get().create(entity.world);
             assert villager != null;

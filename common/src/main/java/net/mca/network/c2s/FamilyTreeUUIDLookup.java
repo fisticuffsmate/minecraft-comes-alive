@@ -8,13 +8,11 @@ import net.mca.network.s2c.FamilyTreeUUIDResponse;
 import net.mca.resources.data.SerializablePair;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import java.io.Serial;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class FamilyTreeUUIDLookup implements Message {
-    @Serial
     private static final long serialVersionUID = 3458196476082270702L;
 
     private final String search;
@@ -25,7 +23,7 @@ public class FamilyTreeUUIDLookup implements Message {
 
     @Override
     public void receive(ServerPlayerEntity player) {
-        FamilyTree tree = FamilyTree.get(player.getWorld());
+        FamilyTree tree = FamilyTree.get(player.getServerWorld());
         List<SerializablePair<UUID, SerializablePair<String, String>>> list = tree.getAllWithName(search)
                 .map(entry -> new SerializablePair<>(entry.id(), new SerializablePair<>(
                         tree.getOrEmpty(entry.father()).map(FamilyTreeNode::getName).orElse(""),

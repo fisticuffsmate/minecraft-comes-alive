@@ -18,6 +18,7 @@ import net.mca.entity.ai.relationship.family.FamilyTree;
 import net.mca.network.c2s.GetChildDataRequest;
 import net.mca.network.s2c.OpenGuiRequest;
 import net.mca.server.world.data.BabyTracker;
+import net.mca.util.NbtElementCompat;
 import net.mca.util.WorldUtils;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
@@ -33,6 +34,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -41,6 +43,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class BabyItem extends Item {
@@ -69,12 +72,12 @@ public class BabyItem extends Item {
 
     public boolean onDropped(ItemStack stack, PlayerEntity player) {
         if (!hasBeenInvalidated(stack)) {
-            if (!player.getWorld().isClient) {
+            if (!player.world.isClient) {
                 int count = 0;
-                if (stack.getOrCreateNbt().contains("dropAttempts", NbtElement.INT_TYPE)) {
-                    count = stack.getOrCreateNbt().getInt("dropAttempts") + 1;
+                if (stack.getOrCreateTag().contains("dropAttempts", NbtElementCompat.INT_TYPE)) {
+                    count = stack.getOrCreateTag().getInt("dropAttempts") + 1;
                 }
-                stack.getOrCreateNbt().putInt("dropAttempts", count);
+                stack.getOrCreateTag().putInt("dropAttempts", count);
                 CriterionMCA.BABY_DROPPED_CRITERION.trigger((ServerPlayerEntity) player, count);
                 player.sendMessage(new TranslatableText("item.mca.baby.no_drop"), true);
             }
@@ -91,15 +94,16 @@ public class BabyItem extends Item {
         }
 
         // remove duplicates
-        if (entity instanceof ServerPlayerEntity player) {
+        if (entity instanceof ServerPlayerEntity) {
+            ServerPlayerEntity player = (ServerPlayerEntity) entity;
             if (world.getTime() % 20 == 0) {
                 Set<UUID> found = new HashSet<>();
-                for (int i = player.getInventory().size() - 1; i >= 0; i--) {
-                    ItemStack s = player.getInventory().getStack(i);
+                for (int i = player.inventory.size() - 1; i >= 0; i--) {
+                    ItemStack s = player.inventory.getStack(i);
                     final int sl = i;
                     BabyTracker.getStateId(s).ifPresent(id -> {
                         if (found.contains(id)) {
-                            player.getInventory().removeStack(sl);
+                            player.inventory.removeStack(sl);
                         } else {
                             found.add(id);
                         }
@@ -119,18 +123,19 @@ public class BabyItem extends Item {
                     state.get().writeToItem(stack);
                     stack.removeCustomName();
 
-                    if (entity instanceof ServerPlayerEntity player) {
+                    if (entity instanceof ServerPlayerEntity) {
+                        ServerPlayerEntity player = (ServerPlayerEntity) entity;
                         CriterionMCA.GENERIC_EVENT_CRITERION.trigger(player, "rename_baby");
                     }
                 }
 
                 if (state.get().getName().isPresent() && world.getTime() % 1200 == 0) {
-                    stack.getNbt().putInt("age", stack.getNbt().getInt("age") + 1200);
+                    stack.getTag().putInt("age", stack.getTag().getInt("age") + 1200);
                 }
             } else {
                 BabyTracker.invalidate(stack);
             }
-        } else if (!stack.hasNbt() || !stack.getNbt().getBoolean("invalidated")) {
+        } else if (!stack.hasTag() || !stack.getTag().getBoolean("invalidated")) {
             // legacy and items obtained by creative
             BabyTracker.get((ServerWorld)world).getPairing(entity.getUuid(), entity.getUuid()).addChild(state -> {
                 state.setGender(gender);
@@ -166,8 +171,9 @@ public class BabyItem extends Item {
 
         return BabyTracker.getState(stack, (ServerWorld)world).map(state -> {
             // Right-clicking an unnamed baby allows you to name it
-            if (state.getName().isEmpty()) {
-                if (player instanceof ServerPlayerEntity serverPlayer) {
+            if (!state.getName().isPresent()) {
+                if (player instanceof ServerPlayerEntity) {
+                    ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
                     NetworkHandler.sendToPlayer(new OpenGuiRequest(OpenGuiRequest.Type.BABY_NAME), serverPlayer);
                 }
 
@@ -178,8 +184,9 @@ public class BabyItem extends Item {
                 return TypedActionResult.pass(stack);
             }
 
-            if (player instanceof ServerPlayerEntity serverPlayer) {
+            if (player instanceof ServerPlayerEntity) {
                 // Name is good and we're ready to grow
+                ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
                 birthChild(state, (ServerWorld)world, serverPlayer);
             }
             stack.decrement(1);
@@ -204,7 +211,7 @@ public class BabyItem extends Item {
                 .withAge(-AgeState.getMaxAge())
                 .build();
 
-        List<Entity> parents = state.getParents().map(world::getEntity).filter(Objects::nonNull).toList();
+        List<Entity> parents = state.getParents().map(world::getEntity).filter(Objects::nonNull).collect(Collectors.toList());
 
         Optional<Entity> mother = parents.stream().findFirst();
         Optional<Entity> father = parents.stream().skip(1).findFirst();
@@ -253,19 +260,19 @@ public class BabyItem extends Item {
 
         getClientState(stack).ifPresent(state -> {
             PlayerEntity player = ClientProxy.getClientPlayer();
-            NbtCompound nbt = stack.getNbt();
+            NbtCompound nbt = stack.getTag();
 
             assert nbt != null;
             int age = nbt.getInt("age") + (int)(world == null ? 0 : world.getTime() % 1200);
 
-            if (state.getName().isEmpty()) {
+            if (!state.getName().isPresent()) {
                 tooltip.add(new TranslatableText("item.mca.baby.give_name").formatted(Formatting.YELLOW));
             } else {
                 final LiteralText text = new LiteralText(state.getName().get());
-                tooltip.add(new TranslatableText("item.mca.baby.name", text.setStyle(text.getStyle().withColor(gender.getColor()))).formatted(Formatting.GRAY));
+                tooltip.add(new TranslatableText("item.mca.baby.name", text.setStyle(text.getStyle().withColor(TextColor.fromRgb(gender.getColor())))).formatted(Formatting.GRAY));
 
                 if (age > 0) {
-                    tooltip.add(new TranslatableText("item.mca.baby.age", StringHelper.formatTicks(age)).formatted(Formatting.GRAY));
+                    tooltip.add(new TranslatableText("item.mca.baby.age", ChatUtil.ticksToString(age)).formatted(Formatting.GRAY));
                 }
             }
 
@@ -303,7 +310,7 @@ public class BabyItem extends Item {
             if (loaded.isPresent()) {
                 BabyTracker.ChildSaveState l = loaded.get();
                 if (
-                        (state.getName().isPresent() && l.getName().isEmpty())
+                        (state.getName().isPresent() && !l.getName().isPresent())
                                 || (state.getName().isPresent() && l.getName().isPresent() && !state.getName().get().contentEquals(l.getName().get()))
                 ) {
                     CLIENT_STATE_CACHE.refresh(state.getId());
@@ -330,11 +337,11 @@ public class BabyItem extends Item {
 
     public static boolean hasBeenInvalidated(ItemStack stack) {
         //noinspection ConstantConditions
-        return (stack.hasNbt() && stack.getNbt().getBoolean("invalidated")) || BabyTracker.getStateId(stack).map(id -> {
+        return (stack.hasTag() && stack.getTag().getBoolean("invalidated")) || BabyTracker.getStateId(stack).map(id -> {
             Optional<BabyTracker.ChildSaveState> loaded = CLIENT_STATE_CACHE.getIfPresent(id);
 
             //noinspection OptionalAssignedToNull
-            return loaded != null && loaded.isEmpty();
+            return loaded != null && !loaded.isPresent();
         }).orElse(false);
     }
 
@@ -344,6 +351,6 @@ public class BabyItem extends Item {
 
     private static boolean isReadyToGrowUp(ItemStack stack) {
         //noinspection ConstantConditions
-        return stack.hasNbt() && canGrow(stack.getNbt().getInt("age"));
+        return stack.hasTag() && canGrow(stack.getTag().getInt("age"));
     }
 }

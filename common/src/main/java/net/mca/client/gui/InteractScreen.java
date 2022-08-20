@@ -13,6 +13,7 @@ import net.mca.entity.ai.relationship.RelationshipState;
 import net.mca.network.c2s.*;
 import net.mca.resources.data.analysis.Analysis;
 import net.mca.resources.data.dialogue.Question;
+import net.mca.util.compat.RenderSystemCompat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
@@ -62,13 +63,13 @@ public class InteractScreen extends AbstractDynamicScreen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
     @Override
-    public void close() {
-        Objects.requireNonNull(this.client).setScreen(null);
+    public void onClose() {
+        Objects.requireNonNull(this.client).openScreen(null);
         NetworkHandler.sendToServer(new InteractionCloseRequest(villager.asEntity().getUuid()));
     }
 
@@ -93,9 +94,9 @@ public class InteractScreen extends AbstractDynamicScreen {
     @Override
     public boolean mouseScrolled(double x, double y, double d) {
         if (d < 0) {
-            player.getInventory().selectedSlot = player.getInventory().selectedSlot == 8 ? 0 : player.getInventory().selectedSlot + 1;
+            player.inventory.selectedSlot = player.inventory.selectedSlot == 8 ? 0 : player.inventory.selectedSlot + 1;
         } else if (d > 0) {
-            player.getInventory().selectedSlot = player.getInventory().selectedSlot == 0 ? 8 : player.getInventory().selectedSlot - 1;
+            player.inventory.selectedSlot = player.inventory.selectedSlot == 0 ? 8 : player.inventory.selectedSlot - 1;
         }
 
         return super.mouseScrolled(x, y, d);
@@ -128,7 +129,7 @@ public class InteractScreen extends AbstractDynamicScreen {
                 inGiftMode = false;
                 setLayout("interact");
             } else {
-                close();
+                onClose();
             }
             return true;
         }
@@ -141,7 +142,7 @@ public class InteractScreen extends AbstractDynamicScreen {
         transform.push();
         transform.scale(iconScale, iconScale, iconScale);
 
-        RenderSystem.setShaderTexture(0, ICON_TEXTURES);
+        RenderSystemCompat.setShaderTexture(0, ICON_TEXTURES);
 
         if (marriageState != null) {
             drawIcon(transform, marriageState.getIcon());
@@ -344,9 +345,10 @@ public class InteractScreen extends AbstractDynamicScreen {
         } else if (id.equals("gui.button.clothing")) {
             setLayout("clothing");
         } else if (id.equals("gui.button.familyTree")) {
-            MinecraftClient.getInstance().setScreen(new FamilyTreeScreen(villager.asEntity().getUuid()));
+            MinecraftClient.getInstance().openScreen(new FamilyTreeScreen(villager.asEntity().getUuid()));
         } else if (id.equals("gui.button.talk")) {
-            clearChildren();
+            children.clear();
+            buttons.clear();
             NetworkHandler.sendToServer(new InteractionDialogueInitMessage(villager.asEntity().getUuid()));
         } else if (id.equals("gui.button.work")) {
             setLayout("work");

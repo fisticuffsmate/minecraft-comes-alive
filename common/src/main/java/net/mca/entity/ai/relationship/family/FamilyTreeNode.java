@@ -3,6 +3,7 @@ package net.mca.entity.ai.relationship.family;
 import net.mca.entity.ai.relationship.EntityRelationship;
 import net.mca.entity.ai.relationship.Gender;
 import net.mca.entity.ai.relationship.RelationshipState;
+import net.mca.util.NbtElementCompat;
 import net.mca.util.NbtHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
@@ -15,7 +16,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerProfession;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Optional;
@@ -25,7 +25,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 public final class FamilyTreeNode implements Serializable {
-    @Serial
     private static final long serialVersionUID = -7307057982785253721L;
 
     private final boolean isPlayer;
@@ -69,7 +68,7 @@ public final class FamilyTreeNode implements Serializable {
                 nbt.getUuid("father"),
                 nbt.getUuid("mother")
         );
-        children.addAll(NbtHelper.toList(nbt.getList("children", NbtElement.COMPOUND_TYPE), c -> ((NbtCompound)c).getUuid("uuid")));
+        children.addAll(NbtHelper.toList(nbt.getList("children", NbtElementCompat.COMPOUND_TYPE), c -> ((NbtCompound)c).getUuid("uuid")));
         profession = nbt.getString("profession");
         deceased = nbt.getBoolean("isDeceased");
         if (nbt.containsUuid("spouse")) {

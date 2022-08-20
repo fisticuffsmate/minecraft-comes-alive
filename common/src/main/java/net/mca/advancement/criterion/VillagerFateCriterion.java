@@ -28,7 +28,7 @@ public class VillagerFateCriterion extends AbstractCriterion<VillagerFateCriteri
     }
 
     public void trigger(ServerPlayerEntity player, Identifier cause, Rank userRelation) {
-        trigger(player, (conditions) -> conditions.test(cause, userRelation));
+        this.test(player, (conditions) -> conditions.test(cause, userRelation));
     }
 
     public static class Conditions extends AbstractCriterionConditions {

@@ -6,6 +6,7 @@ import net.mca.server.world.data.Building;
 import net.mca.server.world.data.GraveyardManager;
 import net.mca.server.world.data.Village;
 import net.mca.server.world.data.VillageManager;
+import net.mca.util.compat.OptionalCompat;
 import net.mca.util.network.datasync.CDataManager;
 import net.mca.util.network.datasync.CDataParameter;
 import net.mca.util.network.datasync.CParameter;
@@ -21,6 +22,7 @@ import net.minecraft.world.poi.PointOfInterestType;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -74,7 +76,7 @@ public class Residency {
 
     public Optional<Building> getHomeBuilding() {
         Optional<Building> building = getHomeVillage().flatMap(v -> v.getBuilding(entity.getTrackedValue(BUILDING)));
-        if (building.isEmpty()) {
+        if (!building.isPresent()) {
             setHomeLess();
         }
         return building;
@@ -104,7 +106,7 @@ public class Residency {
         }
 
         if (entity.age % 600 == 0 && !ProfessionsMCA.needsNoHome.contains(entity.getProfession())) {
-            if (getHomeVillage().filter(v -> !v.isAutoScan()).isEmpty()) {
+            if (!getHomeVillage().filter(v -> !v.isAutoScan()).isPresent()) {
                 reportBuildings();
             }
 
@@ -116,9 +118,9 @@ public class Residency {
 
         //check if his village and building still exists
         if (entity.age % 1200 == 0) {
-            getHomeVillage().ifPresentOrElse(village -> {
+            OptionalCompat.ifPresentOrElse(getHomeVillage(), village -> {
                 Optional<Building> building = village.getBuilding(entity.getTrackedValue(BUILDING));
-                if (building.filter(b -> b.hasResident(entity.getUuid()) && !b.isCrowded()).isEmpty()) {
+                if (!building.filter(b -> b.hasResident(entity.getUuid()) && !b.isCrowded()).isPresent()) {
                     if (building.isPresent()) {
                         setHomeLess();
                     }
@@ -198,7 +200,7 @@ public class Residency {
     private boolean seekNewHome(Village village) {
         //choose the first building available, shuffled
         List<Building> buildings = village.getBuildings().values().stream()
-                .filter(Building::hasFreeSpace).toList();
+                .filter(Building::hasFreeSpace).collect(Collectors.toList());
 
         if (!buildings.isEmpty()) {
             Building b = buildings.get(entity.getRandom().nextInt(buildings.size()));
@@ -219,8 +221,8 @@ public class Residency {
         manager.processBuilding(player.getBlockPos(), true, false);
 
         //check if a bed can be found
-        manager.findNearestVillage(player).ifPresentOrElse(village -> {
-            village.getBuildingAt(player.getBlockPos()).ifPresentOrElse(building -> {
+        OptionalCompat.ifPresentOrElse(manager.findNearestVillage(player), village -> {
+            OptionalCompat.ifPresentOrElse(village.getBuildingAt(player.getBlockPos()), building -> {
                 if (building.hasFreeSpace()) {
                     entity.sendChatMessage(player, "interaction.sethome.success");
 
@@ -244,7 +246,7 @@ public class Residency {
     }
 
     public void goHome(PlayerEntity player) {
-        getHome().filter(p -> p.getDimension() == entity.world.getRegistryKey()).ifPresentOrElse(home -> {
+        OptionalCompat.ifPresentOrElse(getHome().filter(p -> p.getDimension() == entity.world.getRegistryKey()), home -> {
             entity.moveTowards(home.getPos());
             entity.sendChatMessage(player, "interaction.gohome.success");
         }, () -> entity.sendChatMessage(player, "interaction.gohome.fail.nohome"));

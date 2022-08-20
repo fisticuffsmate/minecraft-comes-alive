@@ -3,12 +3,14 @@ package net.mca.entity.ai;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public interface TaskUtils {
     /**
@@ -21,8 +23,8 @@ public interface TaskUtils {
      * @return Integer representing the air block above the first non-air block given the provided ordered triples.
      */
     static int getSpawnSafeTopLevel(World world, int x, int y, int z) {
-        BlockPos.Mutable pos = new BlockPos.Mutable(x, Math.min(y, world.getTopY()), z);
-        while (world.isAir(pos.move(Direction.DOWN)) && pos.getY() > world.getBottomY()) {}
+        BlockPos.Mutable pos = new BlockPos.Mutable(x, Math.min(y, world.getTopY(Heightmap.Type.WORLD_SURFACE, x, z)), z);
+        while (world.isAir(pos.move(Direction.DOWN)) && pos.getY() > 0/*world.getBottomY()*/) {}
 
         return pos.getY() + 1;
     }
@@ -31,7 +33,7 @@ public interface TaskUtils {
         return BlockPos.streamOutwards(origin, xzDist, yDist, xzDist)
                 .filter(pos -> !origin.equals(pos) && (filter == null || filter.test(world.getBlockState(pos))))
                 .map(BlockPos::toImmutable)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Nullable

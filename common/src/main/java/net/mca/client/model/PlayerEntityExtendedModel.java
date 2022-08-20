@@ -3,6 +3,7 @@ package net.mca.client.model;
 import com.google.common.collect.ImmutableList;
 import net.mca.entity.ai.relationship.AgeState;
 import net.mca.entity.ai.relationship.VillagerDimensions;
+import net.mca.util.compat.model.ModelPartCompat;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -20,8 +21,8 @@ public class PlayerEntityExtendedModel<T extends LivingEntity> extends PlayerEnt
     VillagerDimensions.Mutable dimensions = new VillagerDimensions.Mutable(AgeState.ADULT);
     float breastSize;
 
-    public PlayerEntityExtendedModel(ModelPart root) {
-        super(root, false);
+    public PlayerEntityExtendedModel(ModelPartCompat root) {
+        super(0, false);
         this.breasts = root.getChild(BREASTS);
         this.breastsWear = root.getChild(BREASTPLATE);
     }
@@ -30,7 +31,8 @@ public class PlayerEntityExtendedModel<T extends LivingEntity> extends PlayerEnt
     public void setAttributes(BipedEntityModel<T> target) {
         super.setAttributes(target);
 
-        if (target instanceof PlayerEntityExtendedModel<T> playerTarget) {
+        if (target instanceof PlayerEntityExtendedModel) {
+            PlayerEntityExtendedModel<T> playerTarget = (PlayerEntityExtendedModel<T>) target;
             copyAttributes(playerTarget);
         }
     }

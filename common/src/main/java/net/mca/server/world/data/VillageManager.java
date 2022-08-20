@@ -7,8 +7,10 @@ import net.mca.resources.API;
 import net.mca.resources.data.BuildingType;
 import net.mca.server.ReaperSpawner;
 import net.mca.server.SpawnQueue;
+import net.mca.util.NbtElementCompat;
 import net.mca.util.NbtHelper;
 import net.mca.util.WorldUtils;
+import net.mca.util.compat.PersistentStateCompat;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -36,7 +38,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class VillageManager extends PersistentState implements Iterable<Village> {
+public class VillageManager extends PersistentStateCompat implements Iterable<Village> {
     private final Map<Integer, Village> villages = new HashMap<>();
 
     public final Set<BlockPos> cache = ConcurrentHashMap.newKeySet();
@@ -69,10 +71,10 @@ public class VillageManager extends PersistentState implements Iterable<Village>
         this.world = world;
         lastBuildingId = nbt.getInt("lastBuildingId");
         lastVillageId = nbt.getInt("lastVillageId");
-        reapers = nbt.contains("reapers", NbtElement.COMPOUND_TYPE) ? new ReaperSpawner(this, nbt.getCompound("reapers")) : new ReaperSpawner(this);
-        babies = nbt.contains("babies", NbtElement.COMPOUND_TYPE) ? new BabyBunker(this, nbt.getCompound("babies")) : new BabyBunker(this);
+        reapers = nbt.contains("reapers", NbtElementCompat.COMPOUND_TYPE) ? new ReaperSpawner(this, nbt.getCompound("reapers")) : new ReaperSpawner(this);
+        babies = nbt.contains("babies", NbtElementCompat.COMPOUND_TYPE) ? new BabyBunker(this, nbt.getCompound("babies")) : new BabyBunker(this);
 
-        NbtList villageList = nbt.getList("villages", NbtElement.COMPOUND_TYPE);
+        NbtList villageList = nbt.getList("villages", NbtElementCompat.COMPOUND_TYPE);
         for (int i = 0; i < villageList.size(); i++) {
             Village village = new Village();
             village.load(villageList.getCompound(i));
@@ -315,7 +317,7 @@ public class VillageManager extends PersistentState implements Iterable<Village>
                     .filter(b -> b.getCenter().getSquaredDistance(pos) < 1024.0)
                     .forEach(b -> {
                         b.validateBlocks(world);
-                        if (b.getBlockPosStream().findAny().isEmpty()) {
+                        if (!b.getBlockPosStream().findAny().isPresent()) {
                             toRemove.add(b.getId());
                         }
                     });

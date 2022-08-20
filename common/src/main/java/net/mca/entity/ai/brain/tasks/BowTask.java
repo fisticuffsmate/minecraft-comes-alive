@@ -28,7 +28,7 @@ public class BowTask<E extends MobEntity & CrossbowUser> extends Task<E> {
         LivingEntity livingEntity = getAttackTarget(entity);
         return livingEntity != null && entity.isHolding(Items.BOW)
                 && LookTargetUtil.isVisibleInMemory(entity, livingEntity)
-                && LookTargetUtil.isTargetWithinAttackRange(entity, livingEntity, 0);
+                && LookTargetUtil.method_25940/*isTargetWithinAttackRange*/(entity, livingEntity, 0);
     }
 
     @Override

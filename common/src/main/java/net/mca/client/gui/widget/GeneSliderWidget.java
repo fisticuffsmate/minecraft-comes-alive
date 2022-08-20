@@ -8,6 +8,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class GeneSliderWidget extends SliderWidget implements OrderableTooltip {
@@ -30,7 +31,7 @@ public class GeneSliderWidget extends SliderWidget implements OrderableTooltip {
     }
 
     @Override
-    public List<OrderedText> getOrderedTooltip() {
-        return MinecraftClient.getInstance().textRenderer.wrapLines(new TranslatableText("gui.test"), 200);
+    public Optional<List<OrderedText>> getOrderedTooltip() {
+        return Optional.ofNullable(MinecraftClient.getInstance().textRenderer.wrapLines(new TranslatableText("gui.test"), 200));
     }
 }

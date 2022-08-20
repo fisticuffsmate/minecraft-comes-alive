@@ -4,10 +4,7 @@ import net.mca.ClientProxy;
 import net.mca.cobalt.network.Message;
 import net.mca.resources.data.analysis.Analysis;
 
-import java.io.Serial;
-
 public class AnalysisResults implements Message {
-    @Serial
     private static final long serialVersionUID = 2451914344295985363L;
 
     public final Analysis<?> analysis;

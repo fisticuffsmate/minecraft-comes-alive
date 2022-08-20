@@ -3,6 +3,7 @@ package net.mca.entity.interaction.gifts;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import me.shedaniel.architectury.hooks.TagHooks;
 import net.mca.client.gui.Constraint;
 import net.mca.entity.VillagerEntityMCA;
 import net.mca.entity.ai.Chore;
@@ -20,11 +21,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.tag.TagKey;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -121,7 +124,7 @@ public class GiftPredicate {
         }, (Ingredient ingredient) -> (villager, stack, player) -> ingredient.test(stack) ? 1.0f : 0.0f);
         register("tag", (json, name) -> {
             Identifier id = new Identifier(JsonHelper.asString(json, name));
-            TagKey<Item> tag = TagKey.of(Registry.ITEM_KEY, id);
+            Tag.Identified<Item> tag = TagHooks.getItemOptional(id);
             if (tag == null) {
                 throw new JsonSyntaxException("Unknown item tag '" + id + "'");
             }
@@ -153,7 +156,7 @@ public class GiftPredicate {
             long ticks = villager.getLongTermMemory().getMemory(id);
             return divideAndAdd(json, ticks);
         });
-        register("emeralds", JsonHelper::asInt, amount -> (villager, stack, player) -> (player != null && player.getInventory().count(Items.EMERALD) >= amount) ? 1.0f : 0.0f);
+        register("emeralds", JsonHelper::asInt, amount -> (villager, stack, player) -> (player != null && player.inventory.count(Items.EMERALD) >= amount) ? 1.0f : 0.0f);
         register("village_has_building", JsonHelper::asString, name ->
                 (villager, stack, player) ->
                         villager.getResidency().getHomeVillage().filter(v -> v.hasBuilding(name)).isPresent() ? 1.0f : 0.0f
@@ -163,15 +166,15 @@ public class GiftPredicate {
                         villager.getResidency().getHomeVillage().filter(v -> Tasks.getRank(v, player) == Rank.fromName(name)).isPresent() ? 1.0f : 0.0f
         );
         register("time_min", JsonHelper::asLong, time ->
-                (villager, stack, player) -> villager.getWorld().getTimeOfDay() % 24000L >= time ? 1.0f : 0.0f);
+                (villager, stack, player) -> villager.world.getTimeOfDay() % 24000L >= time ? 1.0f : 0.0f);
         register("time_max", JsonHelper::asLong, time ->
-                (villager, stack, player) -> villager.getWorld().getTimeOfDay() % 24000L <= time ? 1.0f : 0.0f);
+                (villager, stack, player) -> villager.world.getTimeOfDay() % 24000L <= time ? 1.0f : 0.0f);
         register("biome", (json, name) ->
                 new Identifier(JsonHelper.asString(json, name)), biome ->
-                (villager, stack, player) ->
-                        villager.getWorld().getBiome(villager.getBlockPos())
-                                .getKeyOrValue().left().filter(b -> b.getValue().equals(biome)).isPresent() ? 1.0f : 0.0f
-        );
+                (villager, stack, player) -> {
+            Optional<RegistryKey<Biome>> biomeKey = villager.world.getBiomeKey(villager.getBlockPos());
+            return biomeKey.filter(b -> b.getValue().equals(biome)).map(result -> 1.0f).orElse(0.0f);
+        });
         register("advancement", (json, name) -> new Identifier(JsonHelper.asString(json, name)), id -> (villager, stack, player) -> {
             assert player != null;
             Advancement advancement = Objects.requireNonNull(player.getServer()).getAdvancementLoader().get(id);

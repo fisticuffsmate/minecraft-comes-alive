@@ -7,19 +7,18 @@ public class BlockBoxExtended extends BlockBox {
         super(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
-    @Override
     public BlockBox expand(int margin) {
         return expand(margin, margin, margin);
     }
 
     public BlockBox expand(int x, int y, int z) {
         return new BlockBox(
-                getMinX() - x,
-                getMinY() - y,
-                getMinZ() - z,
-                getMaxX() + x,
-                getMaxY() + y,
-                getMaxZ() + z
+                minX - x,
+                minY - y,
+                minZ - z,
+                maxX + x,
+                maxY + y,
+                maxZ + z
         );
     }
 

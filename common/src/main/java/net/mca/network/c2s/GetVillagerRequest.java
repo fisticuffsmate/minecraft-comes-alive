@@ -14,12 +14,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 
-import java.io.Serial;
 import java.util.Optional;
 import java.util.UUID;
 
 public class GetVillagerRequest implements Message {
-    @Serial
     private static final long serialVersionUID = -4415670234855916259L;
 
     private final UUID uuid;
@@ -30,7 +28,7 @@ public class GetVillagerRequest implements Message {
 
     @Override
     public void receive(ServerPlayerEntity player) {
-        Entity e = player.getWorld().getEntity(uuid);
+        Entity e = player.getServerWorld().getEntity(uuid);
         NbtCompound villagerData = getVillagerData(e);
         if (villagerData != null) {
             NetworkHandler.sendToPlayer(new GetVillagerResponse(villagerData), player);
@@ -50,7 +48,8 @@ public class GetVillagerRequest implements Message {
     public static NbtCompound getVillagerData(Entity e) {
         NbtCompound data;
 
-        if (e instanceof ServerPlayerEntity serverPlayer) {
+        if (e instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) e;
             data = PlayerSaveData.get(serverPlayer).getEntityData();
         } else if (e instanceof LivingEntity) {
             data = new NbtCompound();

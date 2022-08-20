@@ -1,5 +1,6 @@
 package net.mca.server.world.data;
 
+import com.google.common.collect.Lists;
 import net.mca.Config;
 import net.mca.advancement.criterion.CriterionMCA;
 import net.mca.cobalt.network.NetworkHandler;
@@ -15,8 +16,11 @@ import net.mca.network.s2c.ShowToastRequest;
 import net.mca.resources.API;
 import net.mca.resources.Rank;
 import net.mca.resources.Tasks;
+import net.mca.util.NbtElementCompat;
 import net.mca.util.NbtHelper;
 import net.mca.util.WorldUtils;
+import net.mca.util.compat.OptionalCompat;
+import net.mca.util.compat.PersistentStateCompat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
@@ -41,7 +45,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-public class PlayerSaveData extends PersistentState implements EntityRelationship {
+public class PlayerSaveData extends PersistentStateCompat implements EntityRelationship {
     private final ServerWorld world;
     private final UUID uuid;
 
@@ -53,15 +57,11 @@ public class PlayerSaveData extends PersistentState implements EntityRelationshi
     private final List<NbtCompound> inbox = new LinkedList<>();
 
     public static PlayerSaveData get(ServerPlayerEntity player) {
-        return get(player.getWorld(), player.getUuid());
+        return get(player.getServerWorld(), player.getUuid());
     }
 
     public static PlayerSaveData get(ServerWorld world, UUID uuid) {
         return WorldUtils.loadData(world.getServer().getOverworld(), nbt -> new PlayerSaveData(world, uuid, nbt), w -> new PlayerSaveData(world, uuid), "mca_player_" + uuid);
-    }
-
-    public static Optional<PlayerSaveData> getIfPresent(ServerWorld world, UUID uuid) {
-        return Optional.ofNullable(world.getPersistentStateManager().get(nbt -> new PlayerSaveData(world, uuid, nbt), "mca_player_" + uuid));
     }
 
     PlayerSaveData(ServerWorld world, UUID uuid) {
@@ -75,7 +75,7 @@ public class PlayerSaveData extends PersistentState implements EntityRelationshi
         this.world = world;
         this.uuid = uuid;
 
-        lastSeenVillage = nbt.contains("lastSeenVillage", NbtElement.INT_TYPE) ? Optional.of(nbt.getInt("lastSeenVillage")) : Optional.empty();
+        lastSeenVillage = nbt.contains("lastSeenVillage", NbtElementCompat.INT_TYPE) ? Optional.of(nbt.getInt("lastSeenVillage")) : Optional.empty();
         entityDataSet = nbt.contains("entityDataSet") && nbt.getBoolean("entityDataSet");
 
         if (nbt.contains("entityData")) {
@@ -84,7 +84,7 @@ public class PlayerSaveData extends PersistentState implements EntityRelationshi
             resetEntityData();
         }
 
-        NbtList inbox = nbt.getList("inbox", NbtElement.COMPOUND_TYPE);
+        NbtList inbox = nbt.getList("inbox", NbtElementCompat.COMPOUND_TYPE);
         if (inbox != null) {
             this.inbox.clear();
             for (int i = 0; i < inbox.size(); i++) {
@@ -126,7 +126,8 @@ public class PlayerSaveData extends PersistentState implements EntityRelationshi
         EntityRelationship.super.onTragedy(cause, burialSite, type, victim);
 
         // send letter of condolence
-        if (victim instanceof VillagerEntityMCA victimVillager) {
+        if (victim instanceof VillagerEntityMCA) {
+            VillagerEntityMCA victimVillager = (VillagerEntityMCA) victim;
             sendLetterOfCondolence(victimVillager.getName().getString(),
                     victimVillager.getResidency().getHomeVillage().map(Village::getName).orElse(API.getVillagePool().pickVillageName("village")));
         }
@@ -134,9 +135,9 @@ public class PlayerSaveData extends PersistentState implements EntityRelationshi
 
     public void updateLastSeenVillage(VillageManager manager, ServerPlayerEntity self) {
         Optional<Village> prevVillage = getLastSeenVillage(manager);
-        Optional<Village> nextVillage = prevVillage
+        Optional<Village> nextVillage = OptionalCompat.or(prevVillage
                 .filter(v -> v.isWithinBorder(self))
-                .or(() -> manager.findNearestVillage(self));
+                , () -> manager.findNearestVillage(self));
 
         setLastSeenVillage(self, prevVillage.orElse(null), nextVillage.orElse(null));
 
@@ -244,7 +245,7 @@ public class PlayerSaveData extends PersistentState implements EntityRelationshi
         if (hasMail()) {
             NbtCompound nbt = inbox.remove(0);
             ItemStack stack = new ItemStack(ItemsMCA.LETTER.get(), 1);
-            stack.setNbt(nbt);
+            stack.setTag(nbt);
             return stack;
         } else {
             return null;
@@ -253,14 +254,14 @@ public class PlayerSaveData extends PersistentState implements EntityRelationshi
 
     // todo: Implement for 7.4.0
     public void sendEngagementLetter(String name) {
-        sendLetter(List.of(
+        sendLetter(Lists.newArrayList(
                 String.format("{ \"translate\": \"mca.letter.engagement\", \"with\": [\"%s\", \"%s\"] }",
                         getFamilyEntry().getName(), name)
         ));
     }
 
     public void sendLetterOfCondolence(String name, String village) {
-        sendLetter(List.of(
+        sendLetter(Lists.newArrayList(
                 String.format("{ \"translate\": \"mca.letter.condolence\", \"with\": [\"%s\", \"%s\", \"%s\"] }",
                         getFamilyEntry().getName(), name, village)
         ));

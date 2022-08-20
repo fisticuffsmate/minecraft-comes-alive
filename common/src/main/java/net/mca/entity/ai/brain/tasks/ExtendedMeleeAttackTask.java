@@ -37,7 +37,8 @@ public class ExtendedMeleeAttackTask extends Task<MobEntity> {
     protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         LivingEntity livingEntity = getTarget(mobEntity);
         LookTargetUtil.lookAt(mobEntity, livingEntity);
-        if (mobEntity instanceof VillagerLike<?> villager) {
+        if (mobEntity instanceof VillagerLike<?>) {
+            VillagerLike<?> villager = (VillagerLike<?>) mobEntity;
             mobEntity.swingHand(villager.getDominantHand());
         } else {
             mobEntity.swingHand(Hand.MAIN_HAND);

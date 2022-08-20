@@ -24,14 +24,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerProfession;
 
-import java.io.Serial;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class VillagerEditorSyncRequest extends NbtDataMessage implements Message {
-    @Serial
     private static final long serialVersionUID = -5581564927127176555L;
 
     private final String command;
@@ -70,7 +68,8 @@ public class VillagerEditorSyncRequest extends NbtDataMessage implements Message
                 } else {
                     clothes = ClothingList.getInstance().getPool(getGender(villagerData), VillagerProfession.NONE).pickOne();
                 }
-            } else if (entity instanceof VillagerLike<?> villager) {
+            } else if (entity instanceof VillagerLike<?>) {
+                VillagerLike<?> villager = (VillagerLike<?>) entity;
                 if (getData().contains("offset")) {
                     clothes = ClothingList.getInstance().getPool(villager).pickNext(villager.getClothes(), getData().getInt("offset"));
                 } else {
@@ -84,7 +83,7 @@ public class VillagerEditorSyncRequest extends NbtDataMessage implements Message
 
     @Override
     public void receive(ServerPlayerEntity player) {
-        Entity entity = player.getWorld().getEntity(uuid);
+        Entity entity = player.getServerWorld().getEntity(uuid);
         switch (command) {
             case "hair":
                 setHair(player, entity);
@@ -100,8 +99,9 @@ public class VillagerEditorSyncRequest extends NbtDataMessage implements Message
                 saveEntity(player, entity, getData());
                 break;
             case "profession":
-                if (entity instanceof VillagerEntityMCA villager) {
+                if (entity instanceof VillagerEntityMCA) {
                     VillagerProfession profession = Registry.VILLAGER_PROFESSION.get(new Identifier(getData().getString("profession")));
+                    VillagerEntityMCA villager = (VillagerEntityMCA) entity;
                     villager.setProfession(profession);
                 }
                 break;
@@ -110,20 +110,22 @@ public class VillagerEditorSyncRequest extends NbtDataMessage implements Message
     }
 
     private void saveEntity(ServerPlayerEntity player, Entity entity, NbtCompound villagerData) {
-        if (entity instanceof ServerPlayerEntity serverPlayer) {
+        if (entity instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) entity;
             PlayerSaveData data = PlayerSaveData.get(serverPlayer);
             data.setEntityData(villagerData);
             data.setEntityDataSet(true);
             syncFamilyTree(player, entity, villagerData);
 
             //also update players
-            serverPlayer.getWorld().getPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PlayerDataMessage(player.getUuid(), villagerData), p));
+            serverPlayer.getServerWorld().getPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PlayerDataMessage(player.getUuid(), villagerData), p));
         } else if (entity instanceof VillagerLike) {
             ((LivingEntity)entity).readCustomDataFromNbt(villagerData);
             entity.calculateDimensions();
             syncFamilyTree(player, entity, villagerData);
 
-            if (entity instanceof VillagerEntityMCA villager) {
+            if (entity instanceof VillagerEntityMCA) {
+                VillagerEntityMCA villager = (VillagerEntityMCA) entity;
                 villager.getResidency().getHomeBuilding().ifPresent(b -> b.updateResident(villager));
             }
         }
@@ -145,7 +147,7 @@ public class VillagerEditorSyncRequest extends NbtDataMessage implements Message
                 return Optional.empty();
             }
         } catch (IllegalArgumentException exception) {
-            List<FamilyTreeNode> nodes = tree.getAllWithName(name).toList();
+            List<FamilyTreeNode> nodes = tree.getAllWithName(name).collect(Collectors.toList());
             if (nodes.isEmpty()) {
                 //create a new entry
                 player.sendMessage(new TranslatableText("gui.villager_editor.name_created", name).formatted(Formatting.YELLOW), true);

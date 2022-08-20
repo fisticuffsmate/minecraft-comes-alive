@@ -34,11 +34,11 @@ public class NameBabyScreen extends Screen {
 
     @Override
     public void init() {
-        addDrawableChild(new ButtonWidget(width / 2 - 40, height / 2 + 20, 80, 20, new TranslatableText("gui.button.done"), (b) -> {
-            NetworkHandler.sendToServer(new BabyNamingVillagerMessage(player.getInventory().selectedSlot, babyNameTextField.getText().trim()));
-            Objects.requireNonNull(this.client).setScreen(null);
+        addButton(new ButtonWidget(width / 2 - 40, height / 2 + 20, 80, 20, new TranslatableText("gui.button.done"), (b) -> {
+            NetworkHandler.sendToServer(new BabyNamingVillagerMessage(player.inventory.selectedSlot, babyNameTextField.getText().trim()));
+            Objects.requireNonNull(this.client).openScreen(null);
         }));
-        addDrawableChild(new ButtonWidget(width / 2 + 105, height / 2 - 20, 60, 20, new TranslatableText("gui.button.random"), (b) -> {
+        addButton(new ButtonWidget(width / 2 + 105, height / 2 - 20, 60, 20, new TranslatableText("gui.button.random"), (b) -> {
             NetworkHandler.sendToServer(new BabyNameRequest(((BabyItem)baby.getItem()).getGender()));
         }));
 
@@ -49,7 +49,7 @@ public class NameBabyScreen extends Screen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 

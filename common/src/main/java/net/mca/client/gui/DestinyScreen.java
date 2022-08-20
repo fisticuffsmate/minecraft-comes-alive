@@ -5,6 +5,7 @@ import net.mca.MCAClient;
 import net.mca.cobalt.network.NetworkHandler;
 import net.mca.entity.VillagerLike;
 import net.mca.network.c2s.DestinyMessage;
+import net.mca.util.compat.RenderSystemCompat;
 import net.mca.util.localization.FlowingText;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -37,12 +38,12 @@ public class DestinyScreen extends VillagerEditorScreen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return true;
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         if (!page.equals("general") && !page.equals("story")) {
             setPage("destiny");
         }
@@ -71,26 +72,28 @@ public class DestinyScreen extends VillagerEditorScreen {
         super.render(transform, mouseX, mouseY, delta);
 
         switch (page) {
-            case "general" -> {
+            case "general":
                 drawScaledText(transform, new TranslatableText("gui.destiny.whoareyou"), width / 2, height / 2 - 24, 1.5f);
                 transform.push();
                 transform.scale(0.25f, 0.25f, 0.25f);
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
-                RenderSystem.setShaderColor(1, 1, 1, 1);
-                RenderSystem.setShaderTexture(0, LOGO_TEXTURE);
+                RenderSystem.color4f(1, 1, 1, 1);
+                RenderSystemCompat.setShaderTexture(0, LOGO_TEXTURE);
                 DrawableHelper.drawTexture(transform, width * 2 - 512, -40, 0, 0, 1024, 512, 1024, 512);
                 transform.pop();
-            }
-            case "destiny" -> drawScaledText(transform, new TranslatableText("gui.destiny.journey"), width / 2, height / 2 - 48, 1.5f);
-            case "story" -> {
+                break;
+            case "destiny":
+                drawScaledText(transform, new TranslatableText("gui.destiny.journey"), width / 2, height / 2 - 48, 1.5f);
+                break;
+            case "story":
                 List<Text> text = FlowingText.wrap(story.getFirst(), 256);
                 int y = (int)(height / 2 - 20 - 7.5f * text.size());
                 for (Text t : text) {
                     drawScaledText(transform, t, width / 2, y, 1.25f);
                     y += 15;
                 }
-            }
+                break;
         }
     }
 
@@ -104,14 +107,15 @@ public class DestinyScreen extends VillagerEditorScreen {
         if (page.equals("destiny") && !allowTeleportation) {
             NetworkHandler.sendToServer(new DestinyMessage(null));
             MCAClient.getDestinyManager().allowClosing();
-            super.close();
+            super.onClose();
             return;
         }
 
         this.page = page;
-        clearChildren();
+        children.clear();
+        buttons.clear();
         switch (page) {
-            case "general" -> {
+            case "general":
                 drawName(width / 2 - DATA_WIDTH / 2, height / 2);
                 drawGender(width / 2 - DATA_WIDTH / 2, height / 2 + 24);
 
@@ -119,18 +123,18 @@ public class DestinyScreen extends VillagerEditorScreen {
                     drawModel(width / 2 - DATA_WIDTH / 2, height / 2 + 24 + 22);
                 }
 
-                addDrawableChild(new ButtonWidget(width / 2 - 32, height / 2 + 60 + 22, 64, 20, new TranslatableText("gui.button.accept"), sender -> {
+                addButton(new ButtonWidget(width / 2 - 32, height / 2 + 60 + 22, 64, 20, new TranslatableText("gui.button.accept"), sender -> {
                     setPage("body");
                     if (villager.getTrackedValue(VillagerLike.VILLAGER_NAME).isEmpty()) {
                         villager.setTrackedValue(VillagerLike.VILLAGER_NAME, "Nameless Traveller");
                     }
                 }));
-            }
-            case "destiny" -> {
+                break;
+            case "destiny":
                 int x = 0;
                 int y = 0;
                 for (String location : new String[] {"somewhere", "shipwreck_beached", "village_desert", "village_taiga", "village_snowy", "village_plains", "village_savanna"}) {
-                    addDrawableChild(new ButtonWidget((int)(width / 2 - 96 * 1.5f + x * 96), height / 2 + y * 20 - 16, 96, 20, new TranslatableText("gui.destiny." + location), sender -> {
+                    addButton(new ButtonWidget((int)(width / 2 - 96 * 1.5f + x * 96), height / 2 + y * 20 - 16, 96, 20, new TranslatableText("gui.destiny." + location), sender -> {
                         //story
                         story = new LinkedList<>();
                         story.add(new TranslatableText("destiny.story.reason"));
@@ -145,8 +149,9 @@ public class DestinyScreen extends VillagerEditorScreen {
                         y++;
                     }
                 }
-            }
-            case "story" -> addDrawableChild(new ButtonWidget(width / 2 - 48, height / 2 + 32, 96, 20, new TranslatableText("gui.destiny.next"), sender -> {
+                break;
+            case "story":
+                addButton(new ButtonWidget(width / 2 - 48, height / 2 + 32, 96, 20, new TranslatableText("gui.destiny.next"), sender -> {
                 //we teleport early here to avoid initial flickering
                 if (!teleported) {
                     NetworkHandler.sendToServer(new DestinyMessage(location));
@@ -156,10 +161,13 @@ public class DestinyScreen extends VillagerEditorScreen {
                 if (story.size() > 1) {
                     story.remove(0);
                 } else {
-                    super.close();
+                    super.onClose();
                 }
-            }));
-            default -> super.setPage(page);
+                }));
+                break;
+            default:
+                super.setPage(page);
+                break;
         }
     }
 }

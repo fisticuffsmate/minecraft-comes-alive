@@ -53,16 +53,16 @@ public class ScytheItem extends SwordItem {
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if (!(entity instanceof LivingEntity living)) {
+        if (!(entity instanceof LivingEntity)) {
             return;
         }
-
-        boolean active = stack.getOrCreateNbt().getBoolean("active");
+        LivingEntity living = (LivingEntity) entity;
+        boolean active = stack.getOrCreateTag().getBoolean("active");
 
         Random r = entity.world.random;
 
         if (active != selected) {
-            stack.getOrCreateNbt().putBoolean("active", selected);
+            stack.getOrCreateTag().putBoolean("active", selected);
 
             float baseVolume = selected ? 0.75F : 0.25F;
             entity.world.playSound(null, entity.getBlockPos(), SoundsMCA.REAPER_SCYTHE_OUT.get(), entity.getSoundCategory(),
@@ -136,11 +136,11 @@ public class ScytheItem extends SwordItem {
     }
 
     public static void setSoul(ItemStack stack, boolean soul) {
-        stack.getOrCreateNbt().putBoolean("hasSoul", soul);
+        stack.getOrCreateTag().putBoolean("hasSoul", soul);
     }
 
     public static boolean hasSoul(ItemStack stack) {
-        return stack.hasNbt() && stack.getNbt().getBoolean("hasSoul");
+        return stack.hasTag() && stack.getTag().getBoolean("hasSoul");
     }
 
     public static ActionResult use(ItemUsageContext context, boolean cure) {
