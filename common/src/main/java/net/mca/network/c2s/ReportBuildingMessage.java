@@ -30,14 +30,14 @@ public class ReportBuildingMessage implements Message {
 
     @Override
     public void receive(ServerPlayerEntity player) {
-        VillageManager villages = VillageManager.get(player.getWorld());
+        VillageManager villages = VillageManager.get(player.getServerWorld());
         switch (action) {
             case ADD, ADD_ROOM -> {
                 Building.validationResult result = villages.processBuilding(player.getBlockPos(), true, action == Action.ADD_ROOM);
                 player.sendMessage(new TranslatableText("blueprint.scan." + result.name().toLowerCase(Locale.ENGLISH)), true);
 
                 // also add tombstones
-                GraveyardManager.get(player.getWorld()).reportToVillageManager(player);
+                GraveyardManager.get(player.getServerWorld()).reportToVillageManager(player);
             }
             case AUTO_SCAN -> villages.findNearestVillage(player).ifPresent(Village::toggleAutoScan);
             case FULL_SCAN -> villages.findNearestVillage(player).ifPresent(buildings ->
@@ -58,7 +58,7 @@ public class ReportBuildingMessage implements Message {
                         }
                     } else {
                         village.get().removeBuilding(building.get().getId());
-                        village.get().markDirty(player.getWorld());
+                        village.get().markDirty(player.getServerWorld());
                     }
                 } else {
                     player.sendMessage(new TranslatableText("blueprint.noBuilding"), true);

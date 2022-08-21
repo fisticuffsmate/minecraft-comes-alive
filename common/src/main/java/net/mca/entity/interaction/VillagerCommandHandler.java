@@ -155,9 +155,9 @@ public class VillagerCommandHandler extends EntityCommandHandler<VillagerEntityM
             }
             case "adopt" -> {
                 entity.sendChatMessage(player, "interaction.adopt.success");
-                FamilyTreeNode parentNode = FamilyTree.get(player.getWorld()).getOrCreate(player);
+                FamilyTreeNode parentNode = FamilyTree.get(player.getServerWorld()).getOrCreate(player);
                 entity.getRelationships().getFamilyEntry().assignParent(parentNode);
-                Optional<FamilyTreeNode> parentSpouse = FamilyTree.get(player.getWorld()).getOrEmpty(parentNode.partner());
+                Optional<FamilyTreeNode> parentSpouse = FamilyTree.get(player.getServerWorld()).getOrEmpty(parentNode.partner());
                 parentSpouse.ifPresent(p -> entity.getRelationships().getFamilyEntry().assignParent(p));
             }
             case "procreate" -> {
@@ -326,7 +326,7 @@ public class VillagerCommandHandler extends EntityCommandHandler<VillagerEntityM
             }
         }
 
-        entity.setCustomer(player);
+        entity.setCurrentCustomer(player);
         entity.sendOffers(player, entity.getDisplayName(), entity.getVillagerData().getLevel());
     }
 }

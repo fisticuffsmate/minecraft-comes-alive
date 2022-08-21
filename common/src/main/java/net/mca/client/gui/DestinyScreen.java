@@ -37,12 +37,12 @@ public class DestinyScreen extends VillagerEditorScreen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return true;
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         if (!page.equals("general") && !page.equals("story")) {
             setPage("destiny");
         }
@@ -104,7 +104,7 @@ public class DestinyScreen extends VillagerEditorScreen {
         if (page.equals("destiny") && !allowTeleportation) {
             NetworkHandler.sendToServer(new DestinyMessage(null));
             MCAClient.getDestinyManager().allowClosing();
-            super.close();
+            super.onClose();
             return;
         }
 
@@ -156,7 +156,7 @@ public class DestinyScreen extends VillagerEditorScreen {
                 if (story.size() > 1) {
                     story.remove(0);
                 } else {
-                    super.close();
+                    super.onClose();
                 }
             }));
             default -> super.setPage(page);

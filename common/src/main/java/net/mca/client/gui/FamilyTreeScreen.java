@@ -55,7 +55,7 @@ public class FamilyTreeScreen extends Screen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
@@ -78,12 +78,12 @@ public class FamilyTreeScreen extends Screen {
         focusEntity(focusedEntityId);
 
         addDrawableChild(new ButtonWidget(width / 2 - 100, height - 25, 200, 20, new TranslatableText("gui.done"), sender -> {
-            close();
+            onClose();
         }));
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         assert client != null;
         client.setScreen(parent);
     }
@@ -304,7 +304,7 @@ public class FamilyTreeScreen extends Screen {
                 k += 20;
             }
 
-            Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+            Matrix4f matrix4f = matrices.peek().getModel();
 
             TextRenderer r = MinecraftClient.getInstance().textRenderer;
 

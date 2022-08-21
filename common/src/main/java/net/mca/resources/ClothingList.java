@@ -46,7 +46,8 @@ public class ClothingList extends JsonDataLoader {
                 return;
             }
 
-            for (String key : file.getAsJsonObject().keySet()) {
+            for (Map.Entry<String, JsonElement> entry : file.getAsJsonObject().entrySet()) {
+                String key = entry.getKey();
                 JsonObject object = file.getAsJsonObject().get(key).getAsJsonObject();
 
                 for (int i = 0; i < JsonHelper.getInt(object, "count", 1); i++) {

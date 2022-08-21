@@ -23,7 +23,7 @@ public class PlayerDataRequest implements Message {
 
     @Override
     public void receive(ServerPlayerEntity player) {
-        PlayerEntity playerEntity = player.getWorld().getPlayerByUuid(uuid);
+        PlayerEntity playerEntity = player.getServerWorld().getPlayerByUuid(uuid);
         if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity) {
             PlayerSaveData data = PlayerSaveData.get(serverPlayerEntity);
             if (data.isEntityDataSet()) {

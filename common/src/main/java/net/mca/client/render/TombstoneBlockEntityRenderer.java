@@ -78,7 +78,7 @@ public class TombstoneBlockEntityRenderer implements BlockEntityRenderer<Tombsto
         for (OrderedText line : lines) {
             float x = -text.getWidth(line) / 2F;
 
-            text.drawWithOutline(line, x, y, 0xFFFFFF, 0x000000, matrices.peek().getPositionMatrix(), vertexConsumers, light);
+            text.drawWithOutline(line, x, y, 0xFFFFFF, 0x000000, matrices.peek().getModel(), vertexConsumers, light);
 
             y += 10;
         }

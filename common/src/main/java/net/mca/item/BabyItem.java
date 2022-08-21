@@ -69,7 +69,7 @@ public class BabyItem extends Item {
 
     public boolean onDropped(ItemStack stack, PlayerEntity player) {
         if (!hasBeenInvalidated(stack)) {
-            if (!player.getWorld().isClient) {
+            if (!player.world.isClient) {
                 int count = 0;
                 if (stack.getOrCreateNbt().contains("dropAttempts", NbtElement.INT_TYPE)) {
                     count = stack.getOrCreateNbt().getInt("dropAttempts") + 1;
@@ -265,7 +265,7 @@ public class BabyItem extends Item {
                 tooltip.add(new TranslatableText("item.mca.baby.name", text.setStyle(text.getStyle().withColor(gender.getColor()))).formatted(Formatting.GRAY));
 
                 if (age > 0) {
-                    tooltip.add(new TranslatableText("item.mca.baby.age", StringHelper.formatTicks(age)).formatted(Formatting.GRAY));
+                    tooltip.add(new TranslatableText("item.mca.baby.age", ChatUtil.ticksToString(age)).formatted(Formatting.GRAY));
                 }
             }
 

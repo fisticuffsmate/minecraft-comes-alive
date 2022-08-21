@@ -47,7 +47,7 @@ public class PatrolVillageTask extends Task<VillagerEntityMCA> {
             int z = box.getMinZ() + villager.getRandom().nextInt(box.getBlockCountZ());
             Vec3d targetPos = new Vec3d(x, box.getCenter().getY(), z);
 
-            return NoPenaltyTargeting.findTo(villager, 32, 16, targetPos, Math.PI * 0.5);
+            return NoPenaltyTargeting.find(villager, 32, 16, targetPos, Math.PI * 0.5);
         }).map(BlockPos::new);
     }
 }

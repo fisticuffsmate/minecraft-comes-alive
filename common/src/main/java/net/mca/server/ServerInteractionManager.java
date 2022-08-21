@@ -133,7 +133,7 @@ public class ServerInteractionManager {
 
         // Send the name of all online players to the command sender.
         proposals.forEach((uuid -> {
-            PlayerEntity player = sender.getWorld().getPlayerByUuid(uuid);
+            PlayerEntity player = sender.world.getPlayerByUuid(uuid);
             if (player != null) {
                 infoMessage(sender, (BaseText)new LiteralText("- ").append(new LiteralText(player.getEntityName())));
             }
@@ -280,7 +280,7 @@ public class ServerInteractionManager {
         }
 
         // Ensure we don't already have a baby
-        BabyTracker tracker = BabyTracker.get(sender.getWorld());
+        BabyTracker tracker = BabyTracker.get(sender.getServerWorld());
         BabyTracker.Pairing pairing = tracker.getPairing(sender.getUuid(), senderData.getPartnerUUID().orElse(null));
         if (tracker.hasActiveBaby(sender.getUuid(), senderData.getPartnerUUID().orElse(null))) {
             if (pairing.locateBaby(sender).getRight().wasFound()) {

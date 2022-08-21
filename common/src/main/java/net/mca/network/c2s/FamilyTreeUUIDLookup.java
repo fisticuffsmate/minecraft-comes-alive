@@ -25,7 +25,7 @@ public class FamilyTreeUUIDLookup implements Message {
 
     @Override
     public void receive(ServerPlayerEntity player) {
-        FamilyTree tree = FamilyTree.get(player.getWorld());
+        FamilyTree tree = FamilyTree.get(player.getServerWorld());
         List<SerializablePair<UUID, SerializablePair<String, String>>> list = tree.getAllWithName(search)
                 .map(entry -> new SerializablePair<>(entry.id(), new SerializablePair<>(
                         tree.getOrEmpty(entry.father()).map(FamilyTreeNode::getName).orElse(""),

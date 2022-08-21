@@ -1,6 +1,5 @@
 package net.mca.util;
 
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
@@ -11,12 +10,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,14 +52,17 @@ public interface WorldUtils {
 
     //a wrapper for the unnecessary complex query provided by minecraft
     static Optional<BlockPos> getClosestStructurePosition(ServerWorld world, BlockPos center, Identifier structure, int radius) {
-        Registry<ConfiguredStructureFeature<?, ?>> registry = world.getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
-        ConfiguredStructureFeature<?, ?> feature = registry.get(structure);
-        Optional<RegistryEntry<ConfiguredStructureFeature<?, ?>>> entry = registry.getEntry(registry.getRawId(feature));
-        if (entry.isPresent()) {
-            RegistryEntryList.Direct<ConfiguredStructureFeature<?, ?>> of = RegistryEntryList.of(entry.get());
-            Pair<BlockPos, RegistryEntry<ConfiguredStructureFeature<?, ?>>> pair = world.getChunkManager().getChunkGenerator().locateStructure(world, of, center, radius, false);
-            return pair == null ? Optional.empty() : Optional.ofNullable(pair.getFirst());
+        StructureFeature<?> feature = Registry.STRUCTURE_FEATURE.get(structure);
+        if (feature != null) {
+            BlockPos pos = world.getChunkManager().getChunkGenerator().locateStructure(world, feature, center, radius, false);
+            return pos == null ? Optional.empty() : Optional.of(pos);
         } else {
+            // <1.18.2 Logic
+            if (structure.getPath().contains("_")) {
+                String name = structure.getPath().split("_", 2)[0];
+                Identifier baseStructure = new Identifier(structure.getNamespace(), name);
+                return getClosestStructurePosition(world, center, baseStructure, radius);
+            }
             return Optional.empty();
         }
     }

@@ -94,7 +94,7 @@ public class VillagerEditorScreen extends Screen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
@@ -161,7 +161,7 @@ public class VillagerEditorScreen extends Screen {
             //close
             addDrawableChild(new ButtonWidget(width / 2 - DATA_WIDTH + 20, height / 2 + 85, DATA_WIDTH - 40, 20, new TranslatableText("gui.done"), sender -> {
                 syncVillagerData();
-                close();
+                onClose();
             }));
         }
 

@@ -21,8 +21,8 @@ public class CombScreen extends VillagerEditorScreen {
     }
 
     @Override
-    public void close() {
-        super.close();
+    public void onClose() {
+        super.onClose();
     }
 
     @Override
@@ -38,7 +38,7 @@ public class CombScreen extends VillagerEditorScreen {
             super.setPage("loading");
         } else if (page.equals("head")) {
             syncVillagerData();
-            close();
+            onClose();
         } else {
             super.setPage("hair");
         }

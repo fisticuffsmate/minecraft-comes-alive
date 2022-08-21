@@ -21,7 +21,7 @@ public class GetChildDataRequest implements Message {
 
     @Override
     public void receive(ServerPlayerEntity player) {
-        BabyTracker.get(player.getWorld()).getSaveState(id).ifPresent(
+        BabyTracker.get(player.getServerWorld()).getSaveState(id).ifPresent(
                 state -> NetworkHandler.sendToPlayer(new GetChildDataResponse(state), player)
         );
     }

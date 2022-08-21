@@ -190,7 +190,7 @@ public class TombstoneBlock extends BlockWithEntity implements Waterloggable {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(Properties.WATERLOGGED)) {
-            world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
 
         if (direction == Direction.DOWN && !canPlaceAt(state, world, pos)) {
@@ -464,22 +464,21 @@ public class TombstoneBlock extends BlockWithEntity implements Waterloggable {
         }
 
         @Override
-        public void writeNbt(NbtCompound nbt) {
+        public NbtCompound writeNbt(NbtCompound nbt) {
             entityData.ifPresent(data -> data.writeNbt(nbt));
             nbt.putInt("resurrectionProgress", resurrectionProgress);
             nbt.putBoolean("cure", cure);
+            return super.writeNbt(nbt);
         }
 
         @Override
         public NbtCompound toInitialChunkDataNbt() {
-            NbtCompound tag = new NbtCompound();
-            writeNbt(tag);
-            return tag;
+            return this.writeNbt(new NbtCompound());
         }
 
         @Override
         public BlockEntityUpdateS2CPacket toUpdatePacket() {
-            return BlockEntityUpdateS2CPacket.create(this, BlockEntity::toInitialChunkDataNbt);
+            return new BlockEntityUpdateS2CPacket(this.pos, 127, this.toInitialChunkDataNbt());
         }
 
         public void readFromStack(ItemStack stack) {

@@ -30,7 +30,7 @@ public class GetVillagerRequest implements Message {
 
     @Override
     public void receive(ServerPlayerEntity player) {
-        Entity e = player.getWorld().getEntity(uuid);
+        Entity e = player.getServerWorld().getEntity(uuid);
         NbtCompound villagerData = getVillagerData(e);
         if (villagerData != null) {
             NetworkHandler.sendToPlayer(new GetVillagerResponse(villagerData), player);

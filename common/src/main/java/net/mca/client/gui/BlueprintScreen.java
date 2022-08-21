@@ -159,7 +159,7 @@ public class BlueprintScreen extends ExtendedScreen {
                 addDrawableChild(new ButtonWidget(bx, by + 5, 96, 20, new TranslatableText("gui.blueprint.addBuilding"), (b) -> {
                     NetworkHandler.sendToServer(new ReportBuildingMessage(ReportBuildingMessage.Action.ADD));
                     NetworkHandler.sendToServer(new GetVillageRequest());
-                    close();
+                    onClose();
                 }));
                 break;
             case "refresh":
@@ -311,7 +311,7 @@ public class BlueprintScreen extends ExtendedScreen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 

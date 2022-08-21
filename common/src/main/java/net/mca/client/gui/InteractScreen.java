@@ -62,12 +62,12 @@ public class InteractScreen extends AbstractDynamicScreen {
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         Objects.requireNonNull(this.client).setScreen(null);
         NetworkHandler.sendToServer(new InteractionCloseRequest(villager.asEntity().getUuid()));
     }
@@ -128,7 +128,7 @@ public class InteractScreen extends AbstractDynamicScreen {
                 inGiftMode = false;
                 setLayout("interact");
             } else {
-                close();
+                onClose();
             }
             return true;
         }

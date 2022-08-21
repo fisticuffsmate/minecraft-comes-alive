@@ -507,7 +507,7 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
 
     private void beginTradeWith(PlayerEntity customer) {
         this.prepareOffersFor(customer);
-        this.setCustomer(customer);
+        this.setCurrentCustomer(customer);
         this.sendOffers(customer, this.getDisplayName(), this.getVillagerData().getLevel());
     }
 
@@ -547,7 +547,7 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
         double d = random.nextDouble();
 
         if (d < 0.5D) {
-            return VillagerType.forBiome(world.getBiome(getBlockPos()));
+            return VillagerType.forBiome(world.getBiomeKey(getBlockPos()));
         }
 
         if (d < 0.75D) {
@@ -873,7 +873,7 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
             Vec3d offset = head ? new Vec3d(0, 0.35f, 0) : new Vec3d(left ? 0.4F : -0.4F, 0.05f, 0).rotateY(yaw);
 
             // todo currently only client side
-            if (isClient()) {
+            if (world.isClient) {
                 if (MCAClient.useGeneticsRenderer(vehicle.getUuid())) {
                     float height = getVillager(vehicle).getRawScaleFactor();
                     offset = offset.multiply(1.0f, height, 1.0f);

@@ -201,7 +201,7 @@ public class VillagerBrain<E extends MobEntity & VillagerLike<E>> {
 
     private void resetsBrain() {
         if (entity.asEntity() instanceof VillagerEntityMCA villager) {
-            villager.reinitializeBrain((ServerWorld)villager.getWorld());
+            villager.reinitializeBrain((ServerWorld)villager.world);
         }
     }
 

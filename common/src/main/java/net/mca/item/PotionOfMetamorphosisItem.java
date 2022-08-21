@@ -40,7 +40,7 @@ public class PotionOfMetamorphosisItem extends TooltippedItem {
             common(serverPlayer);
 
             // also update players
-            serverPlayer.getWorld().getPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PlayerDataMessage(player.getUuid(), villagerData), p));
+            serverPlayer.getServerWorld().getPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PlayerDataMessage(player.getUuid(), villagerData), p));
 
             // remove item
             ItemStack stack = player.getStackInHand(hand);
@@ -68,7 +68,7 @@ public class PotionOfMetamorphosisItem extends TooltippedItem {
         entity.playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED, 1.0f, 1.0f);
 
         // update family tree
-        FamilyTree tree = FamilyTree.get((ServerWorld)entity.getWorld());
+        FamilyTree tree = FamilyTree.get((ServerWorld)entity.world);
         FamilyTreeNode entry = tree.getOrCreate(entity);
         entry.setGender(gender);
     }

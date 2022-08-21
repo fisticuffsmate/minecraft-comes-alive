@@ -32,20 +32,20 @@ public class DestinyMessage implements Message {
         }
 
         if (Config.getInstance().allowDestinyTeleportation && location != null) {
-            WorldUtils.getClosestStructurePosition(player.getWorld(), player.getBlockPos(), new Identifier(location), 128).ifPresent(pos -> {
-                player.getWorld().getWorldChunk(pos);
-                pos = player.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, pos);
-                pos = FuzzyPositionsCompat.upWhile(pos, player.getWorld().getHeight(), p -> player.getWorld().getBlockState(p).shouldSuffocate(player.getWorld(), p));
-                pos = FuzzyPositionsCompat.downWhile(pos, 1, p -> !player.getWorld().getBlockState(p.down()).isFullCube(player.getWorld(), p));
+            WorldUtils.getClosestStructurePosition(player.getServerWorld(), player.getBlockPos(), new Identifier(location), 128).ifPresent(pos -> {
+                player.getServerWorld().getWorldChunk(pos);
+                pos = player.getServerWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, pos);
+                pos = FuzzyPositionsCompat.upWhile(pos, player.getServerWorld().getHeight(), p -> player.getServerWorld().getBlockState(p).shouldSuffocate(player.getServerWorld(), p));
+                pos = FuzzyPositionsCompat.downWhile(pos, 1, p -> !player.getServerWorld().getBlockState(p.down()).isFullCube(player.getServerWorld(), p));
 
                 ChunkPos chunkPos = new ChunkPos(pos);
-                player.getWorld().getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, player.getId());
+                player.getServerWorld().getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, player.getId());
                 player.networkHandler.requestTeleport(pos.getX(), pos.getY(), pos.getZ(), player.getYaw(), player.getPitch(), EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class));
 
                 //set spawn
                 player.setSpawnPoint(player.world.getRegistryKey(), pos, 0.0f, true, false);
                 if (player.world.getServer() != null && player.world.getServer().isHost(player.getGameProfile())) {
-                    player.getWorld().setSpawnPos(pos, 0.0f);
+                    player.getServerWorld().setSpawnPos(pos, 0.0f);
                 }
             });
         }
