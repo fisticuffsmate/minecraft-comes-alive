@@ -81,7 +81,7 @@ public interface WorldUtils {
             BlockPos pos = world.getChunkManager().getChunkGenerator().locateStructure(world, feature, center, radius, false);
             return pos == null ? Optional.empty() : Optional.of(pos);
         } else {
-            // 1.16.5 ONLY Logic
+            // <1.18.2 Logic
             if (structure.getPath().contains("_")) {
                 String name = structure.getPath().split("_", 2)[0];
                 Identifier baseStructure = new Identifier(structure.getNamespace(), name);

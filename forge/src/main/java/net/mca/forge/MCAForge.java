@@ -29,11 +29,11 @@ public final class MCAForge {
         new NetworkHandlerImpl();
         MinecraftForge.EVENT_BUS.addListener(this::onAddReloadListener);
 
-        BlocksMCA.bootstrap();
-        ItemsMCA.bootstrap();
         SoundsMCA.bootstrap();
         ParticleTypesMCA.bootstrap();
         EntitiesMCA.bootstrap();
+        BlocksMCA.bootstrap();
+        ItemsMCA.bootstrap();
         MessagesMCA.bootstrap();
         CriterionMCA.bootstrap();
     }
