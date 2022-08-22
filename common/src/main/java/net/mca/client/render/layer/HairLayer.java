@@ -3,10 +3,10 @@ package net.mca.client.render.layer;
 import net.mca.client.resources.ColorPalette;
 import net.mca.entity.ai.Genetics;
 import net.mca.entity.ai.Traits;
+import net.mca.util.compat.SheepEntityCompat;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 
@@ -36,8 +36,8 @@ public class HairLayer<T extends LivingEntity, M extends BipedEntityModel<T>> ex
         int p = n % o;
         int q = (n + 1) % o;
         float r = ((float)(Math.abs(entity.age) % 25) + tickDelta) / 25.0f;
-        float[] fs = SheepEntity.getRgbColor(DyeColor.byId(p));
-        float[] gs = SheepEntity.getRgbColor(DyeColor.byId(q));
+        float[] fs = SheepEntityCompat.getRgbColor(DyeColor.byId(p));
+        float[] gs = SheepEntityCompat.getRgbColor(DyeColor.byId(q));
         return new float[] {
                 fs[0] * (1.0f - r) + gs[0] * r,
                 fs[1] * (1.0f - r) + gs[1] * r,
