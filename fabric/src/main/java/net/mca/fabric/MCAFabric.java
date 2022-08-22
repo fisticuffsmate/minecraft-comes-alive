@@ -13,8 +13,8 @@ import net.mca.advancement.criterion.CriterionMCA;
 import net.mca.block.BlocksMCA;
 import net.mca.entity.EntitiesMCA;
 import net.mca.fabric.cobalt.network.NetworkHandlerImpl;
+import net.mca.fabric.item.ItemsMCAFabric;
 import net.mca.fabric.resources.*;
-import net.mca.item.ItemsMCA;
 import net.mca.network.MessagesMCA;
 import net.mca.server.ServerInteractionManager;
 import net.mca.server.command.AdminCommand;
@@ -27,11 +27,11 @@ public final class MCAFabric implements ModInitializer {
     public void onInitialize() {
         new NetworkHandlerImpl();
 
+        BlocksMCA.bootstrap();
+        ItemsMCAFabric.bootstrap();
         SoundsMCA.bootstrap();
         ParticleTypesMCA.bootstrap();
         EntitiesMCA.bootstrap();
-        BlocksMCA.bootstrap();
-        ItemsMCA.bootstrap();
         MessagesMCA.bootstrap();
         CriterionMCA.bootstrap();
 
