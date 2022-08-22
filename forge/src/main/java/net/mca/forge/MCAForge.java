@@ -10,7 +10,7 @@ import net.mca.block.BlocksMCA;
 import net.mca.entity.EntitiesMCA;
 import net.mca.entity.interaction.gifts.GiftLoader;
 import net.mca.forge.cobalt.network.NetworkHandlerImpl;
-import net.mca.item.ItemsMCA;
+import net.mca.forge.item.ItemsMCAForge;
 import net.mca.network.MessagesMCA;
 import net.mca.resources.*;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,11 +29,11 @@ public final class MCAForge {
         new NetworkHandlerImpl();
         MinecraftForge.EVENT_BUS.addListener(this::onAddReloadListener);
 
+        BlocksMCA.bootstrap();
+        ItemsMCAForge.bootstrap();
         SoundsMCA.bootstrap();
         ParticleTypesMCA.bootstrap();
         EntitiesMCA.bootstrap();
-        BlocksMCA.bootstrap();
-        ItemsMCA.bootstrap();
         MessagesMCA.bootstrap();
         CriterionMCA.bootstrap();
     }
