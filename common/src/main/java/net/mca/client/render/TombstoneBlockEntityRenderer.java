@@ -21,11 +21,8 @@ import java.util.List;
 
 public class TombstoneBlockEntityRenderer extends BlockEntityRenderer<TombstoneBlock.Data> {
 
-    private final TextRenderer text;
-
     public TombstoneBlockEntityRenderer(BlockEntityRenderDispatcher context) {
         super(context);
-        text = context.getTextRenderer();
     }
 
     @Override
@@ -55,6 +52,8 @@ public class TombstoneBlockEntityRenderer extends BlockEntityRenderer<TombstoneB
         matrices.translate(offset.getX(), offset.getY(), offset.getZ());
 
         int maxLineWidth = block.getLineWidth();
+
+        TextRenderer text = dispatcher.getTextRenderer();
 
         float y = drawText(text, text.wrapLines(new TranslatableText("block.mca.tombstone.header"), maxLineWidth), 0, matrices, vertexConsumers, light);
 
