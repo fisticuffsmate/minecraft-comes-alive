@@ -19,7 +19,6 @@
   },
   "license": "GNU",
   "icon": "mca.png",
-  "accessWidener" : "mca.accesswidener",
   "environment": "*",
   "entrypoints": {
     "main": [
