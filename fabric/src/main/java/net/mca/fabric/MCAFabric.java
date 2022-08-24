@@ -28,10 +28,10 @@ public final class MCAFabric implements ModInitializer {
         new NetworkHandlerImpl();
 
         BlocksMCA.bootstrap();
-        ItemsMCAFabric.bootstrap();
         SoundsMCA.bootstrap();
         ParticleTypesMCA.bootstrap();
         EntitiesMCA.bootstrap();
+        ItemsMCAFabric.bootstrap();
         MessagesMCA.bootstrap();
         CriterionMCA.bootstrap();
 
