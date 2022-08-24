@@ -22,7 +22,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -139,12 +138,12 @@ public class ReaperSpawner {
 
     private Set<BlockPos> getTotemsFires(World world, BlockPos pos) {
         int groundY = pos.getY() - 2;
-        int leftSkyHeight = world.getTopY(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ()) - groundY;
+        int leftSkyHeight = world.getHeight() - groundY;
         int minPillarHeight = Math.min(Config.getInstance().minPillarHeight, leftSkyHeight);
         BlockPos.Mutable target = new BlockPos.Mutable();
-        return Stream.of(HORIZONTALS).map(d -> target.set(pos.getX(), groundY, pos.getZ()).offset(d, 3)).filter(pillarPos -> {
+        return Stream.of(HORIZONTALS).map(d -> target.set(pos).set(pos.getX(), groundY, pos.getZ()).move(d, 3)).filter(pillarPos -> {
             for (int height = 1; height <= leftSkyHeight; height++) {
-                pillarPos.add(0, height, 0);
+                pillarPos.set(pillarPos.getX(), groundY + height, pillarPos.getZ());
                 if (world.getBlockState(pillarPos).isOf(Blocks.OBSIDIAN)) {
                     continue;
                 } else if (world.getBlockState(pillarPos).isIn(BlockTags.FIRE)) {
