@@ -5,6 +5,7 @@
 * You can no longer set the home of a villager who is either there temporarily or does not require a home
 * Fixed trades
 * Fixed equipment dropping
+* Fixed destiny locations in 1.16.5
 
 # 7.3.19
 

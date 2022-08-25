@@ -178,20 +178,11 @@ public final class Config implements Serializable {
 
     public List<String> structuresInRumors = Arrays.asList(
             "igloo",
-            "pyramid",
-            "ruined_portal_desert",
-            "ruined_portal_swamp",
-            "ruined_portal",
-            "ruined_portal_mountain",
+            "desert_pyramid",
             "mansion",
             "monument",
             "shipwreck",
-            "shipwreck_beached",
-            "village_desert",
-            "village_taiga",
-            "village_snowy",
-            "village_plains",
-            "village_savanna",
+            "village",
             "swamp_hut",
             "mineshaft",
             "jungle_pyramid",
@@ -200,17 +191,13 @@ public final class Config implements Serializable {
 
     public List<String> destinyLocations = Arrays.asList(
             "somewhere",
-            "shipwreck_beached",
-            "village_desert",
-            "village_taiga",
-            "village_snowy",
-            "village_plains",
-            "village_savanna"
+            "shipwreck",
+            "village"
     );
 
     public Map<String, String> destinyLocationsToTranslationMap = ImmutableMap.<String, String>builder()
             .put("default", "destiny.story.travelling")
-            .put("shipwreck_beached", "destiny.story.sailing")
+            .put("shipwreck", "destiny.story.sailing")
             .build();
 
 
