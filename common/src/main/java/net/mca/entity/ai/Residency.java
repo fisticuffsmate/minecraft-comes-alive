@@ -1,6 +1,5 @@
 package net.mca.entity.ai;
 
-import net.mca.ProfessionsMCA;
 import net.mca.entity.VillagerEntityMCA;
 import net.mca.server.world.data.Building;
 import net.mca.server.world.data.GraveyardManager;
@@ -105,7 +104,7 @@ public class Residency {
             return;
         }
 
-        if (entity.age % 600 == 0 && !ProfessionsMCA.needsNoHome.contains(entity.getProfession())) {
+        if (entity.age % 600 == 0 && entity.doesProfessionRequireHome()) {
             if (!getHomeVillage().filter(v -> !v.isAutoScan()).isPresent()) {
                 reportBuildings();
             }
@@ -223,7 +222,9 @@ public class Residency {
         //check if a bed can be found
         OptionalCompat.ifPresentOrElse(manager.findNearestVillage(player), village -> {
             OptionalCompat.ifPresentOrElse(village.getBuildingAt(player.getBlockPos()), building -> {
-                if (building.hasFreeSpace()) {
+                if (!entity.doesProfessionRequireHome() || entity.getDespawnDelay() > 0) {
+                    entity.sendChatMessage(player, "interaction.sethome.temporary");
+                } else if (building.hasFreeSpace()) {
                     entity.sendChatMessage(player, "interaction.sethome.success");
 
                     //remove from old home

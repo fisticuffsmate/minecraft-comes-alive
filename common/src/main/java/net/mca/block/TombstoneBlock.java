@@ -372,7 +372,7 @@ public class TombstoneBlock extends BlockWithEntity implements Waterloggable {
                             alreadySpawned = true;
                         }
 
-                        if (entity instanceof CompassionateEntity) {
+                        if (entity instanceof CompassionateEntity<?>) {
                             CompassionateEntity<?> compassionateEntity = (CompassionateEntity<?>) entity;
                             compassionateEntity.getRelationships().getFamilyEntry().setDeceased(false);
                         }

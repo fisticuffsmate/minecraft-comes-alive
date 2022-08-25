@@ -52,11 +52,13 @@ jobs:
           loaders: |
             fabric
             forge
+          game-versions: |
+            ${{steps.split.outputs._1}}
           java: |
             Java 1.8
           dependencies: |
+            architectury-api | depends | *
             fabric-api | recommends | *
-            architectury-api | recommends | *
             qsl | recommends | *
 
           retry-attempts: 2
