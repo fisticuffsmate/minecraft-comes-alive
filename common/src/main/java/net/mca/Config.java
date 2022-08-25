@@ -1,12 +1,13 @@
 package net.mca;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -28,9 +29,9 @@ public final class Config implements Serializable {
 
     //mod features
     public boolean overwriteOriginalVillagers = true;
-    public List<String> moddedVillagerWhitelist = Lists.newArrayList();
+    public List<String> moddedVillagerWhitelist = Collections.emptyList();
     public boolean overwriteOriginalZombieVillagers = true;
-    public List<String> moddedZombieVillagerWhitelist = Lists.newArrayList();
+    public List<String> moddedZombieVillagerWhitelist = Collections.emptyList();
     public float babyZombieChance = 0.25f;
     public boolean villagerTagsHacks = true;
     public boolean enableInfection = true;
@@ -99,8 +100,8 @@ public final class Config implements Serializable {
     public boolean innSpawnsCultists = true;
     public boolean innSpawnsWanderingTraders = true;
     public int minimumBuildingsToBeConsideredAVillage = 3;
-    public List<String> villagerDimensionBlacklist = Lists.newArrayList();
-    public List<String> allowedSpawnReasons = Lists.newArrayList(
+    public List<String> villagerDimensionBlacklist = Collections.emptyList();
+    public List<String> allowedSpawnReasons = Arrays.asList(
             "natural",
             "structure"
     );
@@ -126,7 +127,7 @@ public final class Config implements Serializable {
     public Map<String, Integer> maxTreeTicks = ImmutableMap.<String, Integer>builder()
             .put("#minecraft:logs", 60)
             .build();
-    public List<String> validTreeSources = Lists.newArrayList(
+    public List<String> validTreeSources = Arrays.asList(
             "minecraft:grass_block",
             "minecraft:dirt"
     );
@@ -163,7 +164,7 @@ public final class Config implements Serializable {
             .put(MCA.MOD_ID + "male_zombie_villager", 3)
             .build();
 
-    public List<String> villagerPathfindingBlacklist = Lists.newArrayList(
+    public List<String> villagerPathfindingBlacklist = Arrays.asList(
             "#minecraft:climbable",
             "#minecraft:fence_gates",
             "#minecraft:fences",
@@ -175,7 +176,7 @@ public final class Config implements Serializable {
             "#minecraft:walls"
     );
 
-    public List<String> structuresInRumors = List.of(
+    public List<String> structuresInRumors = Arrays.asList(
             "igloo",
             "pyramid",
             "ruined_portal_desert",
@@ -197,7 +198,7 @@ public final class Config implements Serializable {
             "pillager_outpost"
     );
 
-    public List<String> destinyLocations = List.of(
+    public List<String> destinyLocations = Arrays.asList(
             "somewhere",
             "shipwreck_beached",
             "village_desert",
@@ -207,10 +208,10 @@ public final class Config implements Serializable {
             "village_savanna"
     );
 
-    public Map<String, String> destinyLocationsToTranslationMap = Map.of(
-            "default", "destiny.story.travelling",
-            "shipwreck_beached", "destiny.story.sailing"
-    );
+    public Map<String, String> destinyLocationsToTranslationMap = ImmutableMap.<String, String>builder()
+            .put("default", "destiny.story.travelling")
+            .put("shipwreck_beached", "destiny.story.sailing")
+            .build();
 
 
     public static File getConfigFile() {
