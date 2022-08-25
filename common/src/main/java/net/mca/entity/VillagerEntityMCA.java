@@ -288,17 +288,29 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
         return getVillagerData().getProfession();
     }
 
-    public Identifier getProfessionId() {
-        return Registry.VILLAGER_PROFESSION.getId(getProfession());
-    }
-
     public final void setProfession(VillagerProfession profession) {
         setVillagerData(getVillagerData().withProfession(profession));
         reinitializeBrain((ServerWorld)world);
     }
 
+    @Override
+    public Identifier getProfessionId() {
+        return Registry.VILLAGER_PROFESSION.getId(getProfession());
+    }
+
+    @Override
     public boolean isProfessionImportant() {
         return ProfessionsMCA.isImportant.contains(getProfession());
+    }
+
+    @Override
+    public boolean doesProfessionRequireHome() {
+        return !ProfessionsMCA.needsNoHome.contains(getProfession());
+    }
+
+    @Override
+    public boolean canTradeWithProfession() {
+        return !ProfessionsMCA.canNotTrade.contains(getProfession());
     }
 
     @Override
@@ -924,6 +936,11 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
 
     @Override
     public void onDeath(DamageSource cause) {
+        // deselect equipment as this messes with MobEntities equipment dropping
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            this.equipStack(slot, ItemStack.EMPTY);
+        }
+
         super.onDeath(cause);
 
         if (world.isClient) {
@@ -968,6 +985,8 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
 
         residency.leaveHome();
     }
+
+
 
     @Override
     public MoveControl getMoveControl() {
@@ -1463,6 +1482,10 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
 
     public void setDespawnDelay(int despawnDelay) {
         this.despawnDelay = despawnDelay;
+    }
+
+    public int getDespawnDelay() {
+        return this.despawnDelay;
     }
 
     public boolean requiresHome() {
