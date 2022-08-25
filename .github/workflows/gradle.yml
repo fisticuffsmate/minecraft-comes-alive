@@ -59,7 +59,6 @@ jobs:
           dependencies: |
             architectury-api | depends | *
             fabric-api | recommends | *
-            qsl | recommends | *
 
           retry-attempts: 2
           retry-delay: 10000
