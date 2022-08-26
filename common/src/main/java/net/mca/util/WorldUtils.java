@@ -54,7 +54,7 @@ public interface WorldUtils {
     static Optional<BlockPos> getClosestStructurePosition(ServerWorld world, BlockPos center, Identifier structure, int radius) {
         StructureFeature<?> feature = Registry.STRUCTURE_FEATURE.get(structure);
         if (feature != null) {
-            BlockPos pos = world.getChunkManager().getChunkGenerator().locateStructure(world, feature, center, radius, false);
+            BlockPos pos = world.locateStructure(feature, center, radius, false);
             return pos == null ? Optional.empty() : Optional.of(pos);
         } else {
             return Optional.empty();
