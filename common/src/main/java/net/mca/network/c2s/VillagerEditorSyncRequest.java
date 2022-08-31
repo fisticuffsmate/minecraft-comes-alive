@@ -1,5 +1,6 @@
 package net.mca.network.c2s;
 
+import net.mca.MCA;
 import net.mca.cobalt.network.Message;
 import net.mca.cobalt.network.NetworkHandler;
 import net.mca.entity.VillagerEntityMCA;
@@ -175,7 +176,7 @@ public class VillagerEditorSyncRequest extends NbtDataMessage implements Message
 
         if (villagerData.contains("tree_father_new")) {
             String name = villagerData.getString("tree_father_new");
-            if (name.isEmpty()) {
+            if (MCA.isBlankString(name)) {
                 entry.removeFather();
             } else {
                 getFamilyNode(player, tree, name, Gender.MALE).ifPresent(entry::setFather);
@@ -184,7 +185,7 @@ public class VillagerEditorSyncRequest extends NbtDataMessage implements Message
 
         if (villagerData.contains("tree_mother_new")) {
             String name = villagerData.getString("tree_mother_new");
-            if (name.isEmpty()) {
+            if (MCA.isBlankString(name)) {
                 entry.removeMother();
             } else {
                 getFamilyNode(player, tree, name, Gender.FEMALE).ifPresent(entry::setMother);
@@ -193,7 +194,7 @@ public class VillagerEditorSyncRequest extends NbtDataMessage implements Message
 
         if (villagerData.contains("tree_spouse_new")) {
             String name = villagerData.getString("tree_spouse_new");
-            if (name.isEmpty()) {
+            if (MCA.isBlankString(name)) {
                 Optional.of(entry.partner()).flatMap(tree::getOrEmpty).ifPresent(node -> node.updatePartner(null, null));
                 entry.updatePartner(null, null);
             } else {
