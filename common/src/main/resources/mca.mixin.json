@@ -24,6 +24,7 @@
     "MixinHeldItemFeatureRenderer",
     "MixinLivingEntityRenderer",
     "MixinPlayerEntityRenderer",
+    "client.MixinShaderEffect",
     "client.MixinGameRenderer",
     "client.MixinTranslationStorage"
   ],
