@@ -2,6 +2,8 @@
 
 * Fixed crash on systems with Turkish locale
 * Fixed cursed Steve bug when using mca characters
+* Fixed performance issue
+* Fixed rare crashes
 
 # 7.3.21
 
