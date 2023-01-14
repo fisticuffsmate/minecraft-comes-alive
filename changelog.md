@@ -1,6 +1,7 @@
 # 7.3.22
 
 * Fixed crash on systems with Turkish locale
+* Fixed cursed Steve bug when using mca characters
 
 # 7.3.21
 
