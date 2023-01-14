@@ -90,8 +90,7 @@ public class VillagerEditorScreen extends Screen {
         this.allowPlayerModel = allowPlayerModel;
         this.allowVillagerModel = allowVillagerModel;
 
-        if (clothing == null) {
-            clothing = new HashMap<>();
+        if (clothing.isEmpty()) {
             NetworkHandler.sendToServer(new SkinListRequest());
         }
 
