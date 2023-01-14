@@ -1,3 +1,7 @@
+# 7.3.22
+
+* Fixed crash on systems with Turkish locale
+
 # 7.3.21
 
 * Added `percentageOfVanillaVillages` as a config value to randomly keep vanilla villages
