@@ -40,7 +40,7 @@ public class DestinyMessage implements Message {
         }
 
         if (Config.getInstance().allowDestinyTeleportation && location != null) {
-            WorldUtils.getClosestStructurePosition(player.getServerWorld(), player.getBlockPos(), new Identifier(location), 128).ifPresent(pos -> {
+            WorldUtils.getClosestStructurePosition(player.getServerWorld(), player.getBlockPos(), new Identifier(location), 100).ifPresent(pos -> {
                 player.getServerWorld().getWorldChunk(pos);
                 pos = player.getServerWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, pos);
                 pos = FuzzyPositionsCompat.upWhile(pos, player.getServerWorld().getHeight(), p -> player.getServerWorld().getBlockState(p).shouldSuffocate(player.getServerWorld(), p));
