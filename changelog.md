@@ -1,3 +1,7 @@
+# 7.3.23
+
+* Fixed server crash when trying to eat something with status effects
+
 # 7.3.22
 
 * Fixed crash on systems with Turkish locale
