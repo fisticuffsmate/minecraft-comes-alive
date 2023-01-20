@@ -195,7 +195,7 @@ public final class Config implements Serializable {
             "pillager_outpost"
     );
 
-    public List<String> destinyLocations = Arrays.asList(
+    public List<String> oldDestinyLocations = Arrays.asList(
             "somewhere",
             "shipwreck",
             "village"
