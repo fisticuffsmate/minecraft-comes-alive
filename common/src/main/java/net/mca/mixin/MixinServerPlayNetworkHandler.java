@@ -2,7 +2,8 @@ package net.mca.mixin;
 
 import net.mca.Config;
 import net.mca.entity.VillagerEntityMCA;
-import net.mca.entity.ai.GPT3;
+import net.mca.entity.ai.rest.Classifier;
+import net.mca.entity.ai.rest.GPT3;
 import net.mca.util.WorldUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -23,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import static net.mca.entity.VillagerLike.VILLAGER_NAME;
 
 @Mixin(ServerPlayNetworkHandler.class)
-public class MixinServerPlayNetworkHandler {
+public abstract class MixinServerPlayNetworkHandler {
     @Shadow
     public ServerPlayerEntity player;
 
@@ -33,8 +34,49 @@ public class MixinServerPlayNetworkHandler {
 
     @Inject(method = "onChatMessage", at = @At("HEAD"))
     public void sendMessage(ChatMessageC2SPacket message, CallbackInfo ci) {
+        String msg = (Config.getInstance().enableVillagerCommandAI || Config.getInstance().enableVillagerChatAI) ? StringUtils.normalizeSpace(message.getChatMessage()) : "";
+
+        if (Config.getInstance().enableVillagerCommandAI) {
+            if (!msg.startsWith("/")) {
+                List<VillagerEntityMCA> entities = WorldUtils.getCloseEntities(player.world, player, 32, VillagerEntityMCA.class);
+
+                // talk to specific villager
+                String search = normalize(msg);
+                for (VillagerEntityMCA villager : entities) {
+                    String name = normalize(villager.getTrackedValue(VILLAGER_NAME));
+                    int i = search.indexOf("hey " + name);
+                    if (i >= 0) {
+                        CompletableFuture.runAsync(() -> {
+                            Classifier.answer(player, villager, search.substring(i));
+                        });
+                        return;
+                    }
+                }
+
+                // talk to closest
+                int i = search.indexOf("hey you");
+                if (i >= 0) {
+                    VillagerEntityMCA closest = null;
+                    float best = 24;
+                    for (VillagerEntityMCA villager : entities) {
+                        float distance = villager.distanceTo(player);
+                        if (distance < best) {
+                            closest = villager;
+                            best = distance;
+                        }
+                    }
+                    if (closest != null) {
+                        VillagerEntityMCA finalClosest = closest;
+                        CompletableFuture.runAsync(() -> {
+                            Classifier.answer(player, finalClosest, search.substring(i));
+                        });
+                        return;
+                    }
+                }
+            }
+        }
+
         if (Config.getInstance().enableVillagerChatAI) {
-            String msg = StringUtils.normalizeSpace(message.getChatMessage());
             if (!msg.startsWith("/")) {
                 List<VillagerEntityMCA> entities = WorldUtils.getCloseEntities(player.world, player, 32, VillagerEntityMCA.class);
 

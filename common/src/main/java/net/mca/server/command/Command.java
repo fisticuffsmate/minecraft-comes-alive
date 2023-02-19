@@ -8,7 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.mca.Config;
 import net.mca.MCA;
 import net.mca.cobalt.network.NetworkHandler;
-import net.mca.entity.ai.GPT3;
+import net.mca.entity.ai.rest.GPT3;
 import net.mca.network.s2c.OpenGuiRequest;
 import net.mca.server.ServerInteractionManager;
 import net.mca.server.world.data.PlayerSaveData;

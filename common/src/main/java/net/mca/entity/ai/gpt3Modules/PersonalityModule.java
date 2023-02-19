@@ -8,7 +8,7 @@ import net.minecraft.village.VillagerProfession;
 
 import java.util.List;
 
-import static net.mca.entity.ai.GPT3.translate;
+import static net.mca.entity.ai.rest.GPT3.translate;
 
 public class PersonalityModule {
     public static void apply(List<String> input, VillagerEntityMCA villager, ServerPlayerEntity player) {

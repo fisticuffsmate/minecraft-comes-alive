@@ -1,4 +1,4 @@
-package net.mca.entity.ai;
+package net.mca.entity.ai.rest;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

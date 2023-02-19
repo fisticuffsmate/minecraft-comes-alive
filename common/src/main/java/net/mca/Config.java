@@ -93,6 +93,7 @@ public final class Config implements Serializable {
     //AI
     public boolean enableVillagerChatAI = false;
     public int villagerChatAIIntelligence = 4;
+    public boolean enableVillagerCommandAI = false;
 
     //village behavior
     public float guardSpawnFraction = 0.175f;

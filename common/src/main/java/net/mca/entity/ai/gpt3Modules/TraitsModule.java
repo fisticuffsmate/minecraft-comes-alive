@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static net.mca.entity.ai.GPT3.translate;
+import static net.mca.entity.ai.rest.GPT3.translate;
 
 public class TraitsModule {
     private static final Map<String, String> traitDescription = new HashMap<>() {{
