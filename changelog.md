@@ -1,3 +1,7 @@
+# 7.3.22 - 1.17.1 only
+
+* Fixed wrong Java version
+
 # 7.3.21
 
 * Added `percentageOfVanillaVillages` as a config value to randomly keep vanilla villages
