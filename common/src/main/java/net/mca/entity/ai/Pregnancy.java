@@ -110,7 +110,7 @@ public class Pregnancy {
 
         // advancement
         child.getRelationships().getFamily(2, 0)
-                .filter(e -> e instanceof ServerPlayerEntity)
+                .filter(ServerPlayerEntity.class::isInstance)
                 .map(ServerPlayerEntity.class::cast)
                 .forEach(CriterionMCA.FAMILY::trigger);
 
@@ -123,7 +123,7 @@ public class Pregnancy {
 
     private Optional<VillagerEntityMCA> getFather() {
         return mother.getRelationships().getPartner()
-                .filter(father -> father instanceof VillagerEntityMCA)
+                .filter(VillagerEntityMCA.class::isInstance)
                 .map(VillagerEntityMCA.class::cast);
     }
 
@@ -135,8 +135,8 @@ public class Pregnancy {
         int count = areTwins ? 2 : 1;
 
         // advancement
-        if (spouse instanceof ServerPlayerEntity) {
-            CriterionMCA.BABY_CRITERION.trigger((ServerPlayerEntity)spouse, count);
+        if (spouse instanceof ServerPlayerEntity player) {
+            CriterionMCA.BABY_CRITERION.trigger(player, count);
         }
 
         long seed = random.nextLong();
