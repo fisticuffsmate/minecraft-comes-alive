@@ -46,13 +46,6 @@ public class ForgeBusEvents {
     }
 
     @SubscribeEvent
-    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        if (!event.getEntity().world.isClient) {
-            VillageManager.get((ServerWorld)event.getEntity().world).getBabies().pop(event.getPlayer());
-        }
-    }
-
-    @SubscribeEvent
     public static void OnEntityJoinWorldEvent(EntityJoinWorldEvent event) {
         if (event.getEntity().world.isClient) {
             if (MinecraftClient.getInstance().player == null || event.getEntity().getUuid().equals(MinecraftClient.getInstance().player.getUuid())) {
