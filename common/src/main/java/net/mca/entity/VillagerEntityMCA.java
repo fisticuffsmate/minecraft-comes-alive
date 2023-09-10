@@ -580,7 +580,9 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
         // you can't hit babies!
         if (!Config.getInstance().canHurtBabies && !source.isUnblockable() && getAgeState() == AgeState.BABY) {
             if (source.getAttacker() instanceof PlayerEntity) {
-                sendEventMessage(new TranslatableText("villager.baby_hit"));
+                if (requestCooldown()) {
+                    sendEventMessage(new TranslatableText("villager.baby_hit"));
+                }
             }
             return super.damage(source, 0.0f);
         }
@@ -598,10 +600,12 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
                 if (world.getTime() - lastHit > 40) {
                     lastHit = world.getTime();
                     if (!isGuard() || getSmallBounty() == 0) {
-                        if (getHealth() < getMaxHealth() / 2) {
-                            sendChatMessage(player, "villager.badly_hurt");
-                        } else {
-                            sendChatMessage(player, "villager.hurt");
+                        if (requestCooldown()) {
+                            if (getHealth() < getMaxHealth() / 2) {
+                                sendChatMessage(player, "villager.badly_hurt");
+                            } else {
+                                sendChatMessage(player, "villager.hurt");
+                            }
                         }
                     }
                 }
@@ -678,6 +682,17 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
         }
 
         return super.damage(source, damageAmount);
+    }
+
+    long lastCooldown = 0L;
+
+    private boolean requestCooldown() {
+        if (world.getTime() - lastCooldown > 100) {
+            lastCooldown = world.getTime();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean isGuard() {
