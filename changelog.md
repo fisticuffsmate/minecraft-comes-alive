@@ -1,10 +1,7 @@
-# 7.4.10
-
-* Backported some fixes
-
 # 7.4.9
 
 * Added compat with Chunks fade in
+* Backported some fixes
 
 # 7.4.8
 
