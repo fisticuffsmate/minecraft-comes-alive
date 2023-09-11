@@ -1,6 +1,6 @@
 # 7.4.10
 
-* Backported some fixed
+* Backported some fixes
 
 # 7.4.9
 

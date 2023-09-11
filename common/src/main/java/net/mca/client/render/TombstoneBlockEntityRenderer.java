@@ -69,7 +69,7 @@ public class TombstoneBlockEntityRenderer implements BlockEntityRenderer<Tombsto
 
         y += 5;
 
-        drawText(text, text.wrapLines(new TranslatableText("block.mca.tombstone.footer." + entity.getGender().binary().getStrName()), maxLineWidth), y, matrices, vertexConsumers, light);
+        drawText(text, text.wrapLines(new TranslatableText("block.mca.tombstone.footer." + entity.getGender().binary().getDataName()), maxLineWidth), y, matrices, vertexConsumers, light);
 
         matrices.pop();
     }
