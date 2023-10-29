@@ -48,3 +48,4 @@ forge*changelog.txt
 /common/src/main/resources/assets/mca_voices/
 /scripts/TTS/temp.pcm
 /immersiveLibraryToken
+/scripts/GPT3_REST_API/.env

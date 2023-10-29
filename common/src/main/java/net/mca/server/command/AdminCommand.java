@@ -35,10 +35,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static net.minecraft.util.Formatting.*;
@@ -73,7 +70,7 @@ public class AdminCommand {
     private static int listVillages(CommandContext<ServerCommandSource> ctx) {
         for (Village village : VillageManager.get(ctx.getSource().getWorld())) {
             final BlockPos pos = village.getBox().getCenter();
-            success(String.format("%d: %s with %d buildings and %d/%d villager(s)",
+            success(String.format(Locale.ROOT, "%d: %s with %d buildings and %d/%d villager(s)",
                             village.getId(),
                             village.getName(),
                             village.getBuildings().size(),

@@ -1,3 +1,7 @@
+# 7.4.10
+
+* Fixed data loading issues on systems with locales having non-western digits.
+
 # 7.4.9
 
 * Added compat with Chunks fade in

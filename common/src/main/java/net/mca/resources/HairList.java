@@ -11,6 +11,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class HairList extends JsonDataLoader {
@@ -45,7 +46,7 @@ public class HairList extends JsonDataLoader {
                 JsonObject object = file.getAsJsonObject().get(key).getAsJsonObject();
 
                 for (int i = 0; i < JsonHelper.getInt(object, "count", 1); i++) {
-                    String identifier = String.format(key, i);
+                    String identifier = String.format(Locale.ROOT, key, i);
 
                     HairList.Hair c = new HairList.Hair(identifier);
                     c.gender = gender;

@@ -162,7 +162,7 @@ public class VillagerEditorScreen extends Screen {
         if (shouldShowPageSelection()) {
             String[] pages = getPages();
             int w = DATA_WIDTH * 2 / pages.length;
-            int x = (int)(width / 2.0 - pages.length / 2.0 * w);
+            int x = (int) (width / 2.0 - pages.length / 2.0 * w);
             for (String p : pages) {
                 addDrawableChild(new ButtonWidget(x, height / 2 - 105, w, 20, new TranslatableText("gui.villager_editor.page." + p), sender -> setPage(p))).active = !p.equals(page);
                 x += w;
@@ -197,8 +197,8 @@ public class VillagerEditorScreen extends Screen {
 
                 //age
                 if (!villagerUUID.equals(playerUUID)) {
-                    addDrawableChild(new GeneSliderWidget(width / 2, y, DATA_WIDTH, 20, new TranslatableText("gui.villager_editor.age"), 1.0 + villagerBreedingAge / (double)AgeState.getMaxAge(), b -> {
-                        villagerBreedingAge = -(int)((1.0 - b) * AgeState.getMaxAge()) + 1;
+                    addDrawableChild(new GeneSliderWidget(width / 2, y, DATA_WIDTH, 20, new TranslatableText("gui.villager_editor.age"), 1.0 + villagerBreedingAge / (double) AgeState.getMaxAge(), b -> {
+                        villagerBreedingAge = -(int) ((1.0 - b) * AgeState.getMaxAge()) + 1;
                         villager.setBreedingAge(villagerBreedingAge);
                         villager.calculateDimensions();
                     }));
@@ -206,7 +206,7 @@ public class VillagerEditorScreen extends Screen {
                 }
 
                 //relations
-                for (String who : new String[] {"father", "mother", "spouse"}) {
+                for (String who : new String[]{"father", "mother", "spouse"}) {
                     textFieldWidget = addDrawableChild(new NamedTextFieldWidget(this.textRenderer, width / 2, y, DATA_WIDTH, 18,
                             new TranslatableText("gui.villager_editor.relation." + who)));
                     textFieldWidget.setMaxLength(64);
@@ -223,7 +223,7 @@ public class VillagerEditorScreen extends Screen {
             }
             case "body" -> {
                 //genes
-                if(!Config.getServerConfig().allowPlayerSizeAdjustment && villagerUUID.equals(playerUUID)){
+                if (!Config.getServerConfig().allowPlayerSizeAdjustment && villagerUUID.equals(playerUUID)) {
                     y = doubleGeneSliders(y, Genetics.BREAST, Genetics.SKIN);
                     genetics.setGene(Genetics.SIZE, 0.80f);
                     genetics.setGene(Genetics.WIDTH, 0.80f);
@@ -348,7 +348,7 @@ public class VillagerEditorScreen extends Screen {
                 //profession
                 boolean right = false;
                 List<ButtonWidget> professionButtons = new LinkedList<>();
-                for (VillagerProfession p : new VillagerProfession[] {
+                for (VillagerProfession p : new VillagerProfession[]{
                         VillagerProfession.NONE,
                         ProfessionsMCA.GUARD.get(),
                         ProfessionsMCA.ARCHER.get(),
@@ -451,7 +451,7 @@ public class VillagerEditorScreen extends Screen {
 
     private void updateClothingPageWidget() {
         if (pageButtonWidget != null) {
-            pageButtonWidget.setMessage(new LiteralText(String.format("%d / %d", clothingPage + 1, clothingPageCount)));
+            pageButtonWidget.setMessage(new LiteralText((clothingPage + 1) + " / " + clothingPageCount));
         }
     }
 
@@ -477,7 +477,7 @@ public class VillagerEditorScreen extends Screen {
                 .map(Map.Entry::getKey)
                 .toList();
 
-        clothingPageCount = (int)Math.ceil(filtered.size() / ((float)CLOTHES_PER_PAGE));
+        clothingPageCount = (int) Math.ceil(filtered.size() / ((float) CLOTHES_PER_PAGE));
         clothingPage = Math.max(0, Math.min(clothingPage, clothingPageCount - 1));
 
         updateClothingPageWidget();
@@ -487,9 +487,9 @@ public class VillagerEditorScreen extends Screen {
 
     protected String[] getPages() {
         if (villagerUUID.equals(playerUUID)) {
-            return new String[] {"general", "body", "head", "traits"};
+            return new String[]{"general", "body", "head", "traits"};
         } else {
-            return new String[] {"general", "body", "head", "personality", "traits", "debug"};
+            return new String[]{"general", "body", "head", "personality", "traits", "debug"};
         }
     }
 
@@ -634,7 +634,7 @@ public class VillagerEditorScreen extends Screen {
 
     private void setTraitPage(int i) {
         Traits.Trait[] traits = getValidTraits();
-        int maxPage = (int)Math.ceil((double)traits.length / TRAITS_PER_PAGE) - 1;
+        int maxPage = (int) Math.ceil((double) traits.length / TRAITS_PER_PAGE) - 1;
         traitPage = Math.max(0, Math.min(maxPage, i));
         setPage("traits");
     }
@@ -663,7 +663,7 @@ public class VillagerEditorScreen extends Screen {
     }
 
     protected void eventCallback(String event) {
-
+        // nop
     }
 
     protected boolean shouldUsePlayerModel() {
@@ -684,7 +684,7 @@ public class VillagerEditorScreen extends Screen {
             return;
         }
 
-        villager.age = (int)(System.currentTimeMillis() / 50L);
+        villager.age = (int) (System.currentTimeMillis() / 50L);
 
         if (shouldDrawEntity()) {
             int x = width / 2 - DATA_WIDTH / 2;
@@ -728,8 +728,8 @@ public class VillagerEditorScreen extends Screen {
                             villagerVisualization.setHair(filteredHair.get(index));
                         }
 
-                        int cx = width / 2 + (int)((x - CLOTHES_H / 2.0 + 0.5 - 0.5 * (y % 2)) * 40);
-                        int cy = height / 2 + 25 + (int)((y - CLOTHES_V / 2.0 + 0.5) * 65);
+                        int cx = width / 2 + (int) ((x - CLOTHES_H / 2.0 + 0.5 - 0.5 * (y % 2)) * 40);
+                        int cy = height / 2 + 25 + (int) ((y - CLOTHES_V / 2.0 + 0.5) * 65);
 
                         if (Math.abs(cx - mouseX) <= 20 && Math.abs(cy - mouseY - 30) <= 30) {
                             hoveredClothingId = index;
@@ -746,11 +746,6 @@ public class VillagerEditorScreen extends Screen {
         }
 
         super.render(matrices, mouseX, mouseY, delta);
-    }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     protected boolean shouldDrawEntity() {
@@ -791,7 +786,7 @@ public class VillagerEditorScreen extends Screen {
 
     void syncVillagerData() {
         NbtCompound nbt = villagerData;
-        ((MobEntity)villager).writeCustomDataToNbt(nbt);
+        ((MobEntity) villager).writeCustomDataToNbt(nbt);
         nbt.putInt("Age", villagerBreedingAge);
         NetworkHandler.sendToServer(new VillagerEditorSyncRequest("sync", villagerUUID, nbt));
     }

@@ -13,9 +13,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -67,16 +65,6 @@ public class JewelerWorkbench extends Block/* implements BlockEntityProvider*/ {
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView worldIn, BlockPos pos, ShapeContext context) {
         return SHAPE;
-    }
-
-    public VoxelShape getRayTraceShape(BlockState state, BlockView reader, BlockPos pos, ShapeContext context) {
-        return SHAPE;
-    }
-
-    public void addInformation(ItemStack item, @Nullable BlockView iBlock, List<Text> tooltip, TooltipContext iTooltipFlag) {
-        tooltip.add(new LiteralText("Workbench allows you to buy rings from Jeweler").formatted(Formatting.GRAY));
-        tooltip.add(new TranslatableText(String.format("tooltip.%s.block.statue.line1", MCA.MOD_ID)).formatted(Formatting.GRAY));
-        tooltip.add(new TranslatableText(String.format("tooltip.%s.block.statue.line2", MCA.MOD_ID)).formatted(Formatting.GRAY));
     }
 
     @Nullable

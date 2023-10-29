@@ -102,7 +102,7 @@ public class PlayerSaveData extends PersistentState implements EntityRelationshi
         villager.getGenetics().randomize();
         villager.getTraits().randomize();
         villager.getVillagerBrain().randomize();
-        ((MobEntity)villager).writeCustomDataToNbt(entityData);
+        ((MobEntity) villager).writeCustomDataToNbt(entityData);
     }
 
     public boolean isEntityDataSet() {
@@ -237,7 +237,7 @@ public class PlayerSaveData extends PersistentState implements EntityRelationshi
     }
 
     public boolean hasMail() {
-        return inbox.size() > 0;
+        return !inbox.isEmpty();
     }
 
     public ItemStack getMail() {
@@ -251,19 +251,8 @@ public class PlayerSaveData extends PersistentState implements EntityRelationshi
         }
     }
 
-    // todo: Implement for 7.4.0
-    public void sendEngagementLetter(String name) {
-        sendLetter(List.of(
-                String.format("{ \"translate\": \"mca.letter.engagement\", \"with\": [\"%s\", \"%s\"] }",
-                        getFamilyEntry().getName(), name)
-        ));
-    }
-
     public void sendLetterOfCondolence(String name, String village) {
-        sendLetter(List.of(
-                String.format("{ \"translate\": \"mca.letter.condolence\", \"with\": [\"%s\", \"%s\", \"%s\"] }",
-                        getFamilyEntry().getName(), name, village)
-        ));
+        sendLetter(List.of("{ \"translate\": \"mca.letter.condolence\", \"with\": [\"" + getFamilyEntry().getName() + "\", \"" + name + "\", \"" + village + "\"] }"));
     }
 
     public void sendLetter(List<String> lines) {
@@ -275,7 +264,7 @@ public class PlayerSaveData extends PersistentState implements EntityRelationshi
         nbt.put("pages", l);
         sendMail(nbt);
 
-        Optional.ofNullable(world.getPlayerByUuid(uuid)).ifPresent(p -> showMailNotification((ServerPlayerEntity)p));
+        Optional.ofNullable(world.getPlayerByUuid(uuid)).ifPresent(p -> showMailNotification((ServerPlayerEntity) p));
     }
 
     public static void showMailNotification(ServerPlayerEntity player) {
