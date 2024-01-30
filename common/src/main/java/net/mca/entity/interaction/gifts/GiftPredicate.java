@@ -3,7 +3,6 @@ package net.mca.entity.interaction.gifts;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import net.mca.entity.interaction.Constraint;
 import net.mca.entity.VillagerEntityMCA;
 import net.mca.entity.ai.Chore;
 import net.mca.entity.ai.LongTermMemory;
@@ -12,9 +11,10 @@ import net.mca.entity.ai.Traits;
 import net.mca.entity.ai.relationship.AgeState;
 import net.mca.entity.ai.relationship.Gender;
 import net.mca.entity.ai.relationship.Personality;
+import net.mca.entity.interaction.Constraint;
 import net.mca.resources.Rank;
 import net.mca.resources.Tasks;
-import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -51,17 +51,6 @@ public class GiftPredicate {
                 AgeState.valueOf(JsonHelper.asString(json, name).toUpperCase(Locale.ENGLISH)), group -> (villager, stack, player) -> villager.getAgeState() == group ? 1.0f : 0.0f);
         register("gender", (json, name) ->
                 Gender.valueOf(JsonHelper.asString(json, name).toUpperCase(Locale.ENGLISH)), gender -> (villager, stack, player) -> villager.getGenetics().getGender() == gender ? 1.0f : 0.0f);
-        register("has_item", (json, name) ->
-                Ingredient.fromJson(json), item ->
-                (villager, stack, player) -> {
-                    for (int i = 0; i < villager.getInventory().size(); i++) {
-                        if (item.test(villager.getInventory().getStack(i))) {
-                            return 1.0f;
-                        }
-                    }
-                    return 0.0f;
-                }
-        );
         register("min_health", JsonHelper::asFloat, health ->
                 (villager, stack, player) ->
                         villager.getHealth() > health ? 1.0f : 0.0f
@@ -175,8 +164,8 @@ public class GiftPredicate {
         );
         register("advancement", (json, name) -> new Identifier(JsonHelper.asString(json, name)), id -> (villager, stack, player) -> {
             assert player != null;
-            Advancement advancement = Objects.requireNonNull(player.getServer()).getAdvancementLoader().get(id);
-            return (advancement != null && player.getAdvancementTracker().getProgress(advancement).isDone()) ? 1.0f : 0.0f;
+            AdvancementEntry advancement = Objects.requireNonNull(player.getServer()).getAdvancementLoader().get(id);
+            return player.getAdvancementTracker().getProgress(advancement).isDone() ? 1.0f : 0.0f;
         });
         register("constraints", (json, name) -> Constraint.fromStringList(JsonHelper.asString(json, name)), constraints -> (villager, stack, player) -> {
             Set<Constraint> c = Constraint.allMatching(villager, player);
@@ -228,7 +217,7 @@ public class GiftPredicate {
     }
 
     public int getSatisfactionFor(VillagerEntityMCA recipient, ItemStack stack, @Nullable ServerPlayerEntity player) {
-        return (int)(test(recipient, stack, player) * satisfactionBoost);
+        return (int) (test(recipient, stack, player) * satisfactionBoost);
     }
 
     public interface Factory<T> {

@@ -27,9 +27,9 @@ public class MixinAbstractFurnaceBlockEntity {
                 boolean isBaby = identifier.equals(MCA.locate("baby_boy_from_smelting"));
                 boolean isSirbenBaby = identifier.equals(MCA.locate("baby_sirben_boy_from_smelting"));
                 if (isBaby || isSirbenBaby) {
-                    CriterionMCA.BABY_SMELTED_CRITERION.trigger(player, count);
+                    CriterionMCA.BABY_SMELTED.trigger(player, count);
                     if (isSirbenBaby) {
-                        CriterionMCA.BABY_SIRBEN_SMELTED_CRITERION.trigger(player, count);
+                        CriterionMCA.BABY_SIRBEN_SMELTED.trigger(player, count);
                     }
                 }
             }

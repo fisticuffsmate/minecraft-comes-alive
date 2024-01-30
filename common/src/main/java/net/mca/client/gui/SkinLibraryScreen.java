@@ -157,7 +157,7 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
     }
 
     @Override
-    public void renderBackground(DrawContext context) {
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
         if (previousScreen instanceof DestinyScreen) {
             assert MinecraftClient.getInstance().world != null;
             renderBackgroundTexture(context);
@@ -258,14 +258,16 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        final MatrixStack matrices = context.getMatrices();
+        super.render(context, mouseX, mouseY, delta);
 
-        renderBackground(context);
+        final MatrixStack matrices = context.getMatrices();
 
         hoveredContent = null;
 
         villagerVisualization.setBreedingAge(0);
         villagerVisualization.calculateDimensions();
+
+        List<Text> tooltip = null;
 
         switch (page) {
             case LIBRARY -> {
@@ -282,11 +284,11 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
 
                             if (Math.abs(cx - mouseX) <= 15 && Math.abs(cy - mouseY - 25) <= 24) {
                                 hoveredContent = c;
-                                context.drawTooltip(textRenderer, getMetaDataText(c), mouseX, mouseY);
+                                tooltip = getMetaDataText(c);
                             }
 
                             villagerVisualization.getGenetics().setGender(SkinCache.getMeta(c).map(SkinMeta::getGender).orElse(Gender.MALE).binary());
-                            InventoryScreen.drawEntity(context, cx, cy, hoveredContent == c ? 30 : 28, -(mouseX - cx) / 2.0f, -(mouseY - cy) / 2.0f, villagerVisualization);
+                            InventoryScreen.drawEntity(context, cx - 100, cy - 150, cx + 100, cy + 95, hoveredContent == c ? 30 : 28, 0.0625F, mouseX, 10 + mouseY, villagerVisualization);
                             i++;
                         } else {
                             break;
@@ -444,7 +446,7 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
                 int cy = height / 2 + 50;
 
                 villagerVisualization.getGenetics().setGender(SkinCache.getMeta(focusedContent).map(SkinMeta::getGender).orElse(Gender.MALE).binary());
-                InventoryScreen.drawEntity(context, cx, cy, 60, -(mouseX - cx) / 2.0f, -(mouseY - cy) / 2.0f, villagerVisualization);
+                InventoryScreen.drawEntity(context, cx - 100, cy - 150, cx + 100, cy + 30, 60, 0.0625F, mouseX, 30 + mouseY, villagerVisualization);
 
                 //metadata
                 context.drawTooltip(textRenderer, getMetaDataText(focusedContent), width / 2 + 200, height / 2 - 50);
@@ -454,11 +456,13 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
             }
         }
 
+        if (tooltip != null) {
+            context.drawTooltip(textRenderer, tooltip, mouseX, mouseY);
+        }
+
         if (error != null) {
             context.drawCenteredTextWithShadow(textRenderer, error, width / 2, height / 2, 0xFFFF0000);
         }
-
-        super.render(context, mouseX, mouseY, delta);
     }
 
     private void setDummyTexture(LiteContent content) {
@@ -617,9 +621,9 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
         if (page == Page.EDITOR) {
-            float zoom = (float) (amount * 0.2f) * (x1 - x0);
+            float zoom = (float) (verticalAmount * 0.2f) * (x1 - x0);
 
             float ox = getPixelX() / 64.0f;
             x0 = x0 - zoom * ox;
@@ -630,7 +634,7 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
             y1 = y1 + zoom * (1 - oy);
         }
 
-        return super.mouseScrolled(mouseX, mouseY, amount);
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
     @Override
@@ -957,7 +961,7 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
                     //add tag
                     addDrawableChild(new TooltipButtonWidget(width / 2 - 100, height / 2 - 100, 40, 20, "gui.skin_library.add", sender -> {
                         String tag = tagNameWidget.getText().trim().toLowerCase(Locale.ROOT);
-                        if (tag.length() > 0) {
+                        if (!tag.isEmpty()) {
                             setTag(focusedContent.contentid(), tag, true);
                             tagNameWidget.setText("");
                             rebuild();

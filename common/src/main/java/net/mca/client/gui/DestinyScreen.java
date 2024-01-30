@@ -60,7 +60,7 @@ public class DestinyScreen extends VillagerEditorScreen {
     }
 
     @Override
-    public void renderBackground(DrawContext context) {
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
         assert MinecraftClient.getInstance().world != null;
         renderBackgroundTexture(context);
     }

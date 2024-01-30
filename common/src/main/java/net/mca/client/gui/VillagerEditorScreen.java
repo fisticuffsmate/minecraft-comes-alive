@@ -771,7 +771,7 @@ public class VillagerEditorScreen extends Screen implements SkinListUpdateListen
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+        renderBackground(context, mouseX, mouseY, delta);
 
         context.fill(0, 20, width, height - 20, 0x66000000);
 
@@ -786,9 +786,9 @@ public class VillagerEditorScreen extends Screen implements SkinListUpdateListen
             int y = height / 2 + 70;
             if (villagerUUID.equals(playerUUID) && shouldUsePlayerModel()) {
                 assert MinecraftClient.getInstance().player != null;
-                InventoryScreen.drawEntity(context, x, y, 60, x - mouseX, y - 50 - mouseY, MinecraftClient.getInstance().player);
+                InventoryScreen.drawEntity(context, x - 100, y - 150, x + 100, y + 20, 60, 0.0625F, mouseX, 30 + mouseY, MinecraftClient.getInstance().player);
             } else {
-                InventoryScreen.drawEntity(context, x, y, 60, x - mouseX, y - 50 - mouseY, villager);
+                InventoryScreen.drawEntity(context, x - 100, y - 150, x + 100, y + 20, 60, 0.0625F, mouseX, 30 + mouseY, villager);
             }
 
             // hint for confused people
@@ -828,8 +828,9 @@ public class VillagerEditorScreen extends Screen implements SkinListUpdateListen
                             hoveredClothingId = index;
                         }
 
-                        InventoryScreen.drawEntity(context, cx, cy, (hoveredClothingId == index) ? 35 : 30,
-                                -(mouseX - cx) / 2.0f, -(mouseY - cy - 64) / 2.0f, villagerVisualization);
+                        InventoryScreen.drawEntity(context, cx - 100, cy - 150, cx + 100, cy + 105,
+                                (hoveredClothingId == index) ? 35 : 30, 0.0625F,
+                                mouseX, 20 + mouseY, villagerVisualization);
                         i++;
                     } else {
                         break;

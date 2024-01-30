@@ -68,10 +68,6 @@ public abstract class VillagerLayer<T extends LivingEntity, M extends BipedEntit
             return;
         }
 
-        if (getVillager(villager).hasCustomSkin()) {
-            return;
-        }
-
         if (villager instanceof PlayerEntity && !MCAClient.useVillagerRenderer(villager.getUuid())) {
             return;
         }

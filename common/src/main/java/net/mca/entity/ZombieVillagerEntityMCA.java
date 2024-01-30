@@ -115,11 +115,6 @@ public class ZombieVillagerEntityMCA extends ZombieVillagerEntity implements Vil
     }
 
     @Override
-    public double getHeightOffset() {
-        return -0.35;
-    }
-
-    @Override
     public EntityDimensions getDimensions(EntityPose pose) {
 
         if (pose == EntityPose.SLEEPING) {
@@ -145,11 +140,9 @@ public class ZombieVillagerEntityMCA extends ZombieVillagerEntity implements Vil
     @Override
     public final ActionResult interactAt(PlayerEntity player, Vec3d pos, @NotNull Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-        if (hand.equals(Hand.MAIN_HAND) && !stack.isIn(TagsMCA.Items.ZOMBIE_EGGS) && stack.getItem() != Items.GOLDEN_APPLE) {
-            if (player instanceof ServerPlayerEntity) {
-                String t = new String(new char[getRandom().nextInt(8) + 2]).replace("\0", ". ");
-                sendChatMessage(Text.literal(t), player);
-            }
+        if (hand.equals(Hand.MAIN_HAND) && !stack.isIn(TagsMCA.Items.ZOMBIE_EGGS) && stack.getItem() != Items.GOLDEN_APPLE && player instanceof ServerPlayerEntity) {
+            String t = new String(new char[getRandom().nextInt(8) + 2]).replace("\0", ". ");
+            sendChatMessage(Text.literal(t), player);
         }
         return super.interactAt(player, pos, hand);
     }
@@ -240,7 +233,7 @@ public class ZombieVillagerEntityMCA extends ZombieVillagerEntity implements Vil
     public <T extends MobEntity> T convertTo(EntityType<T> type, boolean keepInventory) {
         T mob;
         if (!isRemoved() && type == EntityType.VILLAGER) {
-            mob = (T)super.convertTo(getGenetics().getGender().getVillagerType(), keepInventory);
+            mob = (T) super.convertTo(getGenetics().getGender().getVillagerType(), keepInventory);
         } else {
             mob = super.convertTo(type, keepInventory);
         }

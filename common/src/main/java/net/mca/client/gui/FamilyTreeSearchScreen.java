@@ -7,7 +7,6 @@ import net.mca.util.compat.ButtonWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 import java.io.Serializable;
@@ -71,7 +70,7 @@ public class FamilyTreeSearchScreen extends Screen {
 
         context.fill(width / 2 - DATA_WIDTH / 2 - 10, height / 2 - 110, width / 2 + DATA_WIDTH / 2 + 10, height / 2 + 110, 0x66000000);
 
-        renderBackground(context);
+        renderBackground(context, mouseX, mouseY, delta);
 
         renderVillagers(context);
 

@@ -8,9 +8,11 @@ import net.mca.network.s2c.CustomSkinsChangedMessage;
 import net.mca.resources.data.skin.Clothing;
 import net.mca.resources.data.skin.Hair;
 import net.mca.resources.data.skin.SkinListEntry;
+import net.mca.util.WorldUtils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.PersistentState;
 
 import java.util.HashMap;
@@ -25,8 +27,7 @@ public class CustomClothingManager {
     public static Storage<Clothing> getClothing() {
         Optional<MinecraftServer> server = MCA.getServer();
         if (server.isPresent()) {
-            return server.get().getOverworld().getPersistentStateManager()
-                    .getOrCreate(nbt -> new Storage<>(nbt, Clothing::new), Storage::new, "immersive_library_clothing");
+            return WorldUtils.loadData(server.get().getOverworld(), nbt -> new Storage<>(nbt, Clothing::new), Storage::new, "immersive_library_clothing");
         } else {
             return CLOTHING_DUMMY;
         }
@@ -35,8 +36,7 @@ public class CustomClothingManager {
     public static Storage<Hair> getHair() {
         Optional<MinecraftServer> server = MCA.getServer();
         if (server.isPresent()) {
-            return server.get().getOverworld().getPersistentStateManager()
-                    .getOrCreate(nbt -> new Storage<>(nbt, Hair::new), Storage::new, "immersive_library_hair");
+            return WorldUtils.loadData(server.get().getOverworld(), nbt -> new Storage<>(nbt, Hair::new), Storage::new, "immersive_library_hair");
         } else {
             return HAIR_DUMMY;
         }
@@ -46,6 +46,10 @@ public class CustomClothingManager {
         final Map<String, T> entries = new HashMap<>();
 
         public Storage() {
+        }
+
+        public Storage(ServerWorld serverWorld) {
+            this();
         }
 
         public Storage(NbtCompound nbt, BiFunction<String, JsonObject, T> entryFromNbt) {

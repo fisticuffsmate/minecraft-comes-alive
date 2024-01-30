@@ -1,6 +1,7 @@
 package net.mca.client.gui;
 
 import net.mca.MCA;
+import net.mca.client.gui.widget.OldTexturedButtonWidget;
 import net.mca.client.gui.widget.TooltipButtonWidget;
 import net.mca.client.gui.widget.WidgetUtils;
 import net.mca.cobalt.network.NetworkHandler;
@@ -18,7 +19,6 @@ import net.mca.util.compat.ButtonWidget;
 import net.mca.util.localization.FlowingText;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.registry.Registries;
@@ -243,8 +243,9 @@ public class BlueprintScreen extends ExtendedScreen {
                 catalogButtons.clear();
                 for (BuildingType bt : BuildingTypes.getInstance()) {
                     if (bt.visible()) {
-                        TexturedButtonWidget widget = new TexturedButtonWidget(
-                                row * size + x + 10, col * size + y - 10, 20, 20, bt.iconU(), bt.iconV() + 20, 20, ICON_TEXTURES, 256, 256, button -> {
+                        OldTexturedButtonWidget widget = new OldTexturedButtonWidget(
+                                row * size + x + 10, col * size + y - 10, 20, 20,
+                                bt.iconU(), bt.iconV() + 20, 20, ICON_TEXTURES, 256, 256, button -> {
                             selectBuilding(bt);
                             button.active = false;
                             catalogButtons.forEach(b -> b.active = true);
@@ -313,8 +314,8 @@ public class BlueprintScreen extends ExtendedScreen {
     }
 
     @Override
-    public void render(DrawContext context, int sizeX, int sizeY, float offset) {
-        renderBackground(context);
+    public void render(DrawContext context, int sizeX, int sizeY, float delta) {
+        super.render(context, sizeX, sizeY, delta);
 
         assert client != null;
         this.mouseX = (int) (client.mouse.getX() * width / client.getWindow().getFramebufferWidth());
@@ -323,7 +324,7 @@ public class BlueprintScreen extends ExtendedScreen {
         switch (page) {
             case "waiting" ->
                     context.drawCenteredTextWithShadow(textRenderer, Text.translatable("gui.blueprint.waiting"), width / 2, height / 2, 0xffaaaaaa);
-                case "empty" ->
+            case "empty" ->
                     context.drawCenteredTextWithShadow(textRenderer, Text.translatable("gui.blueprint.empty"), width / 2, height / 2 - 20, 0xffaaaaaa);
             case "map" -> {
                 renderStats(context);
@@ -342,8 +343,6 @@ public class BlueprintScreen extends ExtendedScreen {
             case "villagers" -> renderVillagers(context);
             case "rules" -> renderRules(context);
         }
-
-        super.render(context, sizeX, sizeY, offset);
     }
 
     private void renderName(DrawContext context) {

@@ -180,7 +180,7 @@ public class VillageManager extends PersistentState implements Iterable<Village>
         }
 
         //trigger advancement
-        CriterionMCA.GENERIC_EVENT_CRITERION.trigger(player, "bounty_hunter");
+        CriterionMCA.GENERIC_EVENT.trigger(player, "bounty_hunter");
 
         //spawn the bois
         for (int c = 0; c < count; c++) {

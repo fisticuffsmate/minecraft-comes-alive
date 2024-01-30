@@ -32,12 +32,12 @@ public abstract class NbtDataMessage implements Message {
 
         @Serial
         private void writeObject(ObjectOutputStream out) throws IOException {
-            NbtIo.write(nbt, out);
+            NbtIo.writeCompound(nbt, out);
         }
 
         @Serial
         private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-            nbt = NbtIo.read(in);
+            nbt = NbtIo.readCompound(in);
         }
     }
 }

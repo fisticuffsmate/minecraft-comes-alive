@@ -1,23 +1,24 @@
 package net.mca.advancement.criterion;
 
-import net.mca.mixin.MixinCriteria;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.Criterion;
 
 public interface CriterionMCA {
-    BabyCriterion BABY_CRITERION = register(new BabyCriterion());
-    BabyDroppedCriterion BABY_DROPPED_CRITERION = register(new BabyDroppedCriterion());
-    BabySmeltedCriterion BABY_SMELTED_CRITERION = register(new BabySmeltedCriterion());
-    BabySirbenSmeltedCriterion BABY_SIRBEN_SMELTED_CRITERION = register(new BabySirbenSmeltedCriterion());
-    HeartsCriterion HEARTS_CRITERION = register(new HeartsCriterion());
-    GenericEventCriterion GENERIC_EVENT_CRITERION = register(new GenericEventCriterion());
-    ChildAgeStateChangeCriterion CHILD_AGE_STATE_CHANGE = register(new ChildAgeStateChangeCriterion());
-    FamilyCriterion FAMILY = register(new FamilyCriterion());
-    RankCriterion RANK = register(new RankCriterion());
-    VillagerFateCriterion FATE = register(new VillagerFateCriterion());
+    BabyCriterion BABY = register("baby", new BabyCriterion());
+    BabyDroppedCriterion BABY_DROPPED = register("baby_dropped", new BabyDroppedCriterion());
+    BabySmeltedCriterion BABY_SMELTED = register("baby_smelted", new BabySmeltedCriterion());
+    BabySirbenSmeltedCriterion BABY_SIRBEN_SMELTED = register("baby_sirben_smelted", new BabySirbenSmeltedCriterion());
+    HeartsCriterion HEARTS = register("hearts", new HeartsCriterion());
+    GenericEventCriterion GENERIC_EVENT = register("generic_event", new GenericEventCriterion());
+    ChildAgeStateChangeCriterion CHILD_AGE_STATE_CHANGE = register("child_age_state_change", new ChildAgeStateChangeCriterion());
+    FamilyCriterion FAMILY = register("family", new FamilyCriterion());
+    RankCriterion RANK = register("rank", new RankCriterion());
+    VillagerFateCriterion VILLAGER_FATE = register("villager_fate", new VillagerFateCriterion());
 
-    static <T extends Criterion<?>> T register(T obj) {
-        return MixinCriteria.register(obj);
+    static <T extends Criterion<?>> T register(String id, T obj) {
+        return Criteria.register("mca:" + id, obj);
     }
 
-    static void bootstrap() { }
+    static void bootstrap() {
+    }
 }

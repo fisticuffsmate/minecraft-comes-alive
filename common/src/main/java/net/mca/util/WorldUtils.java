@@ -1,6 +1,7 @@
 package net.mca.util;
 
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
@@ -22,17 +23,9 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public interface WorldUtils {
-    static List<Entity> getCloseEntities(World world, Entity e) {
-        return getCloseEntities(world, e, 256.0);
-    }
-
     static List<Entity> getCloseEntities(World world, Entity e, double range) {
         Vec3d pos = e.getPos();
         return world.getOtherEntities(e, new Box(pos, pos).expand(range));
-    }
-
-    static <T extends Entity> List<T> getCloseEntities(World world, Entity e, Class<T> c) {
-        return getCloseEntities(world, e, 256.0, c);
     }
 
     static <T extends Entity> List<T> getCloseEntities(World world, Entity e, double range, Class<T> c) {
@@ -43,8 +36,21 @@ public interface WorldUtils {
         return world.getNonSpectatingEntities(c, new Box(pos, pos).expand(range));
     }
 
+    static <T extends PersistentState> PersistentState.Type<T> getType(ServerWorld world, Function<NbtCompound, T> loader, Function<ServerWorld, T> factory) {
+        return new PersistentState.Type<>(
+                () -> {
+                    return factory.apply(world);
+                },
+                loader, DataFixTypes.SAVED_DATA_RANDOM_SEQUENCES // Yes, wrong fixer but we do not need one and null is invalid
+        );
+    }
+
     static <T extends PersistentState> T loadData(ServerWorld world, Function<NbtCompound, T> loader, Function<ServerWorld, T> factory, String dataId) {
-        return world.getPersistentStateManager().getOrCreate(loader, () -> factory.apply(world), dataId);
+        return world.getPersistentStateManager().getOrCreate(getType(world, loader, factory), dataId);
+    }
+
+    static <T extends PersistentState> T getData(ServerWorld world, Function<NbtCompound, T> loader, Function<ServerWorld, T> factory, String dataId) {
+        return world.getPersistentStateManager().get(getType(world, loader, factory), dataId);
     }
 
     static void spawnEntity(World world, MobEntity entity, SpawnReason reason) {

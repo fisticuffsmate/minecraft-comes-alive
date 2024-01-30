@@ -116,7 +116,7 @@ public class ScytheItem extends SwordItem {
             sound = SoundEvents.BLOCK_BELL_RESONATE;
 
             if (attacker instanceof ServerPlayerEntity) {
-                CriterionMCA.GENERIC_EVENT_CRITERION.trigger((ServerPlayerEntity)attacker, "scytheKill");
+                CriterionMCA.GENERIC_EVENT.trigger((ServerPlayerEntity)attacker, "scytheKill");
             }
         }
 
@@ -150,7 +150,7 @@ public class ScytheItem extends SwordItem {
         if (state.isIn(TagsMCA.Blocks.TOMBSTONES)) {
             return TombstoneBlock.Data.of(world.getBlockEntity(pos)).filter(TombstoneBlock.Data::hasEntity).map(data -> {
                 if (!context.getWorld().isClient) {
-                    CriterionMCA.GENERIC_EVENT_CRITERION.trigger((ServerPlayerEntity)context.getPlayer(), cure ? "staffOfLife" : "scytheRevive");
+                    CriterionMCA.GENERIC_EVENT.trigger((ServerPlayerEntity)context.getPlayer(), cure ? "staffOfLife" : "scytheRevive");
                 }
 
                 if (!world.isClient && !data.isResurrecting()) {

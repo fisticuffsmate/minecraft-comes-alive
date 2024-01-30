@@ -1,6 +1,5 @@
 package net.mca.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.mca.MCA;
 import net.mca.cobalt.network.NetworkHandler;
 import net.mca.entity.VillagerLike;
@@ -86,6 +85,11 @@ public class InteractScreen extends AbstractDynamicScreen {
     }
 
     @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        // nop
+    }
+
+    @Override
     public void render(DrawContext context, int mouseX, int mouseY, float tickDelta) {
         super.render(context, mouseX, mouseY, tickDelta);
 
@@ -94,14 +98,14 @@ public class InteractScreen extends AbstractDynamicScreen {
     }
 
     @Override
-    public boolean mouseScrolled(double x, double y, double d) {
-        if (d < 0) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        if (verticalAmount < 0) {
             player.getInventory().selectedSlot = player.getInventory().selectedSlot == 8 ? 0 : player.getInventory().selectedSlot + 1;
-        } else if (d > 0) {
+        } else if (verticalAmount > 0) {
             player.getInventory().selectedSlot = player.getInventory().selectedSlot == 0 ? 8 : player.getInventory().selectedSlot - 1;
         }
 
-        return super.mouseScrolled(x, y, d);
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
     @Override
@@ -196,7 +200,7 @@ public class InteractScreen extends AbstractDynamicScreen {
 
         //traits
         Set<Traits.Trait> traits = villager.getTraits().getTraits();
-        if (traits.size() > 0) {
+        if (!traits.isEmpty()) {
             if (hoveringOverText(10, 30 + h * 4, 128)) {
                 //details
                 List<Text> traitText = traits.stream().map(Traits.Trait::getDescription).collect(Collectors.toList());
@@ -206,7 +210,7 @@ public class InteractScreen extends AbstractDynamicScreen {
                 //list
                 MutableText traitText = Text.translatable("traits.title");
                 traits.stream().map(Traits.Trait::getName).forEach(t -> {
-                    if (traitText.getSiblings().size() > 0) {
+                    if (!traitText.getSiblings().isEmpty()) {
                         traitText.append(Text.literal(", "));
                     }
                     traitText.append(t);

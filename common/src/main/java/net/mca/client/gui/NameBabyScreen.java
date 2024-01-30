@@ -8,7 +8,6 @@ import net.mca.util.compat.ButtonWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -27,20 +26,13 @@ public class NameBabyScreen extends Screen {
     }
 
     @Override
-    public void tick() {
-        super.tick();
-
-        babyNameTextField.tick();
-    }
-
-    @Override
     public void init() {
-        addDrawableChild(new ButtonWidget(width / 2 - 40, height / 2 + 20, 80, 20, Text.translatable("gui.button.done"), (b) -> {
+        addDrawableChild(new ButtonWidget(width / 2 - 40, height / 2 + 20, 80, 20, Text.translatable("gui.button.done"), b -> {
             NetworkHandler.sendToServer(new BabyNamingVillagerMessage(player.getInventory().selectedSlot, babyNameTextField.getText().trim()));
             Objects.requireNonNull(this.client).setScreen(null);
         }));
-        addDrawableChild(new ButtonWidget(width / 2 + 105, height / 2 - 20, 60, 20, Text.translatable("gui.button.random"), (b) -> {
-            NetworkHandler.sendToServer(new BabyNameRequest(((BabyItem)baby.getItem()).getGender()));
+        addDrawableChild(new ButtonWidget(width / 2 + 105, height / 2 - 20, 60, 20, Text.translatable("gui.button.random"), b -> {
+            NetworkHandler.sendToServer(new BabyNameRequest(((BabyItem) baby.getItem()).getGender()));
         }));
 
         babyNameTextField = new TextFieldWidget(this.textRenderer, width / 2 - 100, height / 2 - 20, 200, 20, Text.translatable("structure_block.structure_name"));
@@ -55,16 +47,16 @@ public class NameBabyScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int w, int h, float scale) {
-        renderBackground(context);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackground(context, mouseX, mouseY, delta);
 
         setFocused(babyNameTextField);
 
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 70, 16777215);
 
-        babyNameTextField.render(context, width / 2 - 100, height / 2 - 20, scale);
+        babyNameTextField.render(context, width / 2 - 100, height / 2 - 20, delta);
 
-        super.render(context, w, h, scale);
+        super.render(context, mouseX, mouseY, delta);
     }
 
     public void setBabyName(String name) {

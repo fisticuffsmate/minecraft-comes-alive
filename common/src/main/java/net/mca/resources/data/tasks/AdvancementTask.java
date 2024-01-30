@@ -2,7 +2,7 @@ package net.mca.resources.data.tasks;
 
 import com.google.gson.JsonObject;
 import net.mca.server.world.data.Village;
-import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -23,7 +23,7 @@ public class AdvancementTask extends Task {
 
     @Override
     public boolean isCompleted(Village village, ServerPlayerEntity player) {
-        Advancement advancement = Objects.requireNonNull(player.getServer()).getAdvancementLoader().get(new Identifier(identifier));
+        AdvancementEntry advancement = Objects.requireNonNull(player.getServer()).getAdvancementLoader().get(new Identifier(identifier));
         return player.getAdvancementTracker().getProgress(advancement).isDone();
     }
 }

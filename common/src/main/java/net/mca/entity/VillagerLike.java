@@ -2,7 +2,6 @@ package net.mca.entity;
 
 import com.google.common.base.Strings;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.mca.Config;
 import net.mca.MCA;
 import net.mca.entity.ai.DialogueType;
@@ -21,7 +20,6 @@ import net.mca.resources.Names;
 import net.mca.server.world.data.FamilyTreeNode;
 import net.mca.server.world.data.PlayerSaveData;
 import net.mca.util.network.datasync.*;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -43,7 +41,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.VillagerDataContainer;
 
-import java.util.*;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public interface VillagerLike<E extends Entity & VillagerLike<E>> extends CTrackedEntity<E>, VillagerDataContainer, Infectable, Messenger {
     CDataParameter<String> VILLAGER_NAME = CParameter.create("villagerName", "");
@@ -125,16 +126,6 @@ public interface VillagerLike<E extends Entity & VillagerLike<E>> extends CTrack
 
     default GameProfile getGameProfile() {
         return null;
-    }
-
-    default boolean hasCustomSkin() {
-        if (!MCA.isBlankString(getTrackedValue(CUSTOM_SKIN)) && getGameProfile() != null) {
-            MinecraftClient minecraftClient = MinecraftClient.getInstance();
-            Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(getGameProfile());
-            return map.containsKey(MinecraftProfileTexture.Type.SKIN);
-        } else {
-            return false;
-        }
     }
 
     /**

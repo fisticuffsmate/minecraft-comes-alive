@@ -53,7 +53,7 @@ public class BowTask<E extends MobEntity & CrossbowUser> extends MultiTickTask<E
 
         //shoot
         if (entity.age - lastShot > fireInterval) {
-            entity.attack(target, 1.0F);
+            entity.shoot(target, 1.0F);
             lastShot = entity.age;
         }
     }

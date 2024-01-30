@@ -1,6 +1,5 @@
 package net.mca.entity;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Dynamic;
 import net.mca.*;
 import net.mca.advancement.criterion.CriterionMCA;
@@ -24,7 +23,6 @@ import net.mca.util.InventoryUtils;
 import net.mca.util.network.datasync.CDataManager;
 import net.mca.util.network.datasync.CDataParameter;
 import net.mca.util.network.datasync.CParameter;
-import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
@@ -120,7 +118,6 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
     private final UpdatableInventory inventory = new UpdatableInventory(27);
     private final VillagerDimensions.Mutable dimensions = new VillagerDimensions.Mutable(AgeState.UNASSIGNED);
 
-    private GameProfile gameProfile;
     private PlayerModel playerModel;
 
     private int despawnDelay;
@@ -170,21 +167,6 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
         super.initDataTracker();
 
         getTypeDataManager().register(this);
-    }
-
-    @Override
-    public GameProfile getGameProfile() {
-        return gameProfile;
-    }
-
-    @Override
-    public void updateCustomSkin() {
-        if (!MCA.isBlankString(getTrackedValue(CUSTOM_SKIN))) {
-            gameProfile = new GameProfile(null, getTrackedValue(CUSTOM_SKIN));
-            SkullBlockEntity.loadProperties(gameProfile, profile -> gameProfile = profile);
-        } else {
-            gameProfile = null;
-        }
     }
 
     @Override
@@ -876,7 +858,7 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
             if (isClient() && MCAClient.useGeneticsRenderer(vehicle.getUuid())) {
                 float height = getVillager(vehicle).getRawScaleFactor();
                 offset = offset.multiply(1.0f, height, 1.0f);
-                offset = offset.add(0.0f, vehicle.getMountedHeightOffset() * height - vehicle.getMountedHeightOffset(), 0.0f);
+                offset = offset.add(0.0f, vehicle.getRidingOffset(this) * height - vehicle.getRidingOffset(this), 0.0f);
             }
 
             Vec3d pos = this.getPos();
@@ -889,12 +871,12 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
     }
 
     @Override
-    public double getHeightOffset() {
+    public float getRidingOffset(Entity entity) {
         Entity vehicle = getVehicle();
         if (vehicle instanceof PlayerEntity) {
-            return -0.2;
+            return -0.2f;
         }
-        return -0.35;
+        return -0.35f;
     }
 
     @Override
@@ -951,7 +933,7 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
                 servRef.getPlayers().forEach(player -> {
                     Rank relationToVillage = Tasks.getRank(village.get(), player);
                     Identifier causeId = EntityType.getId(cause.getAttacker().getType());
-                    CriterionMCA.FATE.trigger(player, causeId, relationToVillage);
+                    CriterionMCA.VILLAGER_FATE.trigger(player, causeId, relationToVillage);
                 });
             }
 
@@ -1423,7 +1405,7 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
     }
 
     @Override
-    public void attack(LivingEntity target, float pullProgress) {
+    public void shootAt(LivingEntity target, float pullProgress) {
         setTarget(target);
         attackedEntity(target);
 

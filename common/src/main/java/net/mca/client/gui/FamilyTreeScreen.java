@@ -114,7 +114,7 @@ public class FamilyTreeScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+        renderBackground(context, mouseX, mouseY, delta);
 
         context.fill(0, 30, width, height - 30, 0x66000000);
 

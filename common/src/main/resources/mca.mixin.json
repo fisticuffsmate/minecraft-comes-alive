@@ -4,7 +4,7 @@
   "package": "net.mca.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "MixinAbstractFurnaceBlockEntity", "MixinActivity", "MixinCriteria", "MixinDefaultParticleType", "MixinEntityType",
+    "MixinAbstractFurnaceBlockEntity", "MixinActivity", "MixinDefaultParticleType", "MixinEntityType",
     "MixinGoatEntity", "MixinHorseBaseEntity", "MixinMemoryModuleType", "MixinMilkBucketItem", "MixinPlayerEntity",
     "MixinPlayerInventory", "MixinProtoChunk", "MixinSensorType", "MixinServerPlayNetworkHandler", "MixinServerWorld",
     "MixinTranslatableText", "MixinVillagerEntity", "MixinVillagerEntityInvoker", "MixinVillagerProfession",

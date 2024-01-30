@@ -141,7 +141,7 @@ public class Pregnancy {
 
         // advancement
         if (spouse instanceof ServerPlayerEntity player) {
-            CriterionMCA.BABY_CRITERION.trigger(player, count);
+            CriterionMCA.BABY.trigger(player, count);
         }
 
         long seed = random.nextLong();

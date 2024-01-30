@@ -51,7 +51,7 @@ public abstract class MixinGoatEntity extends AnimalEntity {
 
                     //advancement
                     ((ServerWorld)this.getWorld()).getPlayers().stream().filter(p -> p.distanceTo(this) < 30).forEach(p -> {
-                        CriterionMCA.GENERIC_EVENT_CRITERION.trigger(p, "ancient_cultists");
+                        CriterionMCA.GENERIC_EVENT.trigger(p, "ancient_cultists");
                     });
 
                     //remove the goat

@@ -121,7 +121,7 @@ public class BabyItem extends Item {
                     count = stack.getOrCreateNbt().getInt("dropAttempts") + 1;
                 }
                 stack.getOrCreateNbt().putInt("dropAttempts", count);
-                CriterionMCA.BABY_DROPPED_CRITERION.trigger((ServerPlayerEntity)player, count);
+                CriterionMCA.BABY_DROPPED.trigger((ServerPlayerEntity)player, count);
                 player.sendMessage(Text.translatable("item.mca.baby.no_drop"), true);
             }
             return false;
@@ -142,7 +142,7 @@ public class BabyItem extends Item {
             stack.removeCustomName();
 
             if (entity instanceof ServerPlayerEntity player) {
-                CriterionMCA.GENERIC_EVENT_CRITERION.trigger(player, "rename_baby");
+                CriterionMCA.GENERIC_EVENT.trigger(player, "rename_baby");
             }
         }
 

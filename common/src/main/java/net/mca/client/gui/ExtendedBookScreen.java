@@ -14,6 +14,7 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 public class ExtendedBookScreen extends Screen {
     private int pageIndex;
@@ -51,13 +52,16 @@ public class ExtendedBookScreen extends Screen {
     }
 
     protected void addCloseButton() {
-        addDrawableChild(new ButtonWidget(width / 2 - 100, 196, 200, 20, ScreenTexts.DONE, (buttonWidget) -> this.client.setScreen(null)));
+        addDrawableChild(new ButtonWidget(width / 2 - 100, 196, 200, 20, ScreenTexts.DONE, buttonWidget -> {
+            assert this.client != null;
+            this.client.setScreen(null);
+        }));
     }
 
     protected void addPageButtons() {
         int i = (width - 192) / 2;
-        nextPageButton = addDrawableChild(new ExtendedPageTurnWidget(i + 116, 159, true, (buttonWidget) -> goToNextPage(), book.hasPageTurnSound(), book.getBackground()));
-        previousPageButton = addDrawableChild(new ExtendedPageTurnWidget(i + 43, 159, false, (buttonWidget) -> goToPreviousPage(), book.hasPageTurnSound(), book.getBackground()));
+        nextPageButton = addDrawableChild(new ExtendedPageTurnWidget(i + 116, 159, true, buttonWidget -> goToNextPage(), book.hasPageTurnSound(), book.getBackground()));
+        previousPageButton = addDrawableChild(new ExtendedPageTurnWidget(i + 43, 159, false, buttonWidget -> goToPreviousPage(), book.hasPageTurnSound(), book.getBackground()));
         updatePageButtons();
     }
 
@@ -92,16 +96,17 @@ public class ExtendedBookScreen extends Screen {
             return true;
         }
 
-        switch (keyCode) {
-            case 266:
+        return switch (keyCode) {
+            case 266 -> {
                 this.previousPageButton.onPress();
-                return true;
-            case 267:
+                yield true;
+            }
+            case 267 -> {
                 this.nextPageButton.onPress();
-                return true;
-            default:
-                return false;
-        }
+                yield true;
+            }
+            default -> false;
+        };
     }
 
     public TextRenderer getTextRenderer() {
@@ -110,7 +115,7 @@ public class ExtendedBookScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+        renderBackground(context, mouseX, mouseY, delta);
 
         // background
         int i = (width - 192) / 2;
@@ -132,12 +137,11 @@ public class ExtendedBookScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
+    public boolean handleTextClick(@Nullable Style style) {
+        if (style == null) {
+            return false;
+        }
 
-    @Override
-    public boolean handleTextClick(Style style) {
         ClickEvent clickEvent = style.getClickEvent();
         if (clickEvent == null) {
             return false;
@@ -153,6 +157,7 @@ public class ExtendedBookScreen extends Screen {
 
         boolean handled = super.handleTextClick(style);
         if (handled && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
+            assert client != null;
             client.setScreen(null);
         }
 

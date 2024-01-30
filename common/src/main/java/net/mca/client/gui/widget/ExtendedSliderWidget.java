@@ -1,17 +1,18 @@
 package net.mca.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.mca.util.localization.FlowingText;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class ExtendedSliderWidget<T> extends SliderWidget {
+    private static final Identifier TEXTURE = new Identifier("widget/slider");
+
     private T oldValue;
     final Consumer<T> onApplyValue;
     protected final Supplier<Text> tooltipSupplier;
@@ -31,8 +32,8 @@ public abstract class ExtendedSliderWidget<T> extends SliderWidget {
     @Override
     public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
         int i = (this.isHovered() ? 2 : 1) * 20;
-        context.drawTexture(WIDGETS_TEXTURE, this.getX() + (int) (getOpticalValue() * (double) (this.width - 8)), this.getY(), 0, 46 + i, 4, 20);
-        context.drawTexture(WIDGETS_TEXTURE, this.getX() + (int) (getOpticalValue() * (double) (this.width - 8)) + 4, this.getY(), 196, 46 + i, 4, 20);
+        context.drawTexture(TEXTURE, this.getX() + (int) (getOpticalValue() * (double) (this.width - 8)), this.getY(), 0, 46 + i, 4, 20);
+        context.drawTexture(TEXTURE, this.getX() + (int) (getOpticalValue() * (double) (this.width - 8)) + 4, this.getY(), 196, 46 + i, 4, 20);
 
         super.renderButton(context, mouseX, mouseY, delta);
 

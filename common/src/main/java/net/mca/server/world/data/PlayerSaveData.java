@@ -60,7 +60,9 @@ public class PlayerSaveData extends PersistentState implements EntityRelationshi
     }
 
     public static Optional<PlayerSaveData> getIfPresent(ServerWorld world, UUID uuid) {
-        return Optional.ofNullable(world.getPersistentStateManager().get(nbt -> new PlayerSaveData(world, uuid, nbt), "mca_player_" + uuid));
+        return Optional.ofNullable(
+                WorldUtils.getData(world.getServer().getOverworld(), nbt -> new PlayerSaveData(world, uuid, nbt), w -> new PlayerSaveData(world, uuid), "mca_player_" + uuid)
+        );
     }
 
     PlayerSaveData(ServerWorld world, UUID uuid) {
