@@ -24,7 +24,7 @@ public class TextPage extends Page {
         if (cachedPage == null) {
             StringVisitable stringVisitable = StringVisitable.styled(content, style);
             try {
-                MutableText text = Text.Serializer.fromJson(content);
+                MutableText text = Text.Serialization.fromJson(content);
                 if (text != null) {
                     text.fillStyle(style);
                 }

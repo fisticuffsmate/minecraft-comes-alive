@@ -15,12 +15,12 @@ public class InteractionDialogueQuestionResponse implements Message {
     public final boolean silent;
 
     public InteractionDialogueQuestionResponse(boolean silent, Text questionText) {
-        this.questionText = Text.Serializer.toJson(questionText);
+        this.questionText = Text.Serialization.toJsonString(questionText);
         this.silent = silent;
     }
 
     public MutableText getQuestionText() {
-        return Text.Serializer.fromJson(questionText);
+        return Text.Serialization.fromJson(questionText);
     }
 
     @Override

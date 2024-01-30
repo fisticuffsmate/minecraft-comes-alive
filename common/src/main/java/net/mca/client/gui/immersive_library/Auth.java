@@ -3,8 +3,10 @@ package net.mca.client.gui.immersive_library;
 import net.mca.Config;
 import net.minecraft.util.Util;
 
-import javax.annotation.Nullable;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -22,7 +24,6 @@ public class Auth {
         return new String(bytes);
     }
 
-    @Nullable
     public static String loadToken() {
         try {
             return Files.readString(Paths.get("./immersiveLibraryToken"));
@@ -31,7 +32,6 @@ public class Auth {
         }
     }
 
-    @Nullable
     public static String getToken() {
         if (currentToken == null) {
             currentToken = loadToken();

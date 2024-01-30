@@ -25,7 +25,7 @@ public class OldTexturedButtonWidget extends ButtonWidget {
     }
 
     @Override
-    public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         context.drawTexture(texture, getX(), getY() + (isHovered() ? highlightOffset : 0), u, v, width, height, tw, th);
     }
 }

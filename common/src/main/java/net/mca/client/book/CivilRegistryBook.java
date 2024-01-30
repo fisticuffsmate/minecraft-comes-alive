@@ -6,6 +6,7 @@ import net.mca.client.book.pages.TitlePage;
 import net.mca.cobalt.network.NetworkHandler;
 import net.mca.network.c2s.CivilRegistryPageRequest;
 import net.mca.util.localization.FlowingText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
 import java.util.*;
@@ -54,7 +55,7 @@ public class CivilRegistryBook extends Book {
         }
     }
 
-    public void receive(int index, List<Text> lines) {
+    public void receive(int index, List<MutableText> lines) {
         List<Text> text = new LinkedList<>();
         for (Text line : lines) {
             List<Text> wrap = FlowingText.wrap(line, 110);

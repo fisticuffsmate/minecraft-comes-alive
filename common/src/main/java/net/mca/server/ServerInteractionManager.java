@@ -122,7 +122,7 @@ public class ServerInteractionManager {
     public void listProposals(ServerPlayerEntity sender) {
         List<UUID> proposals = getProposalsFor(sender);
 
-        if (proposals.size() == 0) {
+        if (proposals.isEmpty()) {
             infoMessage(sender, Text.translatable("server.noProposals"));
         } else {
             infoMessage(sender, Text.translatable("server.proposals"));
@@ -132,7 +132,7 @@ public class ServerInteractionManager {
         proposals.forEach((uuid -> {
             PlayerEntity player = sender.getWorld().getPlayerByUuid(uuid);
             if (player != null) {
-                infoMessage(sender, Text.literal("- ").append(Text.literal(player.getEntityName())));
+                infoMessage(sender, Text.literal("- ").append(player.getName()));
             }
         }));
     }
@@ -164,11 +164,11 @@ public class ServerInteractionManager {
 
         // Ensure the receiver hasn't already been proposed to by this player.
         if (hasProposalFrom(sender, receiver)) {
-            failMessage(sender, Text.translatable("server.sentProposal", receiver.getEntityName()));
+            failMessage(sender, Text.translatable("server.sentProposal", receiver.getName()));
         } else {
             // Send the proposal messages.
-            successMessage(sender, Text.translatable("server.proposalSent", receiver.getEntityName()));
-            infoMessage(receiver, Text.translatable("server.proposedMarriage", sender.getEntityName()));
+            successMessage(sender, Text.translatable("server.proposalSent", receiver.getName()));
+            infoMessage(receiver, Text.translatable("server.proposedMarriage", sender.getName()));
 
             // Add the proposal to the receiver's proposal list.
             List<UUID> list = getProposalsFor(receiver);
@@ -190,7 +190,7 @@ public class ServerInteractionManager {
         } else {
             // Notify of the proposal failure and remove it.
             successMessage(sender, Text.translatable("server.proposalRejectionSent"));
-            failMessage(receiver, Text.translatable("server.proposalRejected", sender.getEntityName()));
+            failMessage(receiver, Text.translatable("server.proposalRejected", sender.getName()));
             removeProposalFor(sender, receiver);
         }
     }
@@ -249,7 +249,7 @@ public class ServerInteractionManager {
             senderData.getPartner().ifPresent(spouse -> {
                 if (spouse instanceof PlayerEntity player) {
                     // Notify the ex if they are online.
-                    failMessage(player, Text.translatable("server.marriageEnded", sender.getEntityName()));
+                    failMessage(player, Text.translatable("server.marriageEnded", sender.getName()));
                 }
             });
             senderData.endRelationShip(RelationshipState.SINGLE);
@@ -276,20 +276,13 @@ public class ServerInteractionManager {
             return;
         }
 
-        // Ensure we don't already have a baby
-        // todo add cooldown
-        if (false) {
-            failMessage(sender, Text.translatable("server.babyPresent"));
-            return;
-        }
-
         // Ensure the spouse is online.
         senderData.getPartner().filter(e -> e instanceof PlayerEntity).map(PlayerEntity.class::cast).ifPresentOrElse(spouse -> {
             // If the spouse is online and has previously sent a procreation request that hasn't expired, we can continue.
             // Otherwise, we notify the spouse that they must also enter the command.
             if (!procreateMap.containsKey(spouse.getUuid())) {
                 procreateMap.put(sender.getUuid(), System.currentTimeMillis() + 10000);
-                infoMessage(spouse, Text.translatable("server.procreationRequest", sender.getEntityName()));
+                infoMessage(spouse, Text.translatable("server.procreationRequest", sender.getName()));
             } else {
                 // On success, add a randomly generated baby to the original requester.
                 successMessage(sender, Text.translatable("server.procreationSuccessful"));

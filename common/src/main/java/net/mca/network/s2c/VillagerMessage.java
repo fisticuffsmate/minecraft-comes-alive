@@ -16,7 +16,7 @@ public class VillagerMessage implements Message {
     private final UUID uuid;
 
     public VillagerMessage(MutableText message, UUID uuid) {
-        this.message = Text.Serializer.toJson(message);
+        this.message = Text.Serialization.toJsonString(message);
         this.uuid = uuid;
     }
 
@@ -26,7 +26,7 @@ public class VillagerMessage implements Message {
     }
 
     public MutableText getMessage() {
-        return Text.Serializer.fromJson(message);
+        return Text.Serialization.fromJson(message);
     }
 
     public UUID getUuid() {

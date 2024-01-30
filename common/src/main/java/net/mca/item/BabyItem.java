@@ -229,7 +229,7 @@ public class BabyItem extends Item {
 
         // notify parents
         Stream.of("mother", "father").map(key -> world.getEntity(getBabyNbt(stack).getUuid(key))).filter(Objects::nonNull)
-                .filter(e -> e instanceof ServerPlayerEntity)
+                .filter(ServerPlayerEntity.class::isInstance)
                 .map(ServerPlayerEntity.class::cast)
                 .distinct()
                 .forEach(ply -> {
@@ -255,7 +255,7 @@ public class BabyItem extends Item {
             tooltip.add(Text.translatable("item.mca.baby.name", text.setStyle(text.getStyle().withColor(gender.getColor()))).formatted(Formatting.GRAY));
 
             if (age > 0) {
-                tooltip.add(Text.translatable("item.mca.baby.age", StringHelper.formatTicks(age)).formatted(Formatting.GRAY));
+                tooltip.add(Text.translatable("item.mca.baby.age", StringHelper.formatTicks(age, 1.0f)).formatted(Formatting.GRAY));
             }
         } else {
             tooltip.add(Text.translatable("item.mca.baby.give_name").formatted(Formatting.YELLOW));

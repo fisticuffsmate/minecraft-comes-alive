@@ -20,16 +20,16 @@ public class CivilRegistryManager extends PersistentState {
     }
 
     CivilRegistryManager(ServerWorld world) {
-
+        // empty
     }
 
     CivilRegistryManager(NbtCompound nbt) {
-        entries.addAll(NbtHelper.toList(nbt.get("entries"), element -> Text.Serializer.fromJson(element.asString())));
+        entries.addAll(NbtHelper.toList(nbt.get("entries"), element -> Text.Serialization.fromJson(element.asString())));
     }
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
-        NbtList elements = NbtHelper.fromList(entries, a -> NbtString.of(Text.Serializer.toJson(a)));
+        NbtList elements = NbtHelper.fromList(entries, a -> NbtString.of(Text.Serialization.toJsonString(a)));
         NbtCompound compound = new NbtCompound();
         compound.put("entries", elements);
         return compound;

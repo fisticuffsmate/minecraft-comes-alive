@@ -1,43 +1,40 @@
 package net.mca.advancement.criterion;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancement.criterion.AbstractCriterion;
-import net.minecraft.advancement.criterion.AbstractCriterionConditions;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.dynamic.Codecs;
 
 import java.util.Optional;
 
 public class GenericEventCriterion extends AbstractCriterion<GenericEventCriterion.Conditions> {
     @Override
-    public Conditions conditionsFromJson(JsonObject json, Optional<LootContextPredicate> player, AdvancementEntityPredicateDeserializer deserializer) {
-        String event = json.has("event") ? json.get("event").getAsString() : "";
-        return new Conditions(player, event);
+    public Codec<Conditions> getConditionsCodec() {
+        return Conditions.CODEC;
     }
 
     public void trigger(ServerPlayerEntity player, String event) {
         trigger(player, conditions -> conditions.test(event));
     }
 
-    public static class Conditions extends AbstractCriterionConditions {
-        private final String event;
-
-        public Conditions(Optional<LootContextPredicate> player, String event) {
-            super(player);
-            this.event = event;
-        }
+    public record Conditions(
+            Optional<LootContextPredicate> player,
+            String event
+    ) implements AbstractCriterion.Conditions {
+        public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> {
+            return instance.group(
+                    Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player")
+                            .forGetter(Conditions::player),
+                    Codecs.createStrictOptionalFieldCodec(Codec.STRING, "event", "")
+                            .forGetter(Conditions::event)
+            ).apply(instance, Conditions::new);
+        });
 
         public boolean test(String event) {
             return this.event.equals(event);
-        }
-
-        @Override
-        public JsonObject toJson() {
-            JsonObject json = super.toJson();
-            json.add("event", new JsonPrimitive(event));
-            return json;
         }
     }
 }

@@ -136,7 +136,7 @@ public class HarvestingTask extends AbstractChoreTask {
     private boolean isValidMature(BlockPos pos) {
         BlockState state = villager.getWorld().getBlockState(pos);
         return (state.getBlock() instanceof CropBlock crop && crop.isMature(state))
-                || state.getBlock() instanceof GourdBlock;
+                || state.getBlock() instanceof PumpkinBlock;
     }
 
     private boolean isValidImmature(BlockPos pos) {
@@ -146,7 +146,7 @@ public class HarvestingTask extends AbstractChoreTask {
 
     private void searchCrop(int rangeX, int rangeY) {
         List<BlockPos> nearbyCrops = TaskUtils.getNearbyBlocks(villager.getBlockPos(), villager.getWorld(),
-                blockState -> blockState.getBlock() instanceof CropBlock || blockState.getBlock() instanceof GourdBlock, rangeX, rangeY);
+                blockState -> blockState.getBlock() instanceof CropBlock || blockState.getBlock() instanceof PumpkinBlock, rangeX, rangeY);
 
         harvestable.addAll(nearbyCrops.stream().filter(this::isValidMature).toList());
 
@@ -188,7 +188,7 @@ public class HarvestingTask extends AbstractChoreTask {
                     plantSeeds(world, villager, currentPos.up(), null);
                 } else if (isValidMature(currentPos)) {
                     BlockState state = world.getBlockState(currentPos);
-                    if (state.getBlock() instanceof GourdBlock) {
+                    if (state.getBlock() instanceof PumpkinBlock) {
                         harvestCrops(world, currentPos);
                     } else {
                         harvestCrops(world, currentPos);

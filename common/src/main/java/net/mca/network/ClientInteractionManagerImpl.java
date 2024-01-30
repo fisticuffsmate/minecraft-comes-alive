@@ -194,7 +194,7 @@ public class ClientInteractionManagerImpl implements ClientInteractionManager {
 
     @Override
     public void handleToastMessage(ShowToastRequest message) {
-        SystemToast.add(client.getToastManager(), SystemToast.Type.TUTORIAL_HINT, message.getTitle(), message.getMessage());
+        SystemToast.add(client.getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION, message.getTitle(), message.getMessage());
     }
 
     @Override

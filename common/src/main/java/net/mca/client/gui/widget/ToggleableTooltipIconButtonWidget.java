@@ -3,7 +3,6 @@ package net.mca.client.gui.widget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 
 import static net.mca.client.gui.InteractScreen.ICON_TEXTURES;
@@ -20,7 +19,7 @@ public class ToggleableTooltipIconButtonWidget extends ToggleableTooltipButtonWi
     }
 
     @Override
-    public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         drawIcon(context);
     }
 

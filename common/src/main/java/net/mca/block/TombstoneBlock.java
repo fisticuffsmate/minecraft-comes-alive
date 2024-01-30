@@ -1,5 +1,7 @@
 package net.mca.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.mca.entity.Infectable;
 import net.mca.entity.ai.relationship.CompassionateEntity;
 import net.mca.entity.ai.relationship.EntityRelationship;
@@ -23,7 +25,6 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
@@ -80,6 +81,10 @@ public class TombstoneBlock extends BlockWithEntity implements Waterloggable {
     private final boolean requiresSolid;
     private final float rotation;
 
+    public TombstoneBlock(Settings properties) {
+        this(properties, 1, 1, new Vec3d(0, 0, 0), 0, false, GRAVELLING_SHAPE);
+    }
+
     public TombstoneBlock(Settings properties, int lineWidth, int maxNameHeight, Vec3d nameplateOffset, float rotation, boolean requiresSolid, VoxelShape baseShape) {
         super(properties);
         setDefaultState(getDefaultState().with(Properties.WATERLOGGED, false));
@@ -118,12 +123,6 @@ public class TombstoneBlock extends BlockWithEntity implements Waterloggable {
         return true;
     }
 
-    // TODO: Verify (1.20)
-//    @Override
-//    public boolean canMobSpawnInside() {
-//        return true;
-//    }
-
     @Override
     @Deprecated
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext ePos) {
@@ -132,6 +131,15 @@ public class TombstoneBlock extends BlockWithEntity implements Waterloggable {
         }
 
         return shapes.getOrDefault(state.get(Properties.HORIZONTAL_FACING), VoxelShapes.fullCube());
+    }
+
+    public static final MapCodec<TombstoneBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> {
+        return instance.group(createSettingsCodec()).apply(instance, TombstoneBlock::new);
+    });
+
+    @Override
+    protected MapCodec<? extends BlockWithEntity> getCodec() {
+        return CODEC;
     }
 
     @Override
@@ -152,7 +160,7 @@ public class TombstoneBlock extends BlockWithEntity implements Waterloggable {
 
     private void updateTombstoneState(World world, BlockPos pos) {
         if (!world.isClient) {
-            GraveyardManager.get((ServerWorld)world).setTombstoneState(pos,
+            GraveyardManager.get((ServerWorld) world).setTombstoneState(pos,
                     hasEntity(world, pos) ? GraveyardManager.TombstoneState.FILLED : GraveyardManager.TombstoneState.EMPTY
             );
         }
@@ -164,7 +172,7 @@ public class TombstoneBlock extends BlockWithEntity implements Waterloggable {
         super.onStateReplaced(state, world, pos, newState, moved);
         if (!world.isClient && !state.isOf(newState.getBlock())) {
             updateNeighbors(state, world, pos);
-            GraveyardManager.get((ServerWorld)world).removeTombstoneState(pos);
+            GraveyardManager.get((ServerWorld) world).removeTombstoneState(pos);
         }
     }
 
@@ -181,7 +189,7 @@ public class TombstoneBlock extends BlockWithEntity implements Waterloggable {
         if (world.isClient) {
             return null;
         }
-        return (w, pos, s, data) -> ((Data)data).tick();
+        return (w, pos, s, data) -> ((Data) data).tick();
     }
 
     @Override
@@ -407,10 +415,10 @@ public class TombstoneBlock extends BlockWithEntity implements Waterloggable {
                 world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_BELL_USE, SoundCategory.BLOCKS, 1, 1);
                 world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(getCachedState()));
                 world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(getCachedState()));
-                ((TombstoneBlock)getCachedState().getBlock()).updateNeighbors(getCachedState(), world, pos);
+                ((TombstoneBlock) getCachedState().getBlock()).updateNeighbors(getCachedState(), world, pos);
 
                 if (!world.isClient) {
-                    GraveyardManager.get((ServerWorld)world).setTombstoneState(pos,
+                    GraveyardManager.get((ServerWorld) world).setTombstoneState(pos,
                             hasEntity() ? GraveyardManager.TombstoneState.FILLED : GraveyardManager.TombstoneState.EMPTY
                     );
                     sync();
@@ -519,14 +527,14 @@ public class TombstoneBlock extends BlockWithEntity implements Waterloggable {
             EntityData(NbtCompound nbt) {
                 this(
                         nbt.getCompound("entityData"),
-                        Text.Serializer.fromJson(nbt.getString("entityName")),
+                        Text.Serialization.fromJson(nbt.getString("entityName")),
                         Gender.byId(nbt.getInt("entityGender"))
                 );
             }
 
             void writeNbt(NbtCompound nbt) {
                 nbt.put("entityData", this.nbt);
-                nbt.putString("entityName", Text.Serializer.toJson(name));
+                nbt.putString("entityName", Text.Serialization.toJsonString(name));
                 nbt.putInt("entityGender", gender.ordinal());
             }
         }
