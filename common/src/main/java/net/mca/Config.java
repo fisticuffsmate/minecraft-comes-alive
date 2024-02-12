@@ -97,6 +97,12 @@ public final class Config implements Serializable {
     //AI
     public boolean enableVillagerChatAI = false;
     public int villagerChatAIIntelligence = 4;
+    public boolean enableOnlineTTS = false;
+    public String onlineTTSLanguage = "en";
+    public String villagerChatAIEndpoint = "https://chat.conczin.net/v1/mca/chat";
+    public String villagerChatAIToken = "";
+    public String villagerChatAIModel = "mistral-small";
+    public String villagerTTSServer = "https://api.rk.conczin.net/";
 
     //village behavior
     public float guardSpawnFraction = 0.175f;

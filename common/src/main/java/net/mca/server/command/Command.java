@@ -17,6 +17,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -43,9 +45,81 @@ public class Command {
                 .then(register("destiny", Command::destiny))
                 .then(register("mail", Command::mail))
                 .then(register("verify").then(CommandManager.argument("email", StringArgumentType.greedyString()).executes(Command::verify)))
+                .then(register("chatAI")
+                        .executes(Command::chatAIHelp)
+                        .then(CommandManager.argument("model", StringArgumentType.greedyString())
+                                .executes(c -> Command.chatAI(c.getArgument("model", String.class), (new Config()).villagerChatAIEndpoint, ""))
+                                .then(CommandManager.argument("endpoint", StringArgumentType.greedyString())
+                                        .executes(c -> Command.chatAI(c.getArgument("model", String.class), c.getArgument("endpoint", String.class), ""))
+                                        .then(CommandManager.argument("token", StringArgumentType.greedyString())
+                                                .executes(c -> Command.chatAI(c.getArgument("model", String.class), c.getArgument("endpoint", String.class), c.getArgument("token", String.class)))))))
         );
     }
 
+    private static int chatAIHelp(CommandContext<ServerCommandSource> context) {
+        MutableText styled = (Text.translatable("mca.ai_help")).styled(s -> s
+                .withColor(Formatting.GOLD)
+                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/Luke100000/minecraft-comes-alive/wiki/GPT3-based-conversations")));
+        sendMessage(context, styled);
+        return 0;
+    }
+
+    private static int chatAI(String model, String endpoint, String token) {
+        Config.getInstance().villagerChatAIModel = model;
+        Config.getInstance().villagerChatAIEndpoint = endpoint;
+        Config.getInstance().villagerChatAIToken = token;
+        Config.getInstance().save();
+        return 0;
+    }
+
+    private static int ttsEnable(CommandContext<ServerCommandSource> ctx) {
+        Config.getInstance().enableOnlineTTS = BoolArgumentType.getBool(ctx, "enabled");
+        Config.getInstance().save();
+        return 0;
+    }
+
+    private static int ttsLanguage(CommandContext<ServerCommandSource> ctx) {
+        Set<String> languages = Set.of("en", "es", "fr", "de", "it", "pt", "pl", "tr", "ru", "nl", "cs", "ar", "zh-cn", "hu", "ko", "ja", "hi");
+        String language = ctx.getArgument("language", String.class);
+        if (languages.contains(language)) {
+            Config.getInstance().onlineTTSLanguage = language;
+            Config.getInstance().save();
+            return 0;
+        } else {
+            sendMessage(ctx, "Choose one of: " + String.join(", ", languages));
+            return 1;
+        }
+    }
+
+    private static boolean couldBePersonalityRelated(String phrase) {
+        for (Personality value : Personality.values()) {
+            if (phrase.contains(value.name().toLowerCase(Locale.ROOT))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static int ttsScan(CommandContext<ServerCommandSource> ctx) {
+        for (Map.Entry<String, String> text : MCA.translations.entrySet()) {
+            String key = text.getKey();
+            if ((key.contains("dialogue.") || key.contains("interaction.") || key.contains("villager.")) && !couldBePersonalityRelated(key)) {
+                String hash = OnlineSpeechManager.INSTANCE.getHash(text.getValue());
+                String language = Config.getInstance().onlineTTSLanguage;
+                CompletableFuture.runAsync(() -> {
+                    OnlineSpeechManager.INSTANCE.downloadAudio(language, "male_" + (SpeechManager.TOTAL_VOICES - 1), text.getValue(), hash);
+                });
+            }
+        }
+
+        return 0;
+    }
+
+    private static int editor(CommandContext<ServerCommandSource> ctx) {
+        ServerPlayerEntity player = ctx.getSource().getPlayer();
+        if (player == null) {
+            return 1;
+        }
     private static int editor(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         if (ctx.getSource().hasPermissionLevel(2) || Config.getInstance().allowFullPlayerEditor) {
             NetworkHandler.sendToPlayer(new OpenGuiRequest(OpenGuiRequest.Type.VILLAGER_EDITOR, ctx.getSource().getPlayer()), ctx.getSource().getPlayer());
@@ -100,7 +174,7 @@ public class Command {
             // encode and create url
             String encodedURL = params.keySet().stream()
                     .map(key -> key + "=" + URLEncoder.encode(params.get(key), StandardCharsets.UTF_8))
-                    .collect(Collectors.joining("&", GPT3.URL + "verify?", ""));
+                    .collect(Collectors.joining("&", Config.getInstance().villagerChatAIEndpoint.replace("v1/mca/chat", "v1/mca/verify") + "?", ""));
 
             GPT3.Answer request = GPT3.request(encodedURL);
 
