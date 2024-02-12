@@ -49,3 +49,4 @@ forge*changelog.txt
 /scripts/TTS/temp.pcm
 /immersiveLibraryToken
 /scripts/GPT3_REST_API/.env
+/scripts/langPreTranslation/.env

@@ -18,8 +18,8 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
@@ -54,19 +54,15 @@ public class Command {
                                         .executes(c -> Command.chatAI(c.getArgument("model", String.class), c.getArgument("endpoint", String.class), ""))
                                         .then(CommandManager.argument("token", StringArgumentType.string())
                                                 .executes(c -> Command.chatAI(c.getArgument("model", String.class), c.getArgument("endpoint", String.class), c.getArgument("token", String.class)))))))
-                .then(register("tts")
-                        .then(CommandManager.literal("enable").then(CommandManager.argument("enabled", BoolArgumentType.bool()).executes(Command::ttsEnable)))
-                        .then(CommandManager.literal("language").then(CommandManager.argument("language", StringArgumentType.string()).executes(Command::ttsLanguage)))
-                        .then(CommandManager.literal("scan").requires(p -> p.getPlayer() != null && p.getPlayer().getEntityName().contains("Player")).executes(Command::ttsScan))
-                )
+
         );
     }
 
-    private static int chatAIHelp(CommandContext<ServerCommandSource> context) {
-        MutableText styled = (Text.translatable("mca.ai_help")).styled(s -> s
+    private static int chatAIHelp(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        MutableText styled = new TranslatableText("mca.ai_help").styled(s -> s
                 .withColor(Formatting.GOLD)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/Luke100000/minecraft-comes-alive/wiki/GPT3-based-conversations")));
-        sendMessage(context, styled);
+        context.getSource().getPlayer().sendMessage(styled, false);
         return chatAI((new Config()).villagerChatAIModel, (new Config()).villagerChatAIEndpoint, (new Config()).villagerChatAIToken);
     }
 
@@ -78,55 +74,11 @@ public class Command {
         return 0;
     }
 
-    private static int ttsEnable(CommandContext<ServerCommandSource> ctx) {
-        Config.getInstance().enableOnlineTTS = BoolArgumentType.getBool(ctx, "enabled");
-        Config.getInstance().save();
-        return 0;
-    }
-
-    private static int ttsLanguage(CommandContext<ServerCommandSource> ctx) {
-        Set<String> languages = Set.of("en", "es", "fr", "de", "it", "pt", "pl", "tr", "ru", "nl", "cs", "ar", "zh-cn", "hu", "ko", "ja", "hi");
-        String language = ctx.getArgument("language", String.class);
-        if (languages.contains(language)) {
-            Config.getInstance().onlineTTSLanguage = language;
-            Config.getInstance().save();
-            return 0;
-        } else {
-            sendMessage(ctx, "Choose one of: " + String.join(", ", languages));
-            return 1;
-        }
-    }
-
-    private static boolean couldBePersonalityRelated(String phrase) {
-        for (Personality value : Personality.values()) {
-            if (phrase.contains(value.name().toLowerCase(Locale.ROOT))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static int ttsScan(CommandContext<ServerCommandSource> ctx) {
-        for (Map.Entry<String, String> text : MCA.translations.entrySet()) {
-            String key = text.getKey();
-            if ((key.contains("dialogue.") || key.contains("interaction.") || key.contains("villager.")) && !couldBePersonalityRelated(key)) {
-                String hash = OnlineSpeechManager.INSTANCE.getHash(text.getValue());
-                String language = Config.getInstance().onlineTTSLanguage;
-                CompletableFuture.runAsync(() -> {
-                    OnlineSpeechManager.INSTANCE.downloadAudio(language, "male_" + (SpeechManager.TOTAL_VOICES - 1), text.getValue(), hash);
-                });
-            }
-        }
-
-        return 0;
-    }
-
-    private static int editor(CommandContext<ServerCommandSource> ctx) {
+    private static int editor(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayer();
         if (player == null) {
             return 1;
         }
-    private static int editor(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
         if (ctx.getSource().hasPermissionLevel(2) || Config.getInstance().allowFullPlayerEditor) {
             NetworkHandler.sendToPlayer(new OpenGuiRequest(OpenGuiRequest.Type.VILLAGER_EDITOR, ctx.getSource().getPlayer()), ctx.getSource().getPlayer());
             return 0;

@@ -7,10 +7,7 @@ import net.mca.MCA;
 import net.mca.entity.VillagerEntityMCA;
 import net.mca.entity.ai.gpt3Modules.*;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import org.apache.commons.io.IOUtils;
@@ -25,8 +22,6 @@ import java.util.*;
 import static net.minecraft.util.Util.NIL_UUID;
 
 public class GPT3 {
-    public static final String URL = "http://snoweagle.tk/";
-
     private static final int MIN_MEMORY = 100;
     private static final int MAX_MEMORY = 600;
     private static final int MAX_MEMORY_TIME = 20 * 60 * 45;
@@ -38,7 +33,7 @@ public class GPT3 {
     private static final Map<UUID, UUID> lastInteraction = new HashMap<>();
 
     public static String translate(String phrase) {
-        return phrase.replaceAll("_", " ").toLowerCase(Locale.ROOT).replace("mca.", "");
+        return phrase.replace("_", " ").toLowerCase(Locale.ROOT).replace("mca.", "");
     }
 
     public record Answer(String answer, String error) {
@@ -94,7 +89,7 @@ public class GPT3 {
 
             return new Answer(answer, error);
         } catch (Exception e) {
-            e.printStackTrace();
+            MCA.LOGGER.warn(e);
             return new Answer(null, "unknown");
         }
     }
@@ -113,9 +108,9 @@ public class GPT3 {
             lastInteraction.put(player.getUuid(), villager.getUuid());
 
             // remember phrase
-            List<Pair<String, String>> pastDialogue = memory.computeIfAbsent(villager.getUuid(), (key) -> new LinkedList<>());
-            int MEMORY = MIN_MEMORY + Math.min(5, Config.getInstance().villagerChatAIIntelligence) * (MAX_MEMORY - MIN_MEMORY) / 5;
-            while (pastDialogue.stream().mapToInt(v -> (v.getRight().length() / 4)).sum() > MEMORY) {
+            List<Pair<String, String>> pastDialogue = memory.computeIfAbsent(villager.getUuid(), key -> new LinkedList<>());
+            int memory = MIN_MEMORY + Math.min(5, Config.getInstance().villagerChatAIIntelligence) * (MAX_MEMORY - MIN_MEMORY) / 5;
+            while (pastDialogue.stream().mapToInt(v -> (v.getRight().length() / 4)).sum() > memory) {
                 pastDialogue.remove(0);
             }
 
@@ -176,7 +171,7 @@ public class GPT3 {
                 }
                 return Optional.ofNullable(message.answer);
             } else if (message.error.equals("invalid_model")) {
-                player.sendMessage(Text.literal("Invalid model!").formatted(Formatting.RED), false);
+                player.sendMessage(new LiteralText("Invalid model!").formatted(Formatting.RED), false);
             } else if (message.error.equals("limit")) {
                 MutableText styled = (new TranslatableText("mca.limit.patreon")).styled(s -> s
                         .withColor(Formatting.GOLD)
