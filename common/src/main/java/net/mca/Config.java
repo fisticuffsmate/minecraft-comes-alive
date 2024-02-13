@@ -101,11 +101,6 @@ public final class Config implements Serializable {
     public String villagerChatAIEndpoint = "https://api.conczin.net/v1/mca/chat";
     public String villagerChatAIToken = "";
     public String villagerChatAIModel = "mistral-small";
-    public String villagerTTSServer = "http://api.rk.conczin.net/";
-
-    // TTS
-    public boolean enableOnlineTTS = false;
-    public String onlineTTSLanguage = "en";
 
     //village behavior
     public float guardSpawnFraction = 0.175f;
