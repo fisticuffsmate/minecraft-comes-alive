@@ -9,7 +9,6 @@ import net.mca.entity.GrimReaperEntity;
 import net.mca.server.world.data.VillageManager;
 import net.mca.util.WorldUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -17,15 +16,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.server.world.ChunkTicketType;
-import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -33,8 +29,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ReaperSpawner {
-    public static final ChunkTicketType<BlockPos> REAPER = ChunkTicketType.create("mca:reaper", Vec3i::compareTo, 100);
-
     private static final Direction[] HORIZONTALS = new Direction[]{
             Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST
     };
@@ -62,25 +56,19 @@ public class ReaperSpawner {
                 .ifPresent(p -> p.sendMessage(Text.translatable(phrase).formatted(Formatting.RED), true));
     }
 
-    public void trySpawnReaper(ServerWorld world, BlockState state, BlockPos pos) {
-        if (!state.isIn(BlockTags.FIRE)) {
-            return;
-        }
+    public void trySpawnReaper(ServerWorld world, BlockPos pos) {
         if (!Config.getInstance().allowGrimReaper) {
             return;
         }
 
-        ServerChunkManager chunkManager = world.getChunkManager();
         ChunkPos chunkPos = new ChunkPos(pos);
-        chunkManager.addTicket(REAPER, chunkPos, 16, pos);
 
         // Make sure the neighboring chunks are loaded
         if (!WorldUtils.isAreaLoaded(world, chunkPos, 1)) {
-            chunkManager.removeTicket(REAPER, chunkPos, 16, pos);
             return;
         }
 
-        if (world.getBlockState(pos.down()).getBlock() != Blocks.EMERALD_BLOCK) {
+        if (world.getBlockState(pos).getBlock() != Blocks.EMERALD_BLOCK) {
             return;
         }
 
@@ -100,17 +88,15 @@ public class ReaperSpawner {
             return;
         }
 
-        start(new SummonPosition(pos, totems));
+        start(new SummonPosition(pos.up(), totems));
 
         EntityType.LIGHTNING_BOLT.spawn(world, pos, SpawnReason.TRIGGERED);
 
-        world.setBlockState(pos.down(), Blocks.SOUL_SOIL.getDefaultState(), Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
-        world.setBlockState(pos, BlocksMCA.INFERNAL_FLAME.get().getDefaultState(), Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
+        world.setBlockState(pos, Blocks.SOUL_SOIL.getDefaultState(), Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
+        world.setBlockState(pos.up(), BlocksMCA.INFERNAL_FLAME.get().getDefaultState(), Block.NOTIFY_NEIGHBORS | Block.NOTIFY_LISTENERS);
         totems.forEach(totem ->
                 world.setBlockState(totem, BlocksMCA.INFERNAL_FLAME.get().getDefaultState(), Block.NOTIFY_LISTENERS | Block.FORCE_STATE)
         );
-
-        chunkManager.removeTicket(REAPER, chunkPos, 16, pos);
     }
 
     private void start(SummonPosition pos) {
@@ -144,7 +130,7 @@ public class ReaperSpawner {
     }
 
     private Set<BlockPos> getTotemsFires(World world, BlockPos pos) {
-        int groundY = pos.getY() - 2;
+        int groundY = pos.getY() - 1;
         int leftSkyHeight = world.getTopY() - groundY;
         int minPillarHeight = Math.min(Config.getInstance().minPillarHeight, leftSkyHeight);
         BlockPos.Mutable target = new BlockPos.Mutable();

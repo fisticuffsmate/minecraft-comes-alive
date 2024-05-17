@@ -1,6 +1,7 @@
 # 7.5.18
 
 * Updated contributor book
+* Fixed ReaperSpawner eating all your CPU
 
 # 7.5.17
 
