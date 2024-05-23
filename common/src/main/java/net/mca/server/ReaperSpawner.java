@@ -25,6 +25,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,7 +36,7 @@ public class ReaperSpawner {
 
     private final Object lock = new Object();
 
-    private final Map<Long, ActiveSummon> activeSummons = new HashMap<>();
+    private final Map<Long, ActiveSummon> activeSummons = new ConcurrentHashMap<>();
 
     private final VillageManager manager;
 
@@ -100,26 +101,22 @@ public class ReaperSpawner {
     }
 
     private void start(SummonPosition pos) {
-        synchronized (lock) {
-            activeSummons.computeIfAbsent(pos.spawnPosition.asLong(), ActiveSummon::new).start(pos);
-            manager.markDirty();
-        }
+        activeSummons.computeIfAbsent(pos.spawnPosition.asLong(), ActiveSummon::new).start(pos);
+        manager.markDirty();
     }
 
     public void tick(ServerWorld world) {
-        synchronized (lock) {
-            boolean empty = activeSummons.isEmpty();
-            activeSummons.values().removeIf(summon -> {
-                try {
-                    return summon.tick(world);
-                } catch (Exception e) {
-                    MCA.LOGGER.error("Exception ticking summon", e);
-                    return true;
-                }
-            });
-            if (!empty) {
-                manager.markDirty();
+        boolean empty = activeSummons.isEmpty();
+        activeSummons.values().removeIf(summon -> {
+            try {
+                return summon.tick(world);
+            } catch (Exception e) {
+                MCA.LOGGER.error("Exception ticking summon", e);
+                return true;
             }
+        });
+        if (!empty) {
+            manager.markDirty();
         }
     }
 
