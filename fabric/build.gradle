@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id 'com.github.johnrengelman.shadow'
 }
 
 architectury {
@@ -34,47 +34,50 @@ sourceSets {
 }
 
 configurations {
-    common
-    shadowCommon
+    common {
+        canBeResolved = true
+        canBeConsumed = false
+    }
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentFabric.extendsFrom common
+
+    shadowBundle {
+        canBeResolved = true
+        canBeConsumed = false
+    }
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
-    modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
-    modApi "dev.architectury:architectury-fabric:${rootProject.architectury_version}"
+    modImplementation "net.fabricmc:fabric-loader:$rootProject.loader_version"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_version"
+    modImplementation "dev.architectury:architectury-fabric:$rootProject.architectury_version"
 
-    common(project(path: ":common", configuration: "namedElements")) {
-        transitive false
-    }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) {
-        transitive false
-    }
+    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+    shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
+
 }
 
 processResources {
-    inputs.property "version", project.version.toString()
+    inputs.property 'version', project.version
 
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version.toString()
+    filesMatching('fabric.mod.json') {
+        expand version: project.version
     }
 
     from 'LICENSE'
 }
 
 shadowJar {
-    configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+    configurations = [project.configurations.shadowBundle]
+    archiveClassifier = 'dev-shadow'
 }
 
 remapJar {
     input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    classifier "fabric"
 }
 
+/*
 jar {
     classifier "dev"
 }
@@ -91,3 +94,4 @@ components.java {
         skip()
     }
 }
+ */

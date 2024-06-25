@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id 'com.github.johnrengelman.shadow'
 }
 
 architectury {
@@ -14,46 +14,47 @@ loom {
 }
 
 configurations {
-    common
-    shadowCommon
+    common {
+        canBeResolved = true
+        canBeConsumed = false
+    }
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
-    developmentForge.extendsFrom common
+    developmentFabric.extendsFrom common
+
+    shadowBundle {
+        canBeResolved = true
+        canBeConsumed = false
+    }
 }
 
 dependencies {
-    forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
-    // Remove the next line if you don't want to depend on the API
-    modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
+    forge "net.minecraftforge:forge:$rootProject.forge_version"
+    modImplementation "dev.architectury:architectury-forge:$rootProject.architectury_version"
 
-    common(project(path: ":common", configuration: "namedElements")) {
-        transitive false
-    }
-    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) {
-        transitive false
-    }
+    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+    shadowBundle project(path: ':common', configuration: 'transformProductionForge')
 }
 
 processResources {
-    inputs.property "version", project.version.toString()
+    inputs.property 'version', project.version
 
-    filesMatching("META-INF/mods.toml") {
-        expand "version": project.version.toString()
+    filesMatching('META-INF/mods.toml') {
+        expand version: project.version
     }
 }
 
 shadowJar {
     exclude "fabric.mod.json"
-    configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+    configurations = [project.configurations.shadowBundle]
+    archiveClassifier = 'dev-shadow'
 }
 
 remapJar {
     input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    classifier "forge"
 }
 
+/*
 jar {
     classifier "dev"
 }
@@ -70,3 +71,4 @@ components.java {
         skip()
     }
 }
+ */
