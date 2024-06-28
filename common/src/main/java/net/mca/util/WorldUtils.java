@@ -9,6 +9,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
@@ -60,6 +61,18 @@ public interface WorldUtils {
         if (entry.isPresent()) {
             RegistryEntryList.Direct<Structure> of = RegistryEntryList.of(entry.get());
             Pair<BlockPos, RegistryEntry<Structure>> pair = world.getChunkManager().getChunkGenerator().locateStructure(world, of, center, radius, false);
+            return pair == null ? Optional.empty() : Optional.ofNullable(pair.getFirst());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    static Optional<BlockPos> getClosestStructurePosition(ServerWorld world, BlockPos center, TagKey<Structure> tag, int radius) {
+        Registry<Structure> registry = world.getRegistryManager().get(RegistryKeys.STRUCTURE);
+        var entryList = registry.getEntryList(tag);
+        if (entryList.isPresent()) {
+            var chunkGenerator = world.getChunkManager().getChunkGenerator();
+            Pair<BlockPos, RegistryEntry<Structure>> pair = chunkGenerator.locateStructure(world, entryList.get(), center, radius, false);
             return pair == null ? Optional.empty() : Optional.ofNullable(pair.getFirst());
         } else {
             return Optional.empty();
