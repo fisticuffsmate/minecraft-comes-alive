@@ -16,6 +16,7 @@ import net.minecraft.util.Pair;
 import org.apache.commons.io.IOUtils;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -37,17 +38,22 @@ public class GPT3 implements ChatAIStrategy {
     public record Answer(String answer, String error) {
     }
 
+    private static HttpURLConnection getHttpURLConnection(String url, String token) throws IOException {
+        HttpURLConnection con = (HttpURLConnection) (new URL(url)).openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Accept-Charset", StandardCharsets.UTF_8.toString());
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Accept", "application/json");
+        con.setRequestProperty("Authorization", "Bearer " + token);
+
+        // Enable input and output streams
+        con.setDoOutput(true);
+        return con;
+    }
+
     public static Answer post(String url, String requestBody, String token) {
         try {
-            HttpURLConnection con = (HttpURLConnection) (new URL(url)).openConnection();
-            con.setRequestMethod("POST");
-            con.setRequestProperty("Accept-Charset", StandardCharsets.UTF_8.toString());
-            con.setRequestProperty("Content-Type", "application/json");
-            con.setRequestProperty("Accept", "application/json");
-            con.setRequestProperty("Authorization", "Bearer " + token);
-
-            // Enable input and output streams
-            con.setDoOutput(true);
+            HttpURLConnection con = getHttpURLConnection(url, token);
 
             // Write the request body to the connection
             try (DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
@@ -68,7 +74,7 @@ public class GPT3 implements ChatAIStrategy {
             return new Answer(message, error);
         } catch (Exception e) {
             MCA.LOGGER.error(e);
-            return new Answer(null, "unknown");
+            return new Answer(null, "Unknown error, check log!");
         }
     }
 
@@ -94,6 +100,9 @@ public class GPT3 implements ChatAIStrategy {
 
     public Optional<String> answer(ServerPlayerEntity player, VillagerEntityMCA villager, String msg) {
         try {
+            Config config = Config.getInstance();
+            boolean isInhouse = config.villagerChatAIEndpoint.contains("conczin.net");
+
             String playerName = player.getName().getString();
             String villagerName = villager.getName().getString();
 
@@ -106,7 +115,7 @@ public class GPT3 implements ChatAIStrategy {
 
             // remember phrase
             List<Pair<String, String>> pastDialogue = memory.computeIfAbsent(villager.getUuid(), key -> new LinkedList<>());
-            int memory = MIN_MEMORY + Math.min(5, Config.getInstance().villagerChatAIIntelligence) * (MAX_MEMORY - MIN_MEMORY) / 5;
+            int memory = MIN_MEMORY + Math.min(5, config.villagerChatAIIntelligence) * (MAX_MEMORY - MIN_MEMORY) / 5;
             while (pastDialogue.stream().mapToInt(v -> (v.getRight().length() / 4)).sum() > memory) {
                 pastDialogue.remove(0);
             }
@@ -119,6 +128,7 @@ public class GPT3 implements ChatAIStrategy {
             VillageModule.apply(input, villager, player);
             EnvironmentModule.apply(input, villager, player);
             PlayerModule.apply(input, villager, player);
+            // todo add family
 
             // gather variables
             Map<String, String> variables = Map.of(
@@ -126,12 +136,38 @@ public class GPT3 implements ChatAIStrategy {
                     "villager", villagerName
             );
 
-            // add variables
+            // construct system message
             StringBuilder sb = new StringBuilder();
-            if (!Config.getInstance().villagerChatAISystemPrompt.isEmpty()) {
-                sb.append(Config.getInstance().villagerChatAISystemPrompt);
-                sb.append("\n");
+
+            // add control variables
+            if (isInhouse || config.villagerChatAIIncludeSessionInformation) {
+                long seed = player.getServerWorld().getSeed();
+                sb.append("[world_id:").append(seed).append("]");
+
+                sb.append("[player_id:").append(player.getUuid()).append("]");
+                sb.append("[character_id:").append(villager.getUuid()).append("]");
+
+                if (config.villagerChatAIUseLongTermMemory) {
+                    sb.append("[use_memory:true]");
+                }
+                if (config.villagerChatAIUseSharedLongTermMemory) {
+                    sb.append("[shared_memory:true]");
+                }
             }
+
+            if (!config.villagerChatAISystemPrompt.isEmpty()) {
+                // add user specified prompt
+                sb.append(config.villagerChatAISystemPrompt);
+                sb.append("\n");
+            } else if (!isInhouse) {
+                // when not using conczin.net, use some default prompt
+                String defaultPrompt = "You are a Minecraft villager, fully immersed in their virtual world, unaware of its artificial nature. You respond based on your description, your role, and your knowledge of the world. You have no knowledge of the real world, and do not realize that you are within Minecraft. You are no assistant! You can be sarcastic, funny, or even rude when appropriate.";
+                sb.append(defaultPrompt);
+                sb.append("\n");
+
+            }
+
+            // fill in variables and add to system message
             for (String s : input) {
                 for (Map.Entry<String, String> entry : variables.entrySet()) {
                     s = s.replaceAll("\\$" + entry.getKey(), entry.getValue());
@@ -141,28 +177,31 @@ public class GPT3 implements ChatAIStrategy {
 
             String system = sb.toString();
 
-            // Construct body
+            // construct body
             StringBuilder body = new StringBuilder();
             body.append("{");
-            body.append("\"model\": \"").append(Config.getInstance().villagerChatAIModel).append("\",");
+            body.append("\"model\": \"").append(config.villagerChatAIModel).append("\",");
             body.append("\"messages\": [");
             body.append("{\"role\": \"system\", \"content\": ").append(jsonStringQuote(system)).append("},");
             for (Pair<String, String> pair : pastDialogue) {
                 String role = pair.getLeft();
                 String content = pair.getRight();
-                body.append("{\"role\": \"").append(role).append("\", \"content\": ").append(jsonStringQuote(content)).append("},");
+                String name = role.equals("user") ? playerName : villagerName;
+                body.append("{\"role\": \"").append(role)
+                        .append("\", \"name\": \"").append(name)
+                        .append("\", \"content\": ").append(jsonStringQuote(content)).append("},");
             }
-            body.append("{\"role\": \"" + "user" + "\", \"content\": ").append(jsonStringQuote(msg)).append("}");
+            body.append("{\"role\": \"user\", \"name\": \"").append(playerName).append("\", \"content\": ").append(jsonStringQuote(msg)).append("}");
             body.append("]}");
 
             // get access token
-            String token = Config.getInstance().villagerChatAIToken;
-            if (token.isEmpty() || Config.getInstance().villagerChatAIEndpoint.contains("conczin.net")) {
+            String token = config.villagerChatAIToken;
+            if (token.isEmpty() || config.villagerChatAIEndpoint.contains("conczin.net")) {
                 token = variables.get("player");
             }
 
             // encode and create url
-            Answer message = post(Config.getInstance().villagerChatAIEndpoint, body.toString(), token);
+            Answer message = post(config.villagerChatAIEndpoint, body.toString(), token);
 
             if (message.error == null) {
                 // remember
@@ -183,8 +222,7 @@ public class GPT3 implements ChatAIStrategy {
             } else if (message.error.equals("limit_premium")) {
                 player.sendMessage(Text.translatable("mca.limit.premium").formatted(Formatting.RED), false);
             } else {
-                MCA.LOGGER.error(message.error);
-                player.sendMessage(Text.translatable("mca.ai_broken").formatted(Formatting.RED), false);
+                player.sendMessage(Text.literal(message.error).formatted(Formatting.RED), false);
             }
         } catch (Exception e) {
             MCA.LOGGER.error(e);

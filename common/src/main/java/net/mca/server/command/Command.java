@@ -57,6 +57,8 @@ public class Command {
                 .then(register("chatAI")
                         .requires(p -> p.hasPermissionLevel(2) || p.getServer().isSingleplayer())
                         .executes(Command::chatAIHelp)
+                        .then(CommandManager.literal("disable")
+                                .executes(Command::disableChatAI))
                         .then(CommandManager.argument("model", StringArgumentType.string())
                                 .executes(c -> Command.chatAI(c.getArgument("model", String.class), (new Config()).villagerChatAIEndpoint, ""))
                                 .then(CommandManager.argument("endpoint", StringArgumentType.string())
@@ -99,7 +101,7 @@ public class Command {
 
     private static int inworldAICharacter(CommandContext<ServerCommandSource> context, String name, String endpoint) {
         ServerPlayerEntity player = context.getSource().getPlayer();
-        Optional< VillagerEntityMCA> optionalVillager = ChatAI.findVillagerInArea(player, name);
+        Optional<VillagerEntityMCA> optionalVillager = ChatAI.findVillagerInArea(player, name);
         optionalVillager.ifPresent(v -> {
             Config.getInstance().inworldAIResourceNames.put(v.getUuid(), endpoint);
             ChatAI.clearStrategy(v.getUuid());
@@ -113,6 +115,12 @@ public class Command {
         Config.getInstance().villagerChatAIModel = model;
         Config.getInstance().villagerChatAIEndpoint = endpoint;
         Config.getInstance().villagerChatAIToken = token;
+        Config.getInstance().save();
+        return 0;
+    }
+
+    private static int disableChatAI(CommandContext<ServerCommandSource> c) {
+        Config.getInstance().enableVillagerChatAI = false;
         Config.getInstance().save();
         return 0;
     }
