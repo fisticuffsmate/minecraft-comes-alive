@@ -2,6 +2,9 @@
 
 * Fixed trait shaders
 * Rose gold dust is no longer part of the gold dust group to remove conflicts
+* Fixed incompatibility with Productive Bees
+* Added experimental long term memory to ChatAI
+* Hopefully fixed crashes
 
 # 7.5.18
 
