@@ -68,7 +68,7 @@ public class Traits {
         }
 
         public static Trait valueOf(String id) {
-            return TRAIT_REGISTRY.getOrDefault(id, UNKNOWN);
+            return TRAIT_REGISTRY.getOrDefault(id.toUpperCase(Locale.ROOT), UNKNOWN);
         }
 
         public Text getName() {

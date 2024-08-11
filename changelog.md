@@ -1,3 +1,7 @@
+# 7.5.19
+
+* Fixed trait shaders
+
 # 7.5.18
 
 * Updated contributor book
