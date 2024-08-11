@@ -1,6 +1,7 @@
 # 7.5.19
 
 * Fixed trait shaders
+* Rose gold dust is no longer part of the gold dust group to remove conflicts
 
 # 7.5.18
 
