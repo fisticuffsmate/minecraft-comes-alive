@@ -111,8 +111,8 @@ public final class Config implements Serializable {
     public String villagerChatAIToken = "";
     public String villagerChatAIModel = "default";
     public String villagerChatAISystemPrompt = "";
-    public boolean villagerChatAIUseLongTermMemory = true;
-    public boolean villagerChatAIUseSharedLongTermMemory = true;
+    public boolean villagerChatAIUseLongTermMemory = false;
+    public boolean villagerChatAIUseSharedLongTermMemory = false;
     public boolean villagerChatAIIncludeSessionInformation = false;
 
     public String inworldAIToken = "";
