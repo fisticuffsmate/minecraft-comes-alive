@@ -7,6 +7,7 @@
 * Hopefully fixed crashes
 * Villagers no longer grieve at single graves
 * Villager can now glow while invisible
+* You can now whistle villagers when they sit in vehicles
 
 # 7.5.18
 
