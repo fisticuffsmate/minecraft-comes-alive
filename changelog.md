@@ -8,6 +8,7 @@
 * Villagers no longer grieve at single graves
 * Villager can now glow while invisible
 * You can now whistle villagers when they sit in vehicles
+* Height now affects Hemoglobin levels
 
 # 7.5.18
 
