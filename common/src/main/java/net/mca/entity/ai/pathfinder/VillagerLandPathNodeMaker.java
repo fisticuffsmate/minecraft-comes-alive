@@ -358,7 +358,7 @@ public class VillagerLandPathNodeMaker extends PathNodeMaker {
                     pathNodeType = adjustNodeType(world, canOpenDoors, canEnterOpenDoors, pos, pathNodeType);
 
                     // Villager can also open gates
-                    if (blockState.isIn(BlockTags.FENCE_GATES, state -> state.getBlock() instanceof FenceGateBlock)) {
+                    if (Config.getServerConfig().useSmarterDoorAI && blockState.isIn(BlockTags.FENCE_GATES, state -> state.getBlock() instanceof FenceGateBlock)) {
                         pathNodeType = ExtendedPathNodeType.WALKABLE_DOOR;
                     }
 

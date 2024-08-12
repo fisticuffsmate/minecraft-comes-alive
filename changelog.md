@@ -9,6 +9,7 @@
 * Villager can now glow while invisible
 * You can now whistle villagers when they sit in vehicles
 * Height now affects Hemoglobin levels
+* Villagers no longer jump in front of gates
 
 # 7.5.18
 
