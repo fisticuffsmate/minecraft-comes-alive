@@ -6,6 +6,7 @@
 * Added experimental long term memory to ChatAI
 * Hopefully fixed crashes
 * Villagers no longer grieve at single graves
+* Villager can now glow while invisible
 
 # 7.5.18
 
