@@ -5,6 +5,7 @@
 * Fixed incompatibility with Productive Bees
 * Added experimental long term memory to ChatAI
 * Hopefully fixed crashes
+* Villagers no longer grieve at single graves
 
 # 7.5.18
 
