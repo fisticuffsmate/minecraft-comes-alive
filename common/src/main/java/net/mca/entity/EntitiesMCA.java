@@ -46,7 +46,7 @@ public interface EntitiesMCA {
     );
     RegistrySupplier<EntityType<CribEntity>> CRIB = registerNonLiving("crib", EntityType.Builder
     		.<CribEntity>create((t, w) -> new CribEntity(t, w), SpawnGroup.MISC)
-            .setDimensions(1.4F, 1.2F)
+            .setDimensions(1.2F, 1.0F)
             .makeFireImmune()
     );
 

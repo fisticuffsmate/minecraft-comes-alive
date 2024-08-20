@@ -57,6 +57,15 @@ public class CribEntity extends Entity implements CTrackedEntity<CribEntity>
 	public ItemStack getBabyItem() { return getTrackedValue(BABY); }
 	
 	private boolean isOccupied() { return !getTrackedValue(BABY).equals(ItemStack.EMPTY) || infant != null; }
+	
+	@Override
+    public boolean isCollidable() { return true; }
+
+	@Override
+    public boolean isPushedByFluids() { return false; }
+	
+	@Override
+    public boolean isPushable() { return false; }
 
 	@Override
 	protected void initDataTracker() { getTypeDataManager().register(this); }
@@ -98,17 +107,32 @@ public class CribEntity extends Entity implements CTrackedEntity<CribEntity>
 	@Override
 	public Packet<ClientPlayPacketListener> createSpawnPacket() { return new EntitySpawnS2CPacket(this); }
 	
+	private void setEntityOccupant(VillagerEntityMCA occupant)
+	{
+		infant = occupant;
+		infant.setInvulnerable(true);
+	}
+	
+	private void unsetEntityOccupant()
+	{
+		if(infant != null)
+		{
+			infant.setInvulnerable(false);
+			infant = null;
+		}
+	}
+	
 	@Override
     public ActionResult interact(PlayerEntity player, Hand hand)
 	{
 		// Refresh riding data
-		if(hasPassengers() && getFirstPassenger() instanceof VillagerEntityMCA && infant == null) infant = (VillagerEntityMCA) getFirstPassenger();
+		if(hasPassengers() && getFirstPassenger() instanceof VillagerEntityMCA && infant == null) setEntityOccupant((VillagerEntityMCA) getFirstPassenger());
 		
 		// Removing occupant is first priority over adding occupant, so that multiple occupants dont exist.
 		if(infant != null && infant.getVehicle() == this)
 		{
 			infant.startRiding(player, true);
-			infant = null;
+			unsetEntityOccupant();
 		}
 		else if(!getTrackedValue(BABY).equals(ItemStack.EMPTY))
 		{
@@ -125,7 +149,7 @@ public class CribEntity extends Entity implements CTrackedEntity<CribEntity>
 			VillagerEntityMCA rider = (VillagerEntityMCA) player.getFirstPassenger();
 			if(rider.getAgeState() == AgeState.BABY)
 			{
-				infant = rider;
+				setEntityOccupant(rider);
 				infant.startRiding(this, true);
 			}
 		}
