@@ -21,6 +21,8 @@ replacements = {
     "Jorge Quirós Fernández": "Jorge Fernández",
     "Eddiee Ethian Quiriz Loaiza": "Eddiee Quiriz",
     "Felipe Lizarrague Antona": "Felipe Antona",
+    "[PT] Mlg Magic Hoodini [MemesFTW]": "Mlg Magic Hoodini",
+    "Dalek_Caan_2001 Sharks of sliver": "Sharks of sliver",
 }
 
 

@@ -312,7 +312,7 @@ public final class Config implements Serializable {
             try (FileReader reader = new FileReader(file)) {
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 Config config = gson.fromJson(reader, Config.class);
-                if (config.version != VERSION) {
+                if (config == null || config.version != VERSION) {
                     config = new Config();
                 }
                 config.save();
