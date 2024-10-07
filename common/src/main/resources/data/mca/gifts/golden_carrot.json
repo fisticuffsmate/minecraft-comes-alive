@@ -2,11 +2,15 @@
   "conditions": [
     {
       "profession": "minecraft:cleric",
-      "satisfaction_boost": 5
+      "satisfaction_boost": 15
     },
     {
       "profession": "minecraft:farmer",
-      "satisfaction_boost": 15
+      "satisfaction_boost": 5
+    },
+    {
+      "personality": "Greedy",
+      "satisfaction_boost": 10
     }
   ],
   "items": {

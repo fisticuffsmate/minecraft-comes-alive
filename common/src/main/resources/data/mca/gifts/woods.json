@@ -2,13 +2,13 @@
   "conditions": [
     {
       "profession": "mca:lumberjack",
-      "satisfaction_boost": 5
+      "satisfaction_boost": 10
     }
   ],
   "items": {
     "#minecraft:crimson_stems": 5,
-    "#minecraft:warped_stems": 4,
-    "#minecraft:planks": 1,
-    "#minecraft:logs": 2
+    "#minecraft:warped_stems": 5,
+    "#minecraft:planks": 5,
+    "#minecraft:logs": 5
   }
 }

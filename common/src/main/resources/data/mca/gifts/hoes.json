@@ -6,9 +6,9 @@
     }
   ],
   "items": {
-    "minecraft:netherite_hoe": 1000,
-    "minecraft:diamond_hoe": 20,
-    "minecraft:iron_hoe": 15,
+    "minecraft:netherite_hoe": 100000,
+    "minecraft:diamond_hoe": 25,
+    "minecraft:iron_hoe": 20,
     "minecraft:golden_hoe": 15,
     "minecraft:stone_hoe": 10,
     "minecraft:wooden_hoe": 5

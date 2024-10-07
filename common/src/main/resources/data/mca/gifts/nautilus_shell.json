@@ -1,12 +1,12 @@
 {
   "conditions": [
     {
-      "gender": "female",
-      "satisfaction_boost": 30
-    },
-    {
       "profession": "minecraft:fisherman",
       "satisfaction_boost": 20
+    },
+    {
+      "personality": "Greedy",
+      "satisfaction_boost": 10
     }
   ],
   "items": {

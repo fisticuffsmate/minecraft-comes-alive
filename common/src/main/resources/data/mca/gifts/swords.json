@@ -9,8 +9,12 @@
       "satisfaction_boost": -20
     },
     {
+      "trait": "tough",
+      "satisfaction_boost": 15
+    },
+    {
       "trait": "weak",
-      "satisfaction_boost": -20
+      "satisfaction_boost": -15
     }
   ],
   "responses": {
@@ -21,10 +25,10 @@
   },
   "items": {
     "minecraft:netherite_sword": 30,
-    "minecraft:diamond_sword": 20,
+    "minecraft:diamond_sword": 25,
     "minecraft:iron_sword": 20,
-    "minecraft:golden_sword": 10,
-    "minecraft:stone_sword": 5,
-    "minecraft:wooden_sword": 0
+    "minecraft:golden_sword": 15,
+    "minecraft:stone_sword": 10,
+    "minecraft:wooden_sword": 5
   }
 }

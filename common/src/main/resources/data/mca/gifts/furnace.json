@@ -10,10 +10,10 @@
     },
     {
       "profession": "minecraft:armorer",
-      "satisfaction_boost": 15
+      "satisfaction_boost": 10
     }
   ],
   "items": {
-    "minecraft:furnace": 8
+    "minecraft:furnace": 10
   }
 }

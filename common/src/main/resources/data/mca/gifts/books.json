@@ -2,7 +2,7 @@
   "conditions": [
     {
       "age_group": "child",
-      "satisfaction_boost": -20
+      "satisfaction_boost": -10
     },
     {
       "profession": "minecraft:librarian",

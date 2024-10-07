@@ -2,7 +2,7 @@
   "conditions": [
     {
       "profession": "minecraft:farmer",
-      "satisfaction_boost": 5
+      "satisfaction_boost": 10
     }
   ],
   "items": {
