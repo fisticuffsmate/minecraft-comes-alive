@@ -2,7 +2,7 @@
   "conditions": [
     {
       "profession": "minecraft:butcher",
-      "satisfaction_boost": 6
+      "satisfaction_boost": 10
     },
     {
       "trait": "vegetarian",

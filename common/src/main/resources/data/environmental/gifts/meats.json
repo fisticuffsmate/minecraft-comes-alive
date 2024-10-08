@@ -1,12 +1,8 @@
 {
   "conditions": [
     {
-      "profession": "mca:baker",
-      "satisfaction_boost": 8
-    },
-    {
       "profession": "minecraft:butcher",
-      "satisfaction_boost": 6
+      "satisfaction_boost": 10
     },
     {
       "trait": "vegetarian",
