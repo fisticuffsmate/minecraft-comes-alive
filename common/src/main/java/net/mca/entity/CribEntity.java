@@ -208,7 +208,7 @@ public class CribEntity extends Entity implements CTrackedEntity<CribEntity>
         }
         else
         {
-        	CribItem matchingType = (CribItem) ItemsMCA.CRIBS.stream().filter(c -> ((CribItem) c).getColor() == getTrackedValue(COLOR) && ((CribItem) c).getWood() == getTrackedValue(WOOD)).findFirst().get().get();
+        	CribItem matchingType = (CribItem) ItemsMCA.CRIBS.stream().filter(c -> ((CribItem) c.get()).getColor() == getTrackedValue(COLOR) && ((CribItem) c.get()).getWood() == getTrackedValue(WOOD)).findFirst().get().get();
             Block.dropStack(this.getWorld(), this.getBlockPos(), new ItemStack(matchingType));
             this.spawnBreakParticles();
             this.kill();
