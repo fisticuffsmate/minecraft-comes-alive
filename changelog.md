@@ -1,3 +1,10 @@
+# 7.6.0
+
+* Added cribs, a lot of cribs, in all colors and woods
+* Some gift registry updates
+* Destiny now supports structure tags
+* Fixed compatibility issues with Productive Bees
+
 # 7.5.19
 
 * Fixed trait shaders
@@ -27,7 +34,8 @@
 
 # 7.5.15
 
-* Merged [Inworld integration](https://github.com/Luke100000/minecraft-comes-alive/wiki/GPT3-based-conversations) branch (thanks CSCMe!)
+* Merged [Inworld integration](https://github.com/Luke100000/minecraft-comes-alive/wiki/GPT3-based-conversations)
+  branch (thanks CSCMe!)
 * Fixed incompatibility with Cobblemon (thanks Apion!)
 * Fixed AI issues with Grim Reapers, causing him to go much higher than intended
 * Fixed issues when using Arabic numerals
