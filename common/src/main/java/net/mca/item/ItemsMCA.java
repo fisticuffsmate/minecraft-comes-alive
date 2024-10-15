@@ -1,10 +1,5 @@
 package net.mca.item;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import dev.architectury.core.item.ArchitecturySpawnEggItem;
 import dev.architectury.registry.CreativeTabRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
@@ -31,6 +26,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public interface ItemsMCA {
     DeferredRegister<Item> ITEMS = DeferredRegister.create(MCA.MOD_ID, RegistryKeys.ITEM);
@@ -65,10 +65,11 @@ public interface ItemsMCA {
     RegistrySupplier<Item> WHISTLE = register("whistle", () -> new WhistleItem(baseProps()));
     RegistrySupplier<Item> BLUEPRINT = register("blueprint", () -> new BlueprintItem(baseProps()));
     RegistrySupplier<Item> FAMILY_TREE = register("family_tree", () -> new FamilyTreeItem(baseProps()));
+    RegistrySupplier<Item> VILLAGER_TRACKER = register("villager_tracker", () -> new VillagerTrackerItem(baseProps().maxCount(1)));
+
+    RegistrySupplier<Item> SCYTHE = register("scythe", () -> new ScytheItem(baseProps()));
 
     RegistrySupplier<Item> BOUQUET = register("bouquet", () -> new BouquetItem(baseProps()));
-    
-    List<RegistrySupplier<Item>> CRIBS = registerAllCribTypes();
 
     RegistrySupplier<Item> POTION_OF_FEMINITY = register("potion_of_feminity", () -> new PotionOfMetamorphosisItem(baseProps().maxCount(1), Gender.FEMALE));
     RegistrySupplier<Item> POTION_OF_MASCULINITY = register("potion_of_masculinity", () -> new PotionOfMetamorphosisItem(baseProps().maxCount(1), Gender.MALE));
@@ -165,18 +166,16 @@ public interface ItemsMCA {
             .addPage(new CenteredTextPage("We are the universe. We are everything you think isn't you. You are looking at us now, through your skin and your eyes. And why does the universe touch your skin, and throw light on you? To see you, player. To know you. And to be known. I shall tell you a story.")
                     .setStyle(Style.EMPTY.withFont(new Identifier("minecraft", "alt"))))));
 
-    RegistrySupplier<Item> LETTER = register("letter", () -> new ExtendedWrittenBookItem(baseProps().maxCount(1), new Book("letter", null)
-            .setBackground(MCA.locate("textures/gui/books/paper.png"))));
-
     RegistrySupplier<Item> CIVIL_REGISTRY = register("civil_registry", () -> new CivilRegistry(baseProps().maxCount(1), new CivilRegistryBook("civil_registry", null)
             .setBackground(MCA.locate("textures/gui/books/supporters.png"))));
 
-    RegistrySupplier<Item> VILLAGER_TRACKER = register("villager_tracker", () -> new VillagerTrackerItem(baseProps().maxCount(1)));
+    RegistrySupplier<Item> LETTER = register("letter", () -> new ExtendedWrittenBookItem(baseProps().maxCount(1), new Book("letter", null)
+            .setBackground(MCA.locate("textures/gui/books/paper.png"))));
+
+    RegistrySupplier<Item> DIVORCE_PAPERS = register("divorce_papers", () -> new TooltippedItem(baseProps()));
 
     RegistrySupplier<Item> ROSE_GOLD_DUST = register("rose_gold_dust", () -> new Item(baseProps()));
     RegistrySupplier<Item> ROSE_GOLD_INGOT = register("rose_gold_ingot", () -> new Item(baseProps()));
-
-    RegistrySupplier<Item> DIVORCE_PAPERS = register("divorce_papers", () -> new TooltippedItem(baseProps()));
 
     RegistrySupplier<Item> ROSE_GOLD_BLOCK = register("rose_gold_block", () -> new BlockItem(BlocksMCA.ROSE_GOLD_BLOCK.get(), baseProps()));
 
@@ -196,27 +195,24 @@ public interface ItemsMCA {
     RegistrySupplier<Item> DEEPSLATE_UPRIGHT_HEADSTONE = register("deepslate_upright_headstone", () -> new BlockItem(BlocksMCA.DEEPSLATE_UPRIGHT_HEADSTONE.get(), baseProps()));
     RegistrySupplier<Item> DEEPSLATE_SLANTED_HEADSTONE = register("deepslate_slanted_headstone", () -> new BlockItem(BlocksMCA.DEEPSLATE_SLANTED_HEADSTONE.get(), baseProps()));
 
-    RegistrySupplier<Item> SCYTHE = register("scythe", () -> new ScytheItem(baseProps()));
+    List<RegistrySupplier<Item>> CRIBS = registerAllCribTypes();
 
     static void bootstrap() {
         ITEM_GROUPS.register();
         ITEMS.register();
         TagsMCA.Blocks.bootstrap();
     }
-    
-    static List<RegistrySupplier<Item>> registerAllCribTypes()
-    {
-    	List<RegistrySupplier<Item>> cribs = new ArrayList<>();
-    	
-		for(CribWoodType wood : CribWoodType.values())
-		{
-			for(DyeColor color : DyeColor.values())
-			{
-				cribs.add(register(color.getName() + "_" + wood.toString().toLowerCase() + "_crib", () -> new CribItem(unstackableProps(), wood, color)));
-			}
-		}
-		
-		return cribs;
+
+    static List<RegistrySupplier<Item>> registerAllCribTypes() {
+        List<RegistrySupplier<Item>> cribs = new ArrayList<>();
+
+        for (CribWoodType wood : CribWoodType.values()) {
+            for (DyeColor color : DyeColor.values()) {
+                cribs.add(register(color.getName() + "_" + wood.toString().toLowerCase() + "_crib", () -> new CribItem(unstackableProps(), wood, color)));
+            }
+        }
+
+        return cribs;
     }
 
     static RegistrySupplier<Item> register(String name, Supplier<Item> item) {
