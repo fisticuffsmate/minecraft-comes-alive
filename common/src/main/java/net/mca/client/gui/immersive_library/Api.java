@@ -36,7 +36,7 @@ public class Api {
 
     public static Response request(HttpMethod httpMethod, Class<? extends Response> expectedAnswer, String url, Map<String, String> queryParams, Map<String, String> body) {
         try {
-            String fullUrl = Config.getServerConfig().immersiveLibraryUrl + (url.contains("v2") ? "/" : "/v1/") + url;
+            String fullUrl = Config.getInstance().immersiveLibraryUrl + (url.contains("v2") ? "/" : "/v1/") + url;
 
             // Append query params
             if (queryParams != null) {
@@ -54,6 +54,11 @@ public class Api {
             con.setRequestProperty("Content-Type", "application/json");
             con.setRequestProperty("Accept-Encoding", "gzip");
             con.setRequestProperty("Accept", "application/json");
+
+            // Authenticate
+            if (Auth.hasToken()) {
+                con.setRequestProperty("Authorization", "Bearer " + Auth.getToken());
+            }
 
             // Set request body
             if (body != null && !body.isEmpty()) {
@@ -81,31 +86,11 @@ public class Api {
 
             return gson.fromJson(response, expectedAnswer);
         } catch (IOException e) {
+            MCA.LOGGER.warn(e);
             return new ErrorResponse(-1, e.toString());
         } catch (Exception e) {
             MCA.LOGGER.error(e);
             return new ErrorResponse(-1, e.toString());
         }
-    }
-
-    public static void main(String[] args) {
-        if (Auth.getToken() == null) {
-            Auth.authenticate("Carl");
-            return;
-        }
-
-        System.out.println(request(HttpMethod.GET, ContentListResponse.class, "content/mca"));
-
-        System.out.println(request(HttpMethod.GET, UserResponse.class, "user/mca/me", Map.of(
-                "token", Auth.getToken()
-        )));
-
-        System.out.println(request(HttpMethod.POST, ContentIdResponse.class, "content/mca", Map.of(
-                "token", Auth.getToken()
-        ), Map.of(
-                "title", "Carl",
-                "meta", "{}",
-                "data", "12345"
-        )));
     }
 }

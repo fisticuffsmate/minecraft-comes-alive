@@ -1,9 +1,76 @@
+# 7.6.8/9
+
+* Fixed a crash with llm command parsing
+
+# 7.6.7
+
+* Fixed a crash with The Aether
+* Added missing tombstone loot tables and fixed particle textures
+* Increased twin chance to 5%
+
+# 7.6.6
+
+* Allow tripplets, quadruplets, quintuplets, and beyond
+* Fixed a crash in the skin editor
+* Disabled guard teleportation by default again
+* Added experimental support for commands via ChatAI (`villagerChatAIUseTools` in the config, will react to trading, go
+  home, stay here, ...) (Thanks AdrisJ6 and Player2!)
+
+# 7.6.5
+
+* Fixed a crash
+
+# 7.6.4
+
+* Rose gold does no longer classify as gold, interfering with recipes
+* Fixed some GUI crashes
+* Fixed deaths counting sometimes twice (two mails, double hearts, ...)
+* ChatAI related stuff:
+    * Added better integration
+      with [Player2](https://github.com/Luke100000/minecraft-comes-alive/wiki/GPT3-based-conversations#Player2)
+    * Villager no longer starts to yap when you mention a fraction of their name
+    * Villagers will now try to respond in your selected language by default
+* TTS related stuff (https://github.com/Luke100000/minecraft-comes-alive/wiki/TTS):
+    * Added realtime TTS (experimental, worse quality, less languages, but works together with the ChatAI)
+    * Added TTS support for ElevenLabs (thanks BinaryGun951!) (Requires an ElevenLabs API key!)
+
+# 7.6.3
+
+* Turned villager teleportation back on by default
+* Fixed spawn group causing issues with some sound mods
+* Modded jobless traders now show the trade button
+
+# 7.6.2
+
+* Fixed crash on Turkish locale
+* Fixed Cribs crashing on wood compat mods
+* Fixed glowing villagers being visible
+* Fixed crash when using structure tags in destiny
+
+# 7.6.1
+
+* Fixed crash on Forge
+
 # 7.6.0
 
 * Added cribs, a lot of cribs, in all colors and woods
 * Some gift registry updates
 * Destiny now supports structure tags
 * Fixed compatibility issues with Productive Bees
+* Renamed names data dir to avoid conflicts
+
+# 7.5.22
+
+* Fixed Library Auth once again.
+* Fixed Steve skins being converted to Steve skins again.
+
+# 7.5.21
+
+* Fixed Library Auth when updating from older version
+
+# 7.5.20
+
+* Fixed Library Auth
 
 # 7.5.19
 

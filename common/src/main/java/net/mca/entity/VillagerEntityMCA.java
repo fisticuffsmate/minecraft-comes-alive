@@ -31,7 +31,6 @@ import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.entity.ai.control.JumpControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
@@ -303,7 +302,7 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
 
     @Override
     public boolean canTradeWithProfession() {
-        return !ProfessionsMCA.canNotTrade.contains(getProfession());
+        return !ProfessionsMCA.canNotTrade.contains(getProfession()) || (offers != null && !offers.isEmpty());
     }
 
     @Override
@@ -355,9 +354,10 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
         //player just get a beating
         attackedEntity(target);
 
-        //base damage // todo attributes?
-        float damage = getProfession() == ProfessionsMCA.GUARD.get() ? 9 : 3;
-        float knockback = 1;
+        //base damage
+        double baseDamage = getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+        float damage = (float) (baseDamage * (getProfession() == ProfessionsMCA.GUARD.get() ? 3.0f : 1.0f));
+        float knockback = (float) getAttributeValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
 
         //traits
         if (getTraits().hasTrait(Traits.WEAK)) {
@@ -433,17 +433,17 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
 
     public boolean canInteractWithItemStackInHand(ItemStack stack) {
         return stack.getItem() != ItemsMCA.VILLAGER_EDITOR.get()
-                && stack.getItem() != ItemsMCA.NEEDLE_AND_THREAD.get()
-                && stack.getItem() != ItemsMCA.COMB.get()
-                && stack.getItem() != ItemsMCA.POTION_OF_FEMINITY.get()
-                && stack.getItem() != ItemsMCA.POTION_OF_MASCULINITY.get();
+               && stack.getItem() != ItemsMCA.NEEDLE_AND_THREAD.get()
+               && stack.getItem() != ItemsMCA.COMB.get()
+               && stack.getItem() != ItemsMCA.POTION_OF_FEMINITY.get()
+               && stack.getItem() != ItemsMCA.POTION_OF_MASCULINITY.get();
     }
 
     @Override
     public final ActionResult interactAt(PlayerEntity player, Vec3d pos, @NotNull Hand hand) {
-    	// This allows hitbox interactions to be ignored if the player is carrying a child villager.
-    	if(getVehicle() != null && getVehicle().equals(player)) return ActionResult.PASS;
-    	
+        // This allows hitbox interactions to be ignored if the player is carrying a child villager.
+        if (getVehicle() != null && getVehicle().equals(player)) return ActionResult.PASS;
+
         ItemStack stack = player.getStackInHand(hand);
         boolean isOnBlacklist = Config.getInstance().villagerInteractionItemBlacklist.contains(Registries.ITEM.getId(stack.getItem()).toString());
         if (hand.equals(Hand.MAIN_HAND) && !isOnBlacklist && !stack.isIn(TagsMCA.Items.VILLAGER_EGGS) && canInteractWithItemStackInHand(stack) && !getVillagerBrain().isPanicking()) {
@@ -465,15 +465,15 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
 
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
-    	// This allows hitbox interactions to be ignored if the player is carrying a child villager.
-    	if(getVehicle() != null && getVehicle().equals(player)) return ActionResult.PASS;
-    	
+        // This allows hitbox interactions to be ignored if the player is carrying a child villager.
+        if (getVehicle() != null && getVehicle().equals(player)) return ActionResult.PASS;
+
         ItemStack stack = player.getStackInHand(hand);
         if (!stack.isIn(TagsMCA.Items.VILLAGER_EGGS) && isAlive() && !hasCustomer() && !isSleeping() && canInteractWithItemStackInHand(stack) && !getVillagerBrain().isPanicking()) {
             if (isBaby()) {
                 copiedSayNo();
             } else {
-                boolean hasOffers = !getOffers().isEmpty();
+                boolean hasOffers = hasTradeOffers();
                 if (hand == Hand.MAIN_HAND) {
                     if (!hasOffers && !getWorld().isClient) {
                         copiedSayNo();
@@ -496,6 +496,14 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
         if (!this.getWorld().isClient()) {
             this.playSound(this.getNoSound(), this.getSoundVolume(), this.getSoundPitch());
         }
+    }
+
+    public boolean hasTradeOffers() {
+        return !getOffers().isEmpty();
+    }
+
+    public void beginTradeWith(PlayerEntity customer) {
+        copiedBeginTradeWith(customer);
     }
 
     private void copiedBeginTradeWith(PlayerEntity customer) {
@@ -597,14 +605,14 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
 
             //infect the villager
             if (source.getSource() instanceof ZombieEntity
-                    && getProfession() != ProfessionsMCA.GUARD.get()
-                    && Config.getInstance().enableInfection
-                    && random.nextFloat() < Config.getInstance().zombieBiteInfectionChance
-                    && random.nextFloat() > (getVillagerData().getLevel() - 1) * Config.getInstance().infectionChanceDecreasePerLevel
-                    && (getResidency().getHomeVillage().filter(v -> v.hasBuilding("infirmary")).isEmpty() || random.nextBoolean())) {
+                && getProfession() != ProfessionsMCA.GUARD.get()
+                && Config.getInstance().enableInfection
+                && random.nextFloat() < Config.getInstance().zombieBiteInfectionChance
+                && random.nextFloat() > (getVillagerData().getLevel() - 1) * Config.getInstance().infectionChanceDecreasePerLevel
+                && (getResidency().getHomeVillage().filter(v -> v.hasBuilding("infirmary")).isEmpty() || random.nextBoolean())) {
                 setInfected(true);
                 sendChatToAllAround("villager.bitten");
-                MCA.LOGGER.info(getName() + " has been infected");
+                MCA.LOGGER.info("{} has been infected", getName());
             }
         }
 
@@ -687,7 +695,7 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
     }
 
     private int getMaxWarnings(PlayerEntity attacker) {
-        return getVillagerBrain().getMemoriesForPlayer(attacker).getHearts() / Config.getInstance().heartsForPardonHit;
+        return getVillagerBrain().getMemoriesForPlayer(attacker).getHearts() / Math.max(1, Config.getInstance().heartsForPardonHit);
     }
 
     @Override
@@ -714,8 +722,8 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
                 } else {
                     //noinspection ConstantConditions
                     if (!findAndEquipToMain(i -> i.isFood()
-                            && i.getItem().getFoodComponent().getHunger() > 0
-                            && i.getItem().getFoodComponent().getStatusEffects().stream().noneMatch(e -> StatusEffectDangerSet.isDanger.contains(e.getFirst().getEffectType())))) {
+                                                 && i.getItem().getFoodComponent().getHunger() > 0
+                                                 && i.getItem().getFoodComponent().getStatusEffects().stream().noneMatch(e -> StatusEffectDangerSet.isDanger.contains(e.getFirst().getEffectType())))) {
                         heal(1); // natural regeneration
                     }
                 }
@@ -978,11 +986,6 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
     @Override
     public MoveControl getMoveControl() {
         return isRidingHorse() ? moveControl : super.getMoveControl();
-    }
-
-    @Override
-    public JumpControl getJumpControl() {
-        return jumpControl;
     }
 
     @Override
@@ -1469,7 +1472,10 @@ public class VillagerEntityMCA extends VillagerEntity implements VillagerLike<Vi
     }
 
     public static DefaultAttributeContainer.Builder createVillagerAttributes() {
-        return VillagerEntity.createVillagerAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, Config.getInstance().villagerMaxHealth);
+        return VillagerEntity.createVillagerAttributes()
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0f)
+                .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.0f)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, Config.getInstance().villagerMaxHealth);
     }
 
     private void tickDespawnDelay() {

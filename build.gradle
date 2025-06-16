@@ -1,9 +1,8 @@
 plugins {
     id 'java-library'
     id 'architectury-plugin' version '3.4-SNAPSHOT'
-    id 'dev.architectury.loom' version '1.6-SNAPSHOT' apply false
+    id 'dev.architectury.loom' version '1.7-SNAPSHOT' apply false
     id "io.github.pacifistmc.forgix" version "1.2.9"
-    id "com.github.johnrengelman.shadow" version "8.1.1" apply false
 }
 
 architectury {
@@ -24,24 +23,24 @@ def getAppVersion = { ->
     }
 } as Object
 
-allprojects {
-    apply plugin: "maven-publish"
-
-    group = rootProject.group
-    description = rootProject.displayname
-    archivesBaseName = rootProject.name
-    version = getAppVersion()
-}
 
 subprojects {
     apply plugin: 'dev.architectury.loom'
-    apply plugin: 'architectury-plugin'
 
     dependencies {
         minecraft "com.mojang:minecraft:${project.minecraft_version}"
         mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-        implementation 'com.google.code.findbugs:jsr305:3.0.2'
     }
+}
+
+allprojects {
+    apply plugin: "maven-publish"
+    apply plugin: 'architectury-plugin'
+
+    group = rootProject.groupId
+    description = rootProject.displayname
+    archivesBaseName = rootProject.name
+    version = getAppVersion()
 
     build.finalizedBy(mergeJars)
     assemble.finalizedBy(mergeJars)
@@ -77,15 +76,15 @@ forgix {
     outputDir = "build/libs"
 
     forge {
-        jarLocation = "build/libs/${rootProject.name}-${rootProject.version}-forge.jar"
+        jarLocation = "build/libs/${rootProject.name}-${rootProject.version}.jar"
         mixin "mca.mixin.json"
     }
 
     fabric {
-        jarLocation = "build/libs/${rootProject.name}-${rootProject.version}-fabric.jar"
+        jarLocation = "build/libs/${rootProject.name}-${rootProject.version}.jar"
     }
 
     quilt {
-        jarLocation = "build/libs/${rootProject.name}-${rootProject.version}-quilt.jar"
+        jarLocation = "build/libs/${rootProject.name}-${rootProject.version}.jar"
     }
 }

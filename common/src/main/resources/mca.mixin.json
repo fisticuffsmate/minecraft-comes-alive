@@ -12,7 +12,7 @@
   ],
   "client": [
     "client.MixinArmorFeatureRenderer", "client.MixinGameRenderer", "client.MixinHeldItemFeatureRenderer",
-    "client.MixinLivingEntityRenderer", "client.MixinMessageHandler", "client.MixinPlayerEntityClient",
+    "client.MixinLivingEntityRenderer", "client.MixinPlayerEntityClient",
     "client.MixinPlayerEntityRenderer", "client.MixinSoundLoader", "client.MixinTranslationStorage"
   ],
   "injectors": {

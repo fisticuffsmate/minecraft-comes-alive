@@ -4,6 +4,7 @@ import net.mca.MCA;
 import net.mca.entity.CommonSpeechManager;
 import net.mca.entity.ai.DialogueType;
 import net.mca.util.localization.PooledTranslationStorage;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.language.TranslationStorage;
 import net.minecraft.util.Language;
 import net.minecraft.util.Pair;
@@ -33,6 +34,7 @@ abstract class MixinTranslationStorage extends Language {
         if (mca$pool == null) {
             mca$pool = new PooledTranslationStorage(translations);
             MCA.translations = translations;
+            MCA.language = MinecraftClient.getInstance().options.language;
         }
         return mca$pool;
     }

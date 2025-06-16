@@ -55,7 +55,7 @@ def translate_polly(text, path):
             with closing(response["AudioStream"]) as stream:
                 try:
                     # Open a file for writing the output as a binary stream
-                    with open(f"temp.pcm", "wb") as file:
+                    with open("temp.pcm", "wb") as file:
                         file.write(stream.read())
                     subprocess.check_call(
                         f'ffmpeg -f s16le -ar 16000 -ac 1 -i "temp.pcm" "{path}/{name}.wav"',

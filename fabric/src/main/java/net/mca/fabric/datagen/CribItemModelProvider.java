@@ -1,5 +1,6 @@
 package net.mca.fabric.datagen;
 
+import java.util.Locale;
 import java.util.Optional;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -36,12 +37,12 @@ public class CribItemModelProvider extends FabricModelProvider {
 				{
 					CribItem crib = (CribItem) c.get();
 					return crib.getColor() == color && crib.getWood() == wood;
-				}).findFirst().get().get();
-				
+				}).findFirst().orElse(ItemsMCA.CRIBS.get(0)).get();
+
 				Model cribModel = new Model(Optional.of(new Identifier("minecraft", "item/generated")), Optional.empty(), TextureKey.LAYER0, TextureKey.LAYER1);
-				
+
 				cribModel.upload(ModelIds.getItemModelId(item), TextureMap.layered(MCA.locate("item/crib/beds/" + color.getName()),
-					MCA.locate("item/crib/frames/" + wood.toString().toLowerCase())), itemModelGenerator.writer);
+					MCA.locate("item/crib/frames/" + wood.toString().toLowerCase(Locale.ROOT))), itemModelGenerator.writer);
 			}
 		}
 	}

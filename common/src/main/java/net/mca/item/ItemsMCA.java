@@ -29,6 +29,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -208,7 +209,7 @@ public interface ItemsMCA {
 
         for (CribWoodType wood : CribWoodType.values()) {
             for (DyeColor color : DyeColor.values()) {
-                cribs.add(register(color.getName() + "_" + wood.toString().toLowerCase() + "_crib", () -> new CribItem(unstackableProps(), wood, color)));
+                cribs.add(register(color.getName() + "_" + wood.toString().toLowerCase(Locale.ROOT) + "_crib", () -> new CribItem(unstackableProps(), wood, color)));
             }
         }
 

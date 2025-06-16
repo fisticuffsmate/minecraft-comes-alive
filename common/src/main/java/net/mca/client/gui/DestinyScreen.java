@@ -11,6 +11,7 @@ import net.mca.util.localization.FlowingText;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -94,7 +95,7 @@ public class DestinyScreen extends VillagerEditorScreen {
                     drawScaledText(context, Text.translatable("gui.destiny.journey"), width / 2, height / 2 - 48, 1.5f);
             case "story" -> {
                 List<Text> text = FlowingText.wrap(story.getFirst(), 256);
-                int y = (int) (height / 2 - 20 - 7.5f * text.size());
+                int y = (int) (height / 2.0 - 20 - 7.5f * text.size());
                 for (Text t : text) {
                     drawScaledText(context, t, width / 2, y, 1.25f);
                     y += 15;
@@ -106,6 +107,11 @@ public class DestinyScreen extends VillagerEditorScreen {
     @Override
     protected boolean shouldDrawEntity() {
         return !page.equals("general") && !page.equals("destiny") && !page.equals("story") && super.shouldDrawEntity();
+    }
+
+    protected String getPath(String location) {
+        String[] split = location.split(":");
+        return split[split.length - 1];
     }
 
     @Override
@@ -154,7 +160,8 @@ public class DestinyScreen extends VillagerEditorScreen {
                     int rows = (int) Math.ceil(Config.getServerConfig().destinySpawnLocations.size() / 3.0f);
                     float offsetX = (y + 1) == rows ? (2 - (Config.getServerConfig().destinySpawnLocations.size() - 1) % 3) / 2.0f : 0;
                     float offsetY = Math.max(0, 3 - rows) / 2.0f;
-                    addDrawableChild(new ButtonWidget((int) (width / 2.0f - 96 * 1.5f + (x + offsetX) * 96), (int) (height / 2.0f + (y + offsetY) * 20 - 16), 96, 20, Text.translatable("gui.destiny." + new Identifier(location).getPath()), sender -> {
+                    MutableText name = Text.translatable("gui.destiny." + getPath(location));
+                    addDrawableChild(new ButtonWidget((int) (width / 2.0f - 96 * 1.5f + (x + offsetX) * 96), (int) (height / 2.0f + (y + offsetY) * 20 - 16), 96, 20, name, sender -> {
                         selectStory(location);
                     }));
                     x++;
@@ -188,7 +195,7 @@ public class DestinyScreen extends VillagerEditorScreen {
         story.add(Text.translatable("destiny.story.reason"));
         Map<String, String> map = Config.getInstance().destinyLocationsToTranslationMap;
         story.add(Text.translatable(map.getOrDefault(location, map.getOrDefault("default", "missing_default"))));
-        story.add(Text.translatable("destiny.story." + new Identifier(location).getPath()));
+        story.add(Text.translatable("destiny.story." + getPath(location)));
         this.location = location;
         setPage("story");
     }

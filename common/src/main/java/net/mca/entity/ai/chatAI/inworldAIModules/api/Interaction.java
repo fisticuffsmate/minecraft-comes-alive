@@ -41,6 +41,6 @@ public record Interaction(String name,
         }
     }
 
-    public record RelationshipUpdate(int trust, int respect, int familiar, int flirtatious, int attraction) {}
-
+    public record RelationshipUpdate(int trust, int respect, int familiar, int flirtatious, int attraction) {
+    }
 }

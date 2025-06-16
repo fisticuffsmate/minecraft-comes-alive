@@ -1,11 +1,9 @@
 package net.mca.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.mca.util.localization.FlowingText;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 import java.util.function.Consumer;

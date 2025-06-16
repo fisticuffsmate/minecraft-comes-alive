@@ -48,8 +48,6 @@ public class DestinyMessage implements Message {
         }
 
         if (Config.getInstance().allowDestinyTeleportation && location != null) {
-
-
             MCA.executorService.execute(() -> {
                 if (location.charAt(0) == '#') {
                     String tagId = location.substring(1);

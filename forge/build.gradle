@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.johnrengelman.shadow'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 architectury {
@@ -14,26 +14,19 @@ loom {
 }
 
 configurations {
-    common {
-        canBeResolved = true
-        canBeConsumed = false
-    }
+    common
+    shadowCommon
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
-    developmentFabric.extendsFrom common
-
-    shadowBundle {
-        canBeResolved = true
-        canBeConsumed = false
-    }
+    developmentForge.extendsFrom common
 }
 
 dependencies {
     forge "net.minecraftforge:forge:$rootProject.forge_version"
-    modImplementation "dev.architectury:architectury-forge:$rootProject.architectury_version"
+    modApi "dev.architectury:architectury-forge:$rootProject.architectury_version"
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
-    shadowBundle project(path: ':common', configuration: 'transformProductionForge')
+    shadowCommon project(path: ':common', configuration: 'transformProductionForge')
 }
 
 processResources {
@@ -46,21 +39,18 @@ processResources {
 
 shadowJar {
     exclude "fabric.mod.json"
-    configurations = [project.configurations.shadowBundle]
-    archiveClassifier = 'dev-shadow'
+    exclude "architectury.common.json"
+
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier = "dev-shadow"
 }
 
 remapJar {
     input.set shadowJar.archiveFile
-}
-
-/*
-jar {
-    classifier "dev"
+    dependsOn shadowJar
 }
 
 sourcesJar {
-    duplicatesStrategy 'exclude'
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
     from commonSources.archiveFile.map { zipTree(it) }
@@ -71,7 +61,6 @@ components.java {
         skip()
     }
 }
- */
 
 publishing {
     publications {

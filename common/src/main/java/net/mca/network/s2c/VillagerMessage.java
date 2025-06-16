@@ -12,10 +12,12 @@ public class VillagerMessage implements Message {
     @Serial
     private static final long serialVersionUID = -4135222437610000843L;
 
+    private final String prefix;
     private final String message;
     private final UUID uuid;
 
-    public VillagerMessage(MutableText message, UUID uuid) {
+    public VillagerMessage(MutableText prefix, MutableText message, UUID uuid) {
+        this.prefix = Text.Serializer.toJson(prefix);
         this.message = Text.Serializer.toJson(message);
         this.uuid = uuid;
     }
@@ -25,8 +27,18 @@ public class VillagerMessage implements Message {
         ClientProxy.getNetworkHandler().handleVillagerMessage(this);
     }
 
+    public MutableText safeLoadFromJson(String json) {
+        MutableText mutableText = Text.Serializer.fromJson(json);
+        if (mutableText == null) return Text.literal("");
+        return mutableText;
+    }
+
     public MutableText getMessage() {
-        return Text.Serializer.fromJson(message);
+        return safeLoadFromJson(prefix).append(safeLoadFromJson(message));
+    }
+
+    public MutableText getContent() {
+        return safeLoadFromJson(message);
     }
 
     public UUID getUuid() {

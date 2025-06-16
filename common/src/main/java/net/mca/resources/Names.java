@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class Names extends JsonDataLoader {
-    protected static final Identifier ID = MCA.locate("names");
+    protected static final Identifier ID = MCA.locate("mca_names");
 
     public static final Map<String, Map<Gender, WeightedPool<String>>> NAMES_MAP = new HashMap<>();
     public static final List<String> REGION_NAMES = new LinkedList<>();

@@ -65,11 +65,8 @@ public abstract class VillagerLayer<T extends LivingEntity, M extends BipedEntit
     @Override
     public void render(MatrixStack transform, VertexConsumerProvider provider, int light, T villager, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         MinecraftClient client = MinecraftClient.getInstance();
+        boolean visible = !villager.isInvisible();
         boolean glowing = client.hasOutline(villager);
-
-        if (villager.isInvisible() && !glowing) {
-            return;
-        }
 
         if (getVillager(villager).hasCustomSkin()) {
             return;
@@ -94,32 +91,40 @@ public abstract class VillagerLayer<T extends LivingEntity, M extends BipedEntit
         //copy the animation to this layers model
         getContextModel().copyBipedStateTo(model);
 
-        renderFinal(transform, provider, light, villager, tickDelta, glowing);
+        renderFinal(transform, provider, light, villager, tickDelta, visible, glowing);
     }
 
-    public void renderFinal(MatrixStack transform, VertexConsumerProvider provider, int light, T villager, float tickDelta, boolean glowing) {
+    public void renderFinal(MatrixStack transform, VertexConsumerProvider provider, int light, T villager, float tickDelta, boolean visible, boolean glowing) {
         int tint = LivingEntityRenderer.getOverlay(villager, 0);
 
         Identifier skin = getSkin(villager);
         if (canUse(skin)) {
             float[] color = getColor(villager, tickDelta);
-            renderModel(transform, provider, light, model, color[0], color[1], color[2], skin, tint, glowing);
+            renderModel(transform, provider, light, model, color[0], color[1], color[2], skin, tint, visible, glowing);
         }
 
         Identifier overlay = getOverlay(villager);
         if (!Objects.equals(skin, overlay) && canUse(overlay)) {
-            renderModel(transform, provider, light, model, 1, 1, 1, overlay, tint, glowing);
+            renderModel(transform, provider, light, model, 1, 1, 1, overlay, tint, visible, glowing);
         }
     }
 
-    private void renderModel(MatrixStack transform, VertexConsumerProvider provider, int light, M model, float r, float g, float b, Identifier texture, int overlay, boolean glowing) {
-        if (!glowing) {
-            VertexConsumer buffer = provider.getBuffer(isTranslucent() ? RenderLayer.getEntityTranslucent(texture) : RenderLayer.getEntityCutoutNoCull(texture));
-            model.render(transform, buffer, light, overlay, r, g, b, 1);
-        } else if (!isTranslucent()) {
-            VertexConsumer buffer = provider.getBuffer(RenderLayer.getOutline(texture));
-            model.render(transform, buffer, light, overlay, r, g, b, 1);
+    @Nullable
+    protected RenderLayer getRenderLayer(Identifier texture, boolean showBody, boolean translucent, boolean showOutline) {
+        if (translucent) {
+            return RenderLayer.getItemEntityTranslucentCull(texture);
+        } else if (showBody) {
+            return this.model.getLayer(texture);
+        } else {
+            return showOutline ? RenderLayer.getOutline(texture) : null;
         }
+    }
+
+    private void renderModel(MatrixStack transform, VertexConsumerProvider provider, int light, M model, float r, float g, float b, Identifier texture, int overlay, boolean visible, boolean glowing) {
+        RenderLayer layer = getRenderLayer(texture, visible, isTranslucent(), glowing);
+        if (layer == null) return;
+        VertexConsumer buffer = provider.getBuffer(layer);
+        model.render(transform, buffer, light, overlay, r, g, b, 1);
     }
 
     public final boolean canUse(Identifier texture) {

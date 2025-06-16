@@ -59,7 +59,7 @@ public final class Config implements Serializable {
     public int infectionTime = 72000;
 
     //villager behavior
-    public float twinBabyChance = 0.02f;
+    public float twinBabyChance = 0.05f;
     public int marriageHeartsRequirement = 100;
     public int engagementHeartsRequirement = 50;
     public int bouquetHeartsRequirement = 10;
@@ -67,7 +67,7 @@ public final class Config implements Serializable {
     public int villagerMaxAgeTime = 384000;
     public int villagerMaxHealth = 20;
     public boolean allowVillagerTeleporting = false;
-    public double villagerMinTeleportationDistance = 64;
+    public double villagerMinTeleportationDistance = 128;
     public int childInitialHearts = 100;
     public int greetHeartsThreshold = 75;
     public int greetAfterDays = 1;
@@ -104,10 +104,11 @@ public final class Config implements Serializable {
     public int trackVillagerPositionEveryNTicks = 200;
 
     //AI
+    @SuppressWarnings("unused")
     public String _read_this_before_using_villager_ai = "https://github.com/Luke100000/minecraft-comes-alive/wiki/GPT3-based-conversations";
     public boolean enableVillagerChatAI = false;
-    public int villagerChatAIIntelligence = 4;
     public String villagerChatAIEndpoint = "https://api.conczin.net/v1/mca/chat";
+    public boolean villagerChatAIUseTools = false;
     public String villagerChatAIToken = "";
     public String villagerChatAIModel = "default";
     public String villagerChatAISystemPrompt = "";
@@ -115,12 +116,29 @@ public final class Config implements Serializable {
     public boolean villagerChatAIUseSharedLongTermMemory = false;
     public boolean villagerChatAIIncludeSessionInformation = false;
 
+    //InworldAI
     public String inworldAIToken = "";
     public Map<UUID, String> inworldAIResourceNames = new HashMap<>();
 
     // TTS
     public boolean enableOnlineTTS = false;
-    public String villagerTTSServer = "http://api.rk.conczin.net/";
+    public String onlineTTSModel = "default";
+    public String onlineTTSServer = "https://api.rk.conczin.net/";
+    public String player2Url = "http://127.0.0.1:4315/";
+    public String elevenlabsPrivateAPIkey = "";
+    public String elevenlabsModel = "eleven_turbo_v2_5";
+    public List<String> elevenlabsMaleVoices = List.of(
+            "ErXwobaYiN019PkySvjV",
+            "VR6AewLTigWG4xSOukaG",
+            "onwK4e9ZLuTAKqWW03F9",
+            "onwK4e9ZLuTAKqWW03F9"
+    );
+    public List<String> elevenlabsFemaleVoices = List.of(
+            "MF3mGyEYCl7XYWbV9V6O",
+            "AZnzlk1XvdvUeBnXmlld",
+            "pMsXgVXv3BLzUgSXRplE",
+            "AZnzlk1XvdvUeBnXmlld"
+    );
 
     //village behavior
     public float guardSpawnFraction = 0.175f;

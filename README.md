@@ -39,6 +39,7 @@ Following mods have the required resourcepacks included and are therefore fully 
 - Environmental
 - Neopolitan
 - Upgrade Aquatic
+- [Player2](https://player2.game/)
 
 ## Contributing
 

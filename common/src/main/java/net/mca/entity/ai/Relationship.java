@@ -11,13 +11,12 @@ import net.mca.entity.ai.relationship.CompassionateEntity;
 import net.mca.entity.ai.relationship.EntityRelationship;
 import net.mca.entity.ai.relationship.Gender;
 import net.mca.entity.ai.relationship.RelationshipType;
+import net.mca.entity.interaction.gifts.GiftSaturation;
 import net.mca.server.world.data.FamilyTree;
 import net.mca.server.world.data.FamilyTreeNode;
-import net.mca.entity.interaction.gifts.GiftSaturation;
 import net.mca.server.world.data.GraveyardManager;
 import net.mca.util.WorldUtils;
 import net.mca.util.network.datasync.CDataManager;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -69,7 +68,7 @@ public class Relationship<T extends MobEntity & VillagerLike<T>> implements Enti
 
     @Override
     public ServerWorld getWorld() {
-        return (ServerWorld)entity.getWorld();
+        return (ServerWorld) entity.getWorld();
     }
 
     @Override
@@ -115,7 +114,7 @@ public class Relationship<T extends MobEntity & VillagerLike<T>> implements Enti
         if (beRemembered || beLoved || !entity.isHostile()) {
             getFamilyEntry().setDeceased(true);
 
-            ServerWorld world = (ServerWorld)entity.getWorld();
+            ServerWorld world = (ServerWorld) entity.getWorld();
 
             // look for a gravestone
             Optional<BlockPos> nearest = GraveyardManager.get(world).findNearest(entity.getBlockPos(), GraveyardManager.TombstoneState.EMPTY, 10);
@@ -127,14 +126,12 @@ public class Relationship<T extends MobEntity & VillagerLike<T>> implements Enti
 
             // fill it and yeet the villager into depression
             nearest.ifPresentOrElse(pos -> {
-                if (entity.getWorld().getBlockState(pos).isIn(TagsMCA.Blocks.TOMBSTONES)) {
-                    BlockEntity be = entity.getWorld().getBlockEntity(pos);
-                    if (be instanceof TombstoneBlock.Data) {
-                        onTragedy(cause, pos);
-                        ((TombstoneBlock.Data)be).setEntity(entity);
-                    }
+                if (entity.getWorld().getBlockState(pos).isIn(TagsMCA.Blocks.TOMBSTONES) && entity.getWorld().getBlockEntity(pos) instanceof TombstoneBlock.Data tombstone) {
+                    onTragedy(cause, pos);
+                    tombstone.setEntity(entity);
+                } else {
+                    onTragedy(cause, null);
                 }
-                onTragedy(cause, null);
             }, () -> {
                 onTragedy(cause, null);
             });
@@ -216,7 +213,7 @@ public class Relationship<T extends MobEntity & VillagerLike<T>> implements Enti
         }
 
         default BiPredicate<VillagerLike<?>, ServerPlayerEntity> asConstraint() {
-            return (villager, player) -> villager instanceof CompassionateEntity<?> && (test((CompassionateEntity<?>)villager, player));
+            return (villager, player) -> villager instanceof CompassionateEntity<?> && (test((CompassionateEntity<?>) villager, player));
         }
     }
 }

@@ -1,14 +1,17 @@
 package net.mca.entity.ai.chatAI;
 
 import net.mca.entity.VillagerEntityMCA;
-import net.mca.entity.ai.chatAI.inworldAIModules.*;
+import net.mca.entity.ai.chatAI.inworldAIModules.EmotionModule;
+import net.mca.entity.ai.chatAI.inworldAIModules.RelationshipModule;
+import net.mca.entity.ai.chatAI.inworldAIModules.SessionModule;
+import net.mca.entity.ai.chatAI.inworldAIModules.TriggerModule;
 import net.mca.entity.ai.chatAI.inworldAIModules.api.Interaction;
 import net.mca.entity.ai.chatAI.inworldAIModules.api.TriggerEvent;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.util.*;
+import java.util.Optional;
 
 public class InworldAI implements ChatAIStrategy {
     private final SessionModule sessionModule;
@@ -23,13 +26,12 @@ public class InworldAI implements ChatAIStrategy {
         this.emotionModule = new EmotionModule();
     }
 
-    // We don't need conversational memory. Inworld does that for us. (Within the same session, which is enough for us)
-
     /**
      * Gets a reply from InworldAI for a given message.
-     * @param player The player requesting the answer
+     *
+     * @param player   The player requesting the answer
      * @param villager The villager responding
-     * @param msg The message
+     * @param msg      The message
      * @return {@code Optional.EMPTY} on error, Optional containing the answer to a message on success
      */
     public Optional<String> answer(ServerPlayerEntity player, VillagerEntityMCA villager, String msg) {
@@ -62,5 +64,4 @@ public class InworldAI implements ChatAIStrategy {
             return Optional.empty();
         }
     }
-
 }

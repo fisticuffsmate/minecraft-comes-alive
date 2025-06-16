@@ -1,7 +1,7 @@
-import dotenv
+from dotenv import load_dotenv
 from google.cloud import texttospeech
 
-dotenv.load_dotenv()
+load_dotenv()
 
 # Instantiates a client
 client = texttospeech.TextToSpeechClient()

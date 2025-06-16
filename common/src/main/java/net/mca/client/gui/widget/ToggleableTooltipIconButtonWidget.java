@@ -3,8 +3,8 @@ package net.mca.client.gui.widget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 
 import static net.mca.client.gui.InteractScreen.ICON_TEXTURES;
 
@@ -13,7 +13,7 @@ public class ToggleableTooltipIconButtonWidget extends ToggleableTooltipButtonWi
     private final int v;
 
     public ToggleableTooltipIconButtonWidget(int x, int y, int u, int v, boolean toggle, MutableText tooltip, PressAction onPress) {
-        super(x, y, 16, 16, toggle, null, tooltip, onPress);
+        super(x, y, 16, 16, toggle, Text.literal(""), tooltip, onPress);
 
         this.u = u;
         this.v = v;

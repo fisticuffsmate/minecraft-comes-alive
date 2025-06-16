@@ -16,4 +16,3 @@ jobs:
         run: ./gradlew :forge:build
       - name: Build with Gradle - Fabric
         run: ./gradlew :fabric:build
-      

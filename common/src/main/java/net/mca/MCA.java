@@ -20,6 +20,7 @@ public final class MCA {
 
     public static final ExecutorService executorService = Executors.newSingleThreadExecutor();
     public static Map<String, String> translations = new HashMap<>();
+    public static String language;
 
     private static MinecraftServer server;
 

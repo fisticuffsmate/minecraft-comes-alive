@@ -44,7 +44,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.village.VillagerProfession;
 import org.lwjgl.glfw.GLFW;
 
-import javax.annotation.Nullable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,7 +72,6 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
     private final List<LiteContent> serverContent = new ArrayList<>();
     private SubscriptionFilter subscriptionFilter = SubscriptionFilter.LIBRARY;
 
-    @Nullable
     private User currentUser;
 
     private int selectionPage;
@@ -204,10 +202,8 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
     private void reloadDatabase(Runnable callback) {
         CompletableFuture.runAsync(() -> {
             // fetch user
-            if (Auth.getToken() != null && authenticated) {
-                Response response = request(Api.HttpMethod.GET, UserResponse.class, "user/mca/me", Map.of(
-                        "token", Auth.getToken()
-                ));
+            if (Auth.hasToken() && authenticated) {
+                Response response = request(Api.HttpMethod.GET, UserResponse.class, "user/mca/me");
                 if (response instanceof UserResponse userResponse) {
                     currentUser = userResponse.user();
                     refreshContentList();
@@ -238,8 +234,7 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
                     "descending", "true",
                     "offset", String.valueOf(selectionPage * CLOTHES_PER_PAGE),
                     "limit", String.valueOf(CLOTHES_PER_PAGE),
-                    "moderator", String.valueOf(moderatorMode),
-                    "token", String.valueOf(Auth.getToken())
+                    "moderator", String.valueOf(moderatorMode)
             ));
 
             if (response instanceof ContentListResponse contentListResponse) {
@@ -352,18 +347,6 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
 
                 matrices.pop();
 
-                //hovered element
-                int x = (int) getPixelX();
-                int y = (int) getPixelY();
-                if (x >= 0 && x < 64 && y >= 0 && y < 64) {
-                    SkinLocations.Part part = SkinLocations.LOOKUP[x][y];
-                    if (part != null) {
-                        Text text = part.getTranslation();
-                        int textWidth = textRenderer.getWidth(text);
-                        context.drawTooltip(textRenderer, text, width / 2 - textWidth / 2 - 12, height / 2 - 68);
-                    }
-                }
-
                 //dummy
                 if (workspace.skinType == SkinType.CLOTHING) {
                     villagerVisualization.setHair(EMPTY_IDENTIFIER);
@@ -382,6 +365,18 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
                 if (workspace.skinType == SkinType.HAIR) {
                     context.drawCenteredTextWithShadow(textRenderer, Text.translatable("gui.skin_library.hair_color"), width / 2 - 150, height / 2 - 40, 0xAAFFFFFF);
                 }
+
+                //hovered element
+                int x = (int) getPixelX();
+                int y = (int) getPixelY();
+                if (x >= 0 && x < 64 && y >= 0 && y < 64) {
+                    SkinLocations.Part part = SkinLocations.LOOKUP[x][y];
+                    if (part != null) {
+                        Text text = part.getTranslation();
+                        int textWidth = textRenderer.getWidth(text);
+                        context.drawTooltip(textRenderer, text, width / 2 - textWidth / 2 - 12, height / 2 - 68);
+                    }
+                }
             }
             case LOGIN -> {
                 // check user authentication
@@ -389,10 +384,7 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
                     awaitingAuthentication = true;
                     CompletableFuture.runAsync(() -> {
                         try {
-                            String token = Auth.getToken();
-                            Response response = token != null ? request(Api.HttpMethod.GET, IsAuthResponse.class, "auth", Map.of(
-                                    "token", token
-                            )) : null;
+                            Response response = Auth.hasToken() ? request(Api.HttpMethod.GET, IsAuthResponse.class, "auth") : null;
                             if (response instanceof IsAuthResponse authResponse) {
                                 if (authResponse.authenticated()) {
                                     authenticated = true;
@@ -414,7 +406,7 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
                             } else {
                                 setError(Text.translatable("gui.skin_library.is_auth_failed"));
                             }
-                            Thread.sleep(1000);
+                            Thread.sleep(2000);
                         } catch (Exception e) {
                             MCA.LOGGER.error(e);
                         }
@@ -1594,11 +1586,11 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
         if (!uploading) {
             uploading = true;
             CompletableFuture.runAsync(() -> {
-                if (Auth.getToken() != null) {
+                if (Auth.hasToken()) {
                     Response request = null;
                     try {
                         request = request(workspace.contentid == -1 ? Api.HttpMethod.POST : Api.HttpMethod.PUT, workspace.contentid == -1 ? ContentIdResponse.class : SuccessResponse.class, workspace.contentid == -1 ? "content/mca" : ("content/mca/" + workspace.contentid), Map.of(
-                                "token", Auth.getToken()
+
                         ), Map.of(
                                 "title", workspace.title,
                                 "meta", workspace.toListEntry().toJson().toString(),
@@ -1657,10 +1649,8 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
     }
 
     private void setTag(int contentid, String tag, boolean add) {
-        if (Auth.getToken() != null) {
-            request(add ? Api.HttpMethod.POST : Api.HttpMethod.DELETE, SuccessResponse.class, "tag/mca/" + contentid + "/" + tag, Map.of(
-                    "token", Auth.getToken()
-            ));
+        if (Auth.hasToken()) {
+            request(add ? Api.HttpMethod.POST : Api.HttpMethod.DELETE, SuccessResponse.class, "tag/mca/" + contentid + "/" + tag);
             getContentById(contentid).ifPresent(c -> {
                 if (add) {
                     c.tags().add(tag);
@@ -1679,10 +1669,8 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
     }
 
     private void removeContent(int contentId) {
-        if (Auth.getToken() != null) {
-            request(Api.HttpMethod.DELETE, SuccessResponse.class, "content/mca/" + contentId, Map.of(
-                    "token", Auth.getToken()
-            ));
+        if (Auth.hasToken()) {
+            request(Api.HttpMethod.DELETE, SuccessResponse.class, "content/mca/" + contentId);
             removeContentLocally(contentId);
         }
     }
@@ -1697,10 +1685,8 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
     }
 
     private void reportContent(int contentId, String reason) {
-        if (Auth.getToken() != null) {
-            request(Api.HttpMethod.POST, SuccessResponse.class, "report/mca/" + contentId + "/" + reason, Map.of(
-                    "token", Auth.getToken()
-            ));
+        if (Auth.hasToken()) {
+            request(Api.HttpMethod.POST, SuccessResponse.class, "report/mca/" + contentId + "/" + reason);
 
             if (reason.equals("DEFAULT")) {
                 removeContentLocally(contentId);
@@ -1711,10 +1697,8 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
     }
 
     private void setLike(int contentid, boolean add) {
-        if (Auth.getToken() != null && currentUser != null) {
-            request(add ? Api.HttpMethod.POST : Api.HttpMethod.DELETE, SuccessResponse.class, "like/mca/" + contentid, Map.of(
-                    "token", Auth.getToken()
-            ));
+        if (Auth.hasToken() && currentUser != null) {
+            request(add ? Api.HttpMethod.POST : Api.HttpMethod.DELETE, SuccessResponse.class, "like/mca/" + contentid);
 
             if (add) {
                 getContentById(contentid).ifPresent(currentUser.likes()::add);
@@ -1725,9 +1709,8 @@ public class SkinLibraryScreen extends Screen implements SkinListUpdateListener 
     }
 
     private void setBan(int userid, boolean banned) {
-        if (Auth.getToken() != null && currentUser != null) {
+        if (Auth.hasToken() && currentUser != null) {
             request(Api.HttpMethod.PUT, SuccessResponse.class, "user/" + userid, Map.of(
-                    "token", Auth.getToken(),
                     "banned", Boolean.toString(banned)
             ));
         }

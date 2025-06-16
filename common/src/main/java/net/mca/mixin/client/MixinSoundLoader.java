@@ -1,5 +1,6 @@
 package net.mca.mixin.client;
 
+import net.mca.client.tts.AudioCache;
 import net.minecraft.client.sound.AudioStream;
 import net.minecraft.client.sound.OggAudioStream;
 import net.minecraft.client.sound.RepeatingAudioStream;
@@ -23,11 +24,18 @@ public class MixinSoundLoader {
     void mca$injectLoadStreamed(Identifier id, boolean repeatInstantly, CallbackInfoReturnable<CompletableFuture<AudioStream>> cir) {
         if (id.getPath().startsWith("sounds/tts_cache/")) {
             cir.setReturnValue(CompletableFuture.supplyAsync(() -> {
-                try {
-                    InputStream inputStream = new FileInputStream(id.getPath().replace("sounds/", ""));
-                    return repeatInstantly ? new RepeatingAudioStream(OggAudioStream::new, inputStream) : new OggAudioStream(inputStream);
-                } catch (IOException iOException) {
-                    throw new CompletionException(iOException);
+                String identifier = id.getPath().substring(17, id.getPath().length() - 4);
+                if (identifier.endsWith(".ogg")) {
+                    // Persistent OGG file
+                    try {
+                        InputStream inputStream = new FileInputStream("tts_cache/" + identifier);
+                        return repeatInstantly ? new RepeatingAudioStream(OggAudioStream::new, inputStream) : new OggAudioStream(inputStream);
+                    } catch (IOException iOException) {
+                        throw new CompletionException(iOException);
+                    }
+                } else {
+                    // PCM audio (Which can be in memory or on disk)
+                    return AudioCache.getPCMAudioStream(identifier);
                 }
             }, Util.getMainWorkerExecutor()));
         }

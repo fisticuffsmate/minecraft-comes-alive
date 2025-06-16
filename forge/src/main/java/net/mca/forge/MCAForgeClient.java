@@ -15,7 +15,6 @@ import net.mca.client.resources.ColorPaletteLoader;
 import net.mca.entity.EntitiesMCA;
 import net.mca.resources.ApiReloadListener;
 import net.mca.resources.Supporters;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
@@ -23,25 +22,24 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.EntityRenderers;
 import net.minecraft.client.render.entity.VillagerEntityRenderer;
 import net.minecraft.client.render.entity.ZombieVillagerEntityRenderer;
-import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 
 @Mod.EventBusSubscriber(modid = MCA.MOD_ID, value = Dist.CLIENT, bus = Bus.MOD)
 public final class MCAForgeClient {
     @SubscribeEvent
-    public static void data(FMLConstructModEvent event) {
+    public static void data(RegisterClientReloadListenersEvent event) {
         new ClientProxyImpl();
-        ((ReloadableResourceManagerImpl) MinecraftClient.getInstance().getResourceManager()).registerReloader(new MCAScreens());
-        ((ReloadableResourceManagerImpl) MinecraftClient.getInstance().getResourceManager()).registerReloader(new ColorPaletteLoader());
-        ((ReloadableResourceManagerImpl) MinecraftClient.getInstance().getResourceManager()).registerReloader(new Supporters());
-        ((ReloadableResourceManagerImpl) MinecraftClient.getInstance().getResourceManager()).registerReloader(new ApiReloadListener());
+        event.registerReloadListener(new MCAScreens());
+        event.registerReloadListener(new ColorPaletteLoader());
+        event.registerReloadListener(new Supporters());
+        event.registerReloadListener(new ApiReloadListener());
     }
 
     @SubscribeEvent
@@ -61,7 +59,7 @@ public final class MCAForgeClient {
         }
 
         EntityRenderers.register(EntitiesMCA.GRIM_REAPER.get(), GrimReaperRenderer::new);
-        EntityRendererRegistry.register(EntitiesMCA.CRIB, CribEntityRenderer::new);
+        EntityRenderers.register(EntitiesMCA.CRIB.get(), CribEntityRenderer::new);
 
         BlockEntityRendererFactories.register(BlockEntityTypesMCA.TOMBSTONE.get(), TombstoneBlockEntityRenderer::new);
 

@@ -61,6 +61,9 @@ public class PlayerEntityExtendedModel<T extends LivingEntity> extends PlayerEnt
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+        // Idk anymore
+        breastsWear.visible = jacket.visible;
+
         renderCommon(matrices, vertices, light, overlay, red, green, blue, alpha);
     }
 

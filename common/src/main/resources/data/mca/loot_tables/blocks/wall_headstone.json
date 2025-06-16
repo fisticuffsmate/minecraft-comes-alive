@@ -28,7 +28,7 @@
                 {"condition": "minecraft:survives_explosion"}
               ],
               "functions": [
-                {"function": "minecraft:set_count", "count": 5}
+                {"function": "minecraft:set_count", "count": 3}
               ]
             }
           ]

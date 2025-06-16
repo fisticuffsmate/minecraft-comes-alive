@@ -99,9 +99,9 @@ public interface Messenger extends EntityWrapper {
 
     default MutableText transformMessage(MutableText message) {
         if (isSpeechImpaired()) {
-            return Text.translatable(API.getRandomSentence("zombie", message.getString()));
+            return Text.literal(API.getRandomSentence("zombie", message.getString()));
         } else if (isToYoungToSpeak()) {
-            return Text.translatable(API.getRandomSentence("baby", message.getString()));
+            return Text.literal(API.getRandomSentence("baby", message.getString()));
         }
         return message;
     }
@@ -109,10 +109,12 @@ public interface Messenger extends EntityWrapper {
     default MutableText sendChatMessage(MutableText message, Entity receiver) {
         message = transformMessage(message);
 
-        MutableText textToSend = Text.literal(Config.getInstance().villagerChatPrefix).append(asEntity().getDisplayName()).append(": ").append(message);
+        MutableText prefix = Text.literal(Config.getInstance().villagerChatPrefix)
+                .append(asEntity().getDisplayName())
+                .append(": ");
 
         //use custom packet to have access to sender UUID, and maybe future extra information
-        VillagerMessage msg = new VillagerMessage(textToSend, asEntity().getUuid());
+        VillagerMessage msg = new VillagerMessage(prefix, message, asEntity().getUuid());
         if (receiver instanceof ServerPlayerEntity serverPlayer) {
             NetworkHandler.sendToPlayer(msg, serverPlayer);
         } else {
@@ -121,7 +123,7 @@ public interface Messenger extends EntityWrapper {
 
         playSpeechEffect();
 
-        return message;
+        return prefix.append(message);
     }
 
     default void sendEventMessage(Text message, PlayerEntity receiver) {

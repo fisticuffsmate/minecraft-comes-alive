@@ -8,11 +8,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import java.text.Normalizer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import static net.mca.entity.VillagerLike.VILLAGER_NAME;
 
 public class ChatAI {
-
     /** Max range to find a villager in */
     private static final int VILLAGER_SEARCH_RANGE = 32;
 
@@ -59,7 +59,7 @@ public class ChatAI {
     private static ChatAIStrategy computeStrategyIfAbsent(UUID villagerID) {
         return strategies.computeIfAbsent(villagerID, v -> {
             String inworldResourceName = Config.getInstance().inworldAIResourceNames.getOrDefault(v, "");
-            return inworldResourceName.isEmpty() ? new GPT3() : new InworldAI(inworldResourceName);
+            return inworldResourceName.isEmpty() ? new OpenAIChatAI() : new InworldAI(inworldResourceName);
         });
     }
 
@@ -87,9 +87,11 @@ public class ChatAI {
         String normalizedMsg = normalizeString(msg);
         for (VillagerEntityMCA villager : nearbyVillagers) {
             String normalizedName = normalizeString(villager.getTrackedValue(VILLAGER_NAME));
-            // Return first match
-            if (normalizedMsg.contains(normalizedName)) {
-                return Optional.of(villager);
+            String[] nameParts = normalizedName.split(" ");
+            for (String part : nameParts) {
+                if (Pattern.compile("\\b" + Pattern.quote(part) + "\\b").matcher(normalizedMsg).find()) {
+                    return Optional.of(villager);
+                }
             }
         }
 

@@ -1,6 +1,7 @@
 package net.mca;
 
 import net.mca.client.gui.SkinLibraryScreen;
+import net.mca.client.tts.SpeechManager;
 import net.mca.cobalt.network.NetworkHandler;
 import net.mca.entity.VillagerEntityMCA;
 import net.mca.entity.VillagerLike;
@@ -67,6 +68,8 @@ public class MCAClient {
         if (KeyBindings.SKIN_LIBRARY.wasPressed()) {
             MinecraftClient.getInstance().setScreen(new SkinLibraryScreen());
         }
+
+        SpeechManager.INSTANCE.tick(client);
     }
 
     public static void addPlayerData(UUID uuid, VillagerEntityMCA villager) {

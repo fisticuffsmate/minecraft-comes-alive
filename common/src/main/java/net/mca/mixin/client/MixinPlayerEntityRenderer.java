@@ -23,20 +23,25 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerEntityRenderer.class)
 public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
-    private PlayerEntityModel<AbstractClientPlayerEntity> villagerModel;
-    private PlayerEntityModel<AbstractClientPlayerEntity> vanillaModel;
+    @Unique
+    private PlayerEntityModel<AbstractClientPlayerEntity> mca$villagerModel;
+    @Unique
+    private PlayerEntityModel<AbstractClientPlayerEntity> mca$vanillaModel;
 
     @Shadow
     protected abstract void setModelPose(AbstractClientPlayerEntity player);
 
-    SkinLayer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> skinLayer;
-    ClothingLayer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> clothingLayer;
+    @Unique
+    SkinLayer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> mca$skinLayer;
+    @Unique
+    ClothingLayer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> mca$clothingLayer;
 
     public MixinPlayerEntityRenderer(EntityRendererFactory.Context ctx, PlayerEntityModel<AbstractClientPlayerEntity> model, float shadowRadius) {
         super(ctx, model, shadowRadius);
@@ -45,20 +50,21 @@ public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<Abs
     @Inject(method = "<init>(Lnet/minecraft/client/render/entity/EntityRendererFactory$Context;Z)V", at = @At("TAIL"))
     private void init(EntityRendererFactory.Context ctx, boolean slim, CallbackInfo ci) {
         if (MCAClient.isPlayerRendererAllowed()) {
-            villagerModel = createModel(VillagerEntityModelMCA.bodyData(new Dilation(0.0F), slim));
-            vanillaModel = model;
+            mca$villagerModel = mca$createModel(VillagerEntityModelMCA.bodyData(new Dilation(0.0F), slim));
+            mca$vanillaModel = model;
 
-            skinLayer = new SkinLayer<>(this, createModel(VillagerEntityModelMCA.bodyData(new Dilation(0.0F))));
-            addFeature(skinLayer);
-            addFeature(new FaceLayer<>(this, createModel(VillagerEntityModelMCA.bodyData(new Dilation(0.01F))), "normal"));
+            mca$skinLayer = new SkinLayer<>(this, mca$createModel(VillagerEntityModelMCA.bodyData(new Dilation(0.0F))));
+            addFeature(mca$skinLayer);
+            addFeature(new FaceLayer<>(this, mca$createModel(VillagerEntityModelMCA.bodyData(new Dilation(0.01F))), "normal"));
 
-            clothingLayer = new ClothingLayer<>(this, createModel(VillagerEntityModelMCA.bodyData(new Dilation(0.0625F))), "normal");
-            addFeature(clothingLayer);
-            addFeature(new HairLayer<>(this, createModel(VillagerEntityModelMCA.hairData(new Dilation(0.125F)))));
+            mca$clothingLayer = new ClothingLayer<>(this, mca$createModel(VillagerEntityModelMCA.bodyData(new Dilation(0.0625F))), "normal");
+            addFeature(mca$clothingLayer);
+            addFeature(new HairLayer<>(this, mca$createModel(VillagerEntityModelMCA.hairData(new Dilation(0.125F)))));
         }
     }
 
-    private static PlayerEntityExtendedModel<AbstractClientPlayerEntity> createModel(ModelData data) {
+    @Unique
+    private static PlayerEntityExtendedModel<AbstractClientPlayerEntity> mca$createModel(ModelData data) {
         return new PlayerEntityExtendedModel<>(TexturedModelData.of(data, 64, 64).createModel());
     }
 
@@ -74,18 +80,18 @@ public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<Abs
             ci.cancel();
 
             // switch to mca model
-            model = villagerModel;
+            model = mca$villagerModel;
         } else if (MCAClient.isPlayerRendererAllowed()) {
             // switch to vanilla model
-            model = vanillaModel;
+            model = mca$vanillaModel;
         }
     }
 
     @Inject(method = "renderRightArm(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/client/network/AbstractClientPlayerEntity;)V", at = @At("HEAD"), cancellable = true)
     public void injectRenderRightArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, CallbackInfo ci) {
         if (MCAClient.renderArms(player.getUuid(), "right_arm")) {
-            renderCustomArm(matrices, vertexConsumers, light, player, skinLayer.model.rightArm, skinLayer.model.rightSleeve, skinLayer);
-            renderCustomArm(matrices, vertexConsumers, light, player, clothingLayer.model.rightArm, clothingLayer.model.rightSleeve, clothingLayer);
+            mca$renderCustomArm(matrices, vertexConsumers, light, player, mca$skinLayer.model.rightArm, mca$skinLayer.model.rightSleeve, mca$skinLayer);
+            mca$renderCustomArm(matrices, vertexConsumers, light, player, mca$clothingLayer.model.rightArm, mca$clothingLayer.model.rightSleeve, mca$clothingLayer);
             ci.cancel();
         }
     }
@@ -93,13 +99,14 @@ public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<Abs
     @Inject(method = "renderLeftArm(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/client/network/AbstractClientPlayerEntity;)V", at = @At("HEAD"), cancellable = true)
     public void injectRenderLeftArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, CallbackInfo ci) {
         if (MCAClient.renderArms(player.getUuid(), "left_arm")) {
-            renderCustomArm(matrices, vertexConsumers, light, player, skinLayer.model.leftArm, skinLayer.model.leftSleeve, skinLayer);
-            renderCustomArm(matrices, vertexConsumers, light, player, clothingLayer.model.leftArm, clothingLayer.model.leftSleeve, clothingLayer);
+            mca$renderCustomArm(matrices, vertexConsumers, light, player, mca$skinLayer.model.leftArm, mca$skinLayer.model.leftSleeve, mca$skinLayer);
+            mca$renderCustomArm(matrices, vertexConsumers, light, player, mca$clothingLayer.model.leftArm, mca$clothingLayer.model.leftSleeve, mca$clothingLayer);
             ci.cancel();
         }
     }
 
-    private void renderCustomArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, VillagerLayer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> layer) {
+    @Unique
+    private void mca$renderCustomArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, VillagerLayer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> layer) {
         PlayerEntityExtendedModel<AbstractClientPlayerEntity> model = (PlayerEntityExtendedModel<AbstractClientPlayerEntity>)layer.model;
         setModelPose(player);
 

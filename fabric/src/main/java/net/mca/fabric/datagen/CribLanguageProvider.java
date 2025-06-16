@@ -7,6 +7,8 @@ import net.mca.item.CribItem;
 import net.mca.item.ItemsMCA;
 import net.minecraft.util.DyeColor;
 
+import java.util.Locale;
+
 public class CribLanguageProvider extends FabricLanguageProvider {
 
 	protected CribLanguageProvider(FabricDataOutput dataOutput) { super(dataOutput); }
@@ -27,13 +29,13 @@ public class CribLanguageProvider extends FabricLanguageProvider {
 				String colorName = "";
 				for(String s : item.getColor().getName().split("_"))
 				{
-					colorName += ( s.substring(0, 1).toUpperCase() + s.substring(1, s.length()) + " ");
+					colorName += (s.substring(0, 1).toUpperCase(Locale.ROOT) + s.substring(1) + " ");
 				}
 				
 				String woodName = "";
-				for(String s : item.getWood().toString().toLowerCase().split("_"))
+				for(String s : item.getWood().toString().toLowerCase(Locale.ROOT).split("_"))
 				{
-					woodName += ( s.substring(0, 1).toUpperCase() + s.substring(1, s.length()) + " ");
+					woodName += (s.substring(0, 1).toUpperCase(Locale.ROOT) + s.substring(1) + " ");
 				}
 				
 				translationBuilder.add(item, colorName + woodName + "Crib");

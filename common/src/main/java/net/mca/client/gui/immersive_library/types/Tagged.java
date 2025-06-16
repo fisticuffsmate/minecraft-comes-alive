@@ -13,13 +13,4 @@ public interface Tagged {
         }
         return false;
     }
-
-    default boolean hasTag(Set<String> tags) {
-        for (String tag : this.tags()) {
-            if (tags.contains(tag)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

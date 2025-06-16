@@ -136,8 +136,10 @@ public class Pregnancy {
         Random random = mother.getRandom();
 
         //make sure this villager is registered in the family tree
-        boolean areTwins = random.nextFloat() < Config.getInstance().twinBabyChance;
-        int count = areTwins ? 2 : 1;
+        int count = 1;
+        while (random.nextFloat() < Config.getInstance().twinBabyChance && count < 8) {
+            count++;
+        }
 
         // advancement
         if (spouse instanceof ServerPlayerEntity player) {
